@@ -7,8 +7,9 @@ description: "Meine Odysee, einen Hugo-Blog zu erstellen"
 summary: "Vom iPad aus bloggen, ganz ohne halbherzig produzierte App von Squarespace oder Wordpress. Das war meine Idee und so landete ich bei Hugo. Aber wie naiv meine Vorstellung einer kurzen Einrichtung war, beschreibe ich hier."
 tags: ["iPad", "Blog", "Hugo"]
 categories: ["Blog"]
-ShowToc: false
-TocOpen: false
+series: ["iPad Blog Workflow"]
+#ShowToc: false
+#TocOpen: false
 cover:
   image: featured-image.png
   caption: "Erstellt von ChatGPT"
