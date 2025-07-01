@@ -1,6 +1,7 @@
 # Hugo
 /public/
 /resources/_gen/
+/svg_references/
 /assets/jsconfig.json
 hugo_stats.json
 /.hugo_build.lock
