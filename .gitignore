@@ -1,0 +1,14 @@
+# Hugo
+/public/
+/resources/_gen/
+/assets/jsconfig.json
+hugo_stats.json
+/.hugo_build.lock
+
+# Hugo Executable ma be added to repository
+hugo.exe
+hugo.darwin
+hugo.linux
+
+# MacOS
+.DS_Store

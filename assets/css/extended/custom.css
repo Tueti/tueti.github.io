@@ -1,0 +1,20 @@
+/* Zoom und Rotation beim Hover der Social Icons */
+.social-icons a svg:hover {
+    transform: scale(1.25) rotate3d(1, 1, 1, 15deg);
+}
+
+/* Zentriert den Begrüßungstext */
+.home-info {
+    text-align: center;
+}
+
+/* Minimiert den Rand um den Begrüßungstext etwas */
+.first-entry {
+    min-height: 2%;
+    margin: var(--gap) 0 calc(var(--gap) * 1.5);
+}
+
+/* Erhöht den Summary Text bei Beitragsliste */
+.entry-content {
+    -webkit-line-clamp: 4;
+}
