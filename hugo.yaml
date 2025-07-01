@@ -2,10 +2,6 @@ baseURL: http://localhost:1313/
 languageCode: de-de
 title: Chrischis iPad Blog
 
-# ToDo's:
-# - Optional: Merged Front Page: https://www.softwarecraftsperson.com/posts/2024-02-03-hugo-papermod-modes/
-# - cover image erstellen
-
 copyright: Written with ❤️ in Hamburg • Chrischi 2025
 
 theme: ["PaperMod"]
@@ -61,9 +57,9 @@ params:
   comments: false
   impressum: "[Impressum & Datenschutz](impressum)"
 
-  defaultTheme: dark
+  defaultTheme: auto
   disableThemeToggle: false
-  ShowShareButtons: true
+  ShowShareButtons: false
   ShowReadingTime: true
   ShowWordCount: true
   # disableSpecial1stPost: true
@@ -75,21 +71,8 @@ params:
   ShowAllPagesInArchive: true
   ShowPageNums: true
   ShowToc: true
-  # comments: false
-  images: ["images/papermod-cover.png"]
-
-#  profileMode:
-#    enabled: false
-#    title: "Chrischis iPad Blog"
-#    imageUrl: "#"
-#    imageTitle: my image
-    # imageWidth: 120
-    # imageHeight: 120
-#    buttons:
-#      - name: Blog
-#        url: posts
-#      - name: Tags
-#        url: tags
+  comments: false
+  images: ["images/blog-cover.png"]
 
   homeInfoParams:
     Title: "Moin!"
@@ -113,9 +96,9 @@ params:
     - name: rss
       title: Seite als RSS Feed
       url: "/index.xml"
-    - name: buymeacoffee
-      title: Spendiere mir einen Kaffee :)
-      url: "https://buymeacoffee.com/"
+#    - name: buymeacoffee
+#      title: Spendiere mir einen Kaffee :)
+#      url: "https://buymeacoffee/chrischi"
 
   assets:
     disableHLJS: true
@@ -124,25 +107,6 @@ params:
     favicon32x32: "/favicon/favicon-96x96.png"
     apple_touch_icon: "/favicon/apple-touch-icon.png"
     safari_pinned_tab: "/favicon/favicon.svg"
-
-
-# privacy:
-#   instagram:
-#     disabled: false
-#     simple: true
-
-#   youtube:
-#     disabled: false
-#     privacyEnhanced: true
-
-#   vimeo:
-#     disabled: false
-#     simple: true
-
-#   twitter:
-#     disabled: false
-#     enableDNT: true
-#     simple: true
 
 markup:
   highlight:
