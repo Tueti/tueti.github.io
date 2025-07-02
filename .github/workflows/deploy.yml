@@ -32,4 +32,4 @@
 #         key: ${{ secrets.UBERSPACE_SSH_KEY }}
 #         port: 22
 #         source: public/
-#         target: /var/www/virtual/${{ secrets.UBERSPACE_USER }}/
+#         target: /var/www/virtual/${{ secrets.UBERSPACE_USER }}/html
