@@ -106,7 +106,7 @@ Zeile 3 ist ein Kommentar, der keine Ausführung auf die Ausführung hat, jedoch
 
 Schlussendlich kommt das Herzstück. Meine beiden Ordner, die ich prüfen will. Hier gehe ich etwas näher auf alle Zeilen ein:
 
-> # Check Directories
+> #Check Directories
 
 Eine Kommentar für meine Strukturierung. Wird ignoriert, gibt nur an, dass nun die zu prüfenden Ordner folgen
 
