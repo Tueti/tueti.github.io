@@ -1,0 +1,35 @@
+# .github/workflows/deploy.yml
+# name: Build & Deploy Hugo Site to Uberspace
+
+# on:
+#   push:
+#     branches: [main]
+#   schedule:
+#     - cron: '0 2 * * *' # täglich um 2:00 UTC (3:00 bzw 4:00 MEZ/MESZ)
+# 
+# jobs:
+#   build-deploy:
+#     runs-on: ubuntu-latest
+# 
+#     steps:
+#     - name: Checkout Repository
+#       uses: actions/checkout@v4
+# 
+#     - name: Setup Hugo
+#       uses: peaceiris/actions-hugo@v3
+#       with:
+#         hugo-version: 'latest'
+#         extended: true
+# 
+#     - name: Build site
+#       run: hugo --minify
+# 
+#     - name: Copy via SCP to Uberspace
+#       uses: appleboy/scp-action@v1
+#       with:
+#         host: ${{ secrets.UBERSPACE_HOST }}
+#         username: ${{ secrets.UBERSPACE_USER }}
+#         key: ${{ secrets.UBERSPACE_SSH_KEY }}
+#         port: 22
+#         source: public/
+#         target: /var/www/virtual/${{ secrets.UBERSPACE_USER }}/
