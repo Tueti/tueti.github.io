@@ -22,6 +22,8 @@ Uberspace [anonymisiert die geloggten IP-Adressen](https://manual.uberspace.de/w
 
 Und das wars! Keine Cookies, keine Analysetools, keine geladenen Fonts von Google und keine automatischen Requests an Dritte (wie Social Media Betreiber). Blogbeiträge enthalten jedoch eine "Teilen"-Funktion. Hier wird der Service jedoch erst aufgerufen und somit Daten an diesen übermittelt, wenn der Teilen-Button aktiv genutzt wird.
 
+Und einige Posts enthalten Affiliate Links, diese sind immer entsprechend gekennzeichnet. Wenn du über einen solchen Link einen Kauf tätigst, erhalte ich eine Provision, ohne dass für dich zusätzliche Kosten entstehen. Dies steht die aber natürlich frei!
+
 ---
 
 ## Impressum
