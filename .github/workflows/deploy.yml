@@ -1,5 +1,5 @@
 # .github/workflows/deploy.yml
-# name: Build & Deploy Hugo Site to Uberspace
+name: Build & Deploy Hugo Site to Uberspace
 
 # on:
 #   push:
