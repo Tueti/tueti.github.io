@@ -35,3 +35,14 @@ jobs:
         port: 22
         source: public/*
         target: /var/www/virtual/${{ secrets.UBERSPACE_USER }}/html
+
+    - name: Move content out of ~/html/public/ into ~/html/ and clean up
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.UBERSPACE_HOST }}
+        username: ${{ secrets.UBERSPACE_USER }}
+        key: ${{ secrets.UBERSPACE_SSH_KEY }}
+        port: 22
+        script: |
+          rsync -a ~/html/public/ ~/html/
+          rm -rf ~/html/public
