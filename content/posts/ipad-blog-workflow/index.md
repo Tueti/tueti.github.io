@@ -3,6 +3,7 @@ author: ["Chrischi"]
 title: "iPad Blog Workflow: Vom Schreiben bis zur Veröffentlichung"
 slug: "iPad Blog Workflow Vom Schreiben bis zur Veroeffentlichung"
 date: "2025-06-30"
+draft: false
 description: "Meine Odysee, einen Hugo-Blog zu erstellen"
 summary: "Vom iPad aus bloggen, ganz ohne halbherzig produzierte App von Squarespace oder Wordpress. Das war meine Idee und so landete ich bei Hugo. Aber wie naiv meine Vorstellung einer kurzen Einrichtung war, beschreibe ich hier."
 tags: ["iPad", "Blog", "Hugo"]
@@ -11,7 +12,7 @@ series: ["iPad Blog Workflow"]
 #ShowToc: false
 #TocOpen: false
 cover:
-  image: featured-image.png
+  image: featured-image.webp
   caption: "Erstellt von ChatGPT"
 ---
 
