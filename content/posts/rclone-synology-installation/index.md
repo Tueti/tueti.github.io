@@ -16,7 +16,7 @@ cover:
   caption: "Erstellt von ChatGPT"
 ---
 
-**Update 02.07.2025:** Dieser Beitrag ist dauerhaft von meiner alten Domain "chrischisblog.de" umgezogen. Den Grund für den Umzug habe ich in [diesem Post](ipad-blog-workflow-vom-schreiben-bis-zur-veroeffentlichung) erklärt.
+**Update 02.07.2025:** Dieser Beitrag ist dauerhaft von meiner alten Domain "chrischisblog.de" umgezogen. Den Grund für den Umzug habe ich in [diesem Post](/ipad-blog-workflow-vom-schreiben-bis-zur-veroeffentlichung) erklärt.
 
 **Update 15.12.2024:** Am Ende des Tutorials wurden die Sync-Befehle für rclone aktualisiert. Beim Transfer großer Dateien kam es ab einer bestimmten Version zu Übertragungsfehlern. Dazu gab es auch im [rclone-Forum einen längeren Beitrag](https://forum.rclone.org/t/copy-sync-of-large-files-to-pcloud-always-failing/48334/24?page=2) und am Ende wurde ein (für mich) funktionierender Workaround gefunden. Das Update befindet sich erst am Ende, wenn die Datei *rclone\_bisync.sh* erstellt wird und ich weise an der entsprechenden Stelle noch einmal darauf hin.
 
