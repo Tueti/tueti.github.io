@@ -371,4 +371,4 @@ Und nun viel Spaß mit den synchronen Systemen!
 
 PS.: Wenn du noch keinen pCloud-Speicher hast, aber gern welchen erwerben würdest, freue ich mich, wenn du meinen Affiliate Link verwendest. So bekomme ich eine kleine Provision, es gibt aber keine Mehrkosten für dich. Einfach auf das folgende Bild oder [hier](https://partner.pcloud.com/r/130163) klicken. Danke!
 
-[![pCloud Lifetime](https://partner.pcloud.com/media/banners/lifetime/lifetime001300250.jpg)](https://partner.pcloud.com/r/130163 "pCloud Lifetime")
+[![pCloud Lifetime](https://partner.pcloud.com/media/banners/lifetime/lifetime001300250.jpg#center)](https://partner.pcloud.com/r/130163 "pCloud Lifetime")

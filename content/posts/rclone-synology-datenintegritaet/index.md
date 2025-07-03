@@ -167,4 +167,4 @@ Viel Spaß damit und hoffentlich ruhige Nächte, da du nun weißt, dass deine Da
 
 Zum Schluss in eigener Sache: Solltest du pCloud-Speicher erwerben und mich damit unterstützen wollen, würde ich mich total freuen, wenn du meinen Affiliate Link verwendest. So bekomme ich eine kleine Provision, es gibt aber keine Mehrkosten für dich. Einfach auf das folgende Bild oder [hier](https://partner.pcloud.com/r/130163) klicken. Danke!
 
-[![pCloud Lifetime](https://partner.pcloud.com/media/banners/lifetime/lifetime001300250.jpg)](https://partner.pcloud.com/r/130163 "pCloud Lifetime")
+[![pCloud Lifetime](https://partner.pcloud.com/media/banners/lifetime/lifetime001300250.jpg#center)](https://partner.pcloud.com/r/130163 "pCloud Lifetime")
