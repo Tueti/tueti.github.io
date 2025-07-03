@@ -18,3 +18,32 @@
 .entry-content {
     -webkit-line-clamp: 4;
 }
+
+
+/* Images mit Caption und zentriert. Arbeitet mit den Shortcodes */
+.post-content img[src*="#center"] {
+    margin: 0;
+}
+
+.post-content img {
+    margin: 0;
+}
+
+.post-content figure>figcaption {
+    color: var(--primary);
+    font-size: 0.9rem;
+    font-weight: 300;
+    text-align: center;      /* zentriert unter dem Bild */
+    margin: 4px auto 1em;
+    max-width: 90%;
+}
+
+.center-image {
+    text-align: center; /* Zentriert inline-Inhalt wie die figcaption */
+}
+
+.center-image img {
+    display: block; /* Wichtig, damit auto-margins funktionieren */
+    margin-left: auto;
+    margin-right: auto;
+}

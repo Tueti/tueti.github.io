@@ -1,0 +1,8 @@
+<figure {{ if .Get "center" }}class="center-image"{{ end }}>
+  <a href="{{ .Get "link" }}">
+    <img src="{{ .Get "src" }}" alt="{{ .Get "alt" }}" loading="lazy">
+  </a>
+  {{ with .Get "caption" }}
+    <figcaption>{{ . | safeHTML }}</figcaption>
+  {{ end }}
+</figure>
