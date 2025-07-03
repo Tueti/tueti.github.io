@@ -25,13 +25,13 @@ Gerade in Urlauben machen wir - meine Frau, meine Tochter und ich - viele Ausfl�
 
 Den Höhepunkt hatte ich 2023, als wir im Urlaub in Thailand waren und den Khao Ra, den höchsten Berg Koh Phangans, hoch wanderten. Ich verstaute die Kamera bei dieser Wanderung sogar in der Kraxe, da ich sie nicht mehr um den Hals haben wollte und meine Fotos machte ich mit meinem iPhone. Für extra Gewicht auf dem Rücken sollte man keine Kamera mitnehmen. Hier ein Bild von mir auf dem Khao Ra:
 
-{{< image_with_caption src="AufDemKhaoRa.webp#center" alt="Ich auf dem Khao Ra mit Kraxe. Für ein Foto nutze ich das iPhone, die Kamera ist in der Kraxe verstaut." caption="Ich auf dem Khao Ra mit Kraxe. Für ein Foto nutze ich das iPhone, die Kamera ist in der Kraxe verstaut." center="true">}}
+{{< image_with_caption_and_link src="AufDemKhaoRa.webp" alt="Ich auf dem Khao Ra mit Kraxe. Für ein Foto nutze ich das iPhone, die Kamera ist in der Kraxe verstaut." caption="Ich auf dem Khao Ra mit Kraxe. Für ein Foto nutze ich das iPhone, die Kamera ist in der Kraxe verstaut." >}}
 
 Das Sony Setup nahm ich in Urlaube immer nur auf Ausflüge mit, wenn der Ausflug "gute Fotos wert war". Bei abendlichen Spaziergängen oder der Erkundung der Straßen um die Ecke nahm ich sie gar nicht erst mit. Meine Fotos machte ich dann mit dem iPhone und die Kamera blieb immer wieder im Hotelzimmer liegen, einfach, um mit "leichtem Gepäck" unterwegs zu sein.
 
 Mein erster Impuls für ein schlankeres Setup war, das Objektiv zu verkleinern. Ich stieg um auf das Sony 20-70mm f/4, mit welchem ich zwar etwas Lichtstärke einbußte, aber dafür auch Gewicht einsparte. Allerdings machten die ~350g nicht wirklich etwas aus und im nächsten großen Urlaub, Kroatien 2024, hatte ich eine ähnliche Erfahrung.
 
-{{< image_with_caption src="PlitvicerSeen.webp#center" alt="Die Plitvicer Seen in Kroatien" caption="Die Plitvicer Seen in Kroatien" center="true">}}
+{{< image_with_caption_and_link src="PlitvicerSeen.webp#center" alt="Die Plitvicer Seen in Kroatien" caption="Die Plitvicer Seen in Kroatien" >}}
 
 
 Bei der Wanderung um die Plitvicer Seen in Kroatien hatte ich erneut das Gefühl, dass die Kamera "im Weg" war. Die Bilder sind schön geworden, aber die Kamera und die Kraxe zusammen waren einfach unliebsam. Und wie in den bisherigen Urlauben blieb die Kamera im Hotel, wenn es kein Ausflug war, für den ich das Gewicht rechtfertigen konnte. Ich wollte das Setup **deutlich** reduzieren und selbst mit der recht kleinen Sony 35mm f/1.8 Festbrennweite blieb das Gesamtgewicht der Kombination bei gut einem Kilogramm. 
@@ -95,10 +95,10 @@ Die Farben bei der Fuji (beim Blau des Himmels und den warmen Tönen im zweiten 
 
 Habe ich meine Sony A7 III vermisst? Nein! Im Gegenteil, die X100VI hat mir total viel Spaß gemacht und mich zum Fotografieren motiviert. Außerdem ist sie gegenüber meinem iPhone 15 Pro Max ein Upgrade, was die Fotos angeht. Ich finde, die Fotos wirken einfach anders. Hier nochmal ein paar Beispiele für Farben, Bokeh (f/2) bei der Katze und einer längeren Belichtungszeit (1/60 Sek.) beim Bild mit der Schildkröte.
 
-{{< linked_image_with_caption src="Palmen_crop.webp" link="Palmen.webp" alt="Palmen auf Mallorca" caption="Palmen auf Mallorca" center="true" >}}
-{{< linked_image_with_caption src="Eingang_crop.webp" link="Eingang.webp" alt="Eingang in einer Gasse, Mallorca" caption="Eingang in einer Gasse, Mallorca" center="true" >}}
-{{< linked_image_with_caption src="Katze_crop.webp" link="Katze.webp" alt="Straßenkatzen in Lindos, Rhodos" caption="Straßenkatzen in Lindos, Rhodos" center="true" >}}
-{{< linked_image_with_caption src="Schildkroete_crop.webp" link="Schildkroete.webp" alt="Schildkröte im Schmetterlingstal, Rhodos" caption="Schildkröte im Schmetterlingstal, Rhodos" center="true" >}}
+{{< image_with_caption_and_link src="Palmen_crop.webp" link="Palmen.webp" alt="Palmen auf Mallorca" caption="Palmen auf Mallorca" >}}
+{{< image_with_caption_and_link src="Eingang_crop.webp" link="Eingang.webp" alt="Eingang in einer Gasse, Mallorca" caption="Eingang in einer Gasse, Mallorca" >}}
+{{< image_with_caption_and_link src="Katze_crop.webp" link="Katze.webp" alt="Straßenkatzen in Lindos, Rhodos" caption="Straßenkatzen in Lindos, Rhodos" >}}
+{{< image_with_caption_and_link src="Schildkroete_crop.webp" link="Schildkroete.webp" alt="Schildkröte im Schmetterlingstal, Rhodos" caption="Schildkröte im Schmetterlingstal, Rhodos" >}}
 
 ## Fazit: Ist es die beste Alltagskamera oder dank Smartphones überflüssig?
 
