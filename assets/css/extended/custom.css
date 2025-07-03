@@ -22,11 +22,11 @@
 
 /* Images mit Caption und zentriert. Arbeitet mit den Shortcodes */
 .post-content img[src*="#center"] {
-    margin: 0 auto 1rem auto;
+    margin: 1rem auto 0 auto;
 }
 
 .post-content img {
-    margin: 0 auto 1rem auto;
+    margin: 1rem auto 0 auto;
 }
 
 .post-content figure>figcaption {
