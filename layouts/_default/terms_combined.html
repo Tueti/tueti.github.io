@@ -1,0 +1,54 @@
+{{- define "main" }}
+
+{{- if .Title }}
+<header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{- if .Description }}
+    <div class="post-description">
+        {{ .Description }}
+    </div>
+    {{- end }}
+</header>
+{{- end }}
+
+<section class="terms-section">
+    {{ with .Params.categorySubHeading }}
+        <h2>{{ . }}</h2>
+    {{ else }}
+        <h2>Kategorien</h2> {# Fallback, falls der Parameter nicht gesetzt ist #}
+    {{ end }}
+    <ul class="terms-list">
+        {{- $type := "categories" }}
+        {{- range $key, $value := site.Taxonomies.categories.Alphabetical }}
+        {{- $name := .Name }}
+        {{- $count := .Count }}
+        {{- with site.GetPage (printf "/%s/%s" $type $name) }}
+        <li>
+            <a href="{{ .Permalink }}">{{ .Name }} <sup><strong><sup>{{ $count }}</sup></strong></sup> </a>
+        </li>
+        {{- end }}
+        {{- end }}
+    </ul>
+</section>
+
+<section class="terms-section">
+    {{ with .Params.tagsSubHeading }}
+        <h2>{{ . }}</h2>
+    {{ else }}
+        <h2>Tags</h2> {# Fallback, falls der Parameter nicht gesetzt ist #}
+    {{ end }}
+    <ul class="terms-list">
+        {{- $type := "tags" }}
+        {{- range $key, $value := site.Taxonomies.tags.Alphabetical }}
+        {{- $name := .Name }}
+        {{- $count := .Count }}
+        {{- with site.GetPage (printf "/%s/%s" $type $name) }}
+        <li>
+            <a href="{{ .Permalink }}">{{ .Name }} <sup><strong><sup>{{ $count }}</sup></strong></sup> </a>
+        </li>
+        {{- end }}
+        {{- end }}
+    </ul>
+</section>
+
+{{- end }}
