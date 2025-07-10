@@ -19,9 +19,9 @@
     -webkit-line-clamp: 4;
 }
 
-/**
-/*  Images mit Caption. Arbeitet mit den Shortcode
-**/
+
+/* --- BILDER MIT CAPTIONS. NUTZT DEN SHORTCIDE --- */
+
 .captioned-image {
     margin: 1rem auto 0 auto !important;
 }
@@ -32,4 +32,52 @@
     text-align: center !important;      /* zentriert unter dem Bild */
     margin: 4px auto 1em !important;
     max-width: 90% !important;
+}
+
+
+/* --- NEUE STILE FÜR DIE KOMBINIERTE "CATEGORIES & TAGS"-SEITE --- */
+
+/* Wrapper für die gesamte Sektion (Categories ODER Tags) */
+.terms-section {
+    margin-bottom: 40px; /* Fügt etwas Abstand zwischen den Kategorien und Tags hinzu */
+}
+
+/* Überschrift für Categories und Tags */
+.terms-section h2 {
+    font-size: 1.8em; /* Du kannst die Größe anpassen */
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--tertiary); /* Eine Linie unter der Überschrift, passend zu deinem Theme */
+    padding-bottom: 10px;
+}
+
+/* Stile für die Listen in der kombinierten Seite (ersetzt .terms-tags) */
+.terms-list {
+    list-style: none; /* Entfernt die Standard-Aufzählungszeichen */
+    padding: 0; /* Entfernt den Standard-Innenabstand */
+    display: flex; /* Für die Anordnung der Elemente nebeneinander */
+    flex-wrap: wrap; /* Lässt Elemente in die nächste Zeile umbrechen, wenn der Platz nicht reicht */
+    gap: 10px; /* Abstand zwischen den einzelnen Listenelementen */
+}
+
+.terms-list li {
+    /* Übernimmt die meisten Stile von .terms-tags li */
+    display: inline-block; /* Behält das Inline-Block-Verhalten bei */
+    margin: 0; /* Setze den Margin hier auf 0, da wir 'gap' verwenden */
+    font-weight: 500;
+    margin-bottom: 10px; /* Optional: Wenn du zusätzlich etwas vertikalen Abstand zwischen den Zeilen möchtest */
+}
+
+.terms-list a {
+    /* Übernimmt die meisten Stile von .terms-tags a */
+    display: block;
+    padding: 3px 10px;
+    background: var(--tertiary); /* Dein Theme verwendet --tertiary */
+    border-radius: 6px;
+    transition: transform 0.1s;
+}
+
+.terms-list a:active {
+    /* Übernimmt die meisten Stile von .terms-tags a:active */
+    background: var(--tertiary);
+    transform: scale(0.96);
 }

@@ -37,8 +37,8 @@ languages:
         - name: Archiv
           url: archives
           weight: 10
-        - name: Tags
-          url: tags/
+        - name: Kategorien & Tags
+          url: categories-and-tags/
           weight: 20
         - name: Serien
           url: series/
