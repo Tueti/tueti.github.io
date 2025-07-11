@@ -7,7 +7,7 @@ draft: false
 description: "Tutorial für die Installation von rclone auf einem Synology NAS (DSM 7)"
 summary: "Ich möchte meine Bilder nicht ausschließlich auf meinem NAS haben. Es kann immer mal etwas passieren, was das NAS korrumpiert. Als Schweizer Cloud-Anbieter mit Lifetime-Lizenz war mir pCloud sympathisch. Hier zeige ich, wie rclone auf dem NAS installiert werden kann, um einen Sync in die Cloud einzurichten."
 tags: ["Synology", "rclone", "pCloud"]
-categories: ["Tutorials"]
+categories: ["Tutorials", "Synology NAS"]
 series: ["Synology rclone Reihe"]
 ShowToc: true
 TocOpen: false

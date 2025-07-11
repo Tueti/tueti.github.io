@@ -9,7 +9,7 @@ summary: "Deutschland und das Internet sind nicht immer die besten Freunde und s
 ShowToc: true
 TocOpen: false
 tags: ["Synology", "Cloudflare"]
-categories: ["Tutorials"]
+categories: ["Tutorials", "Synology NAS"]
 series: ["Private Cloud mit einem Synology NAS"]
 cover:
   image: featured-image.webp
