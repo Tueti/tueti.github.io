@@ -7,7 +7,7 @@ draft: false
 description: "Tutorial, um die Datenintegrität zwischen einem Synology NAS (DSM 7) und der Cloud sicherzustellen"
 summary: "Nachdem eine Synchronisation zwischen unserem Synology NAS und einer Cloud eingerichtet wurde, sollten wir nun auch regelmäßig sicherstellen, dass die Datenintegrität gewährleistet ist. Hier die Anleitung dazu."
 tags: ["Synology", "rclone", "pCloud"]
-categories: ["Tech-Tipps"]
+categories: ["Tutorials"]
 series: ["Synology rclone Reihe"]
 ShowToc: true
 TocOpen: false
