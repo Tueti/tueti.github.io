@@ -34,42 +34,35 @@ Ziel ist es, einen extra Schritt der Authentifizierung zu erschaffen. Bevor unse
 
 ## Los geht's mit der Einrichtung
 
-Ich hoffe, du hast dich etwas mit dem Cloudflare Dashboard auseinandergesetzt und kannst dort nun immer sicher zu deinem Zero Trust Dashboard, deinem Network Tunnel und den Hostnames navigieren. Öffne also bitte das Zero Trust Dashboard via [Cloudflare Dashboard](https://dash.cloudflare.com/), dann im Navigationsbaum links _Zero Trust_ und dort gibt es im neuen Navigationsbaum ein Modul _Access_.
+Um diesem Tutorial folgen zu können, wirst du bereits einen Cloudflare Tunnel eingerichtet haben (vielleicht auch durch meinen [ersten Beitrag dazu](/synology-nas-als-private-cloud-via-cloudflare-tunnel-ohne-portweiterleitung) und dich deshalb ein wenig im Cloudflare Portal auskennen. Deshalb lass uns direkt starten, indem du einmal das Zero Trust Dashboard öffnest. Das findest du im Navigationsbaum des [Cloudflare Dashboards](https://dash.cloudflare.com/) auf der linken Seite unter _Zero Trust_. Im sich dann öffnenden Dashboard findest du im neuen Navigationsbaum ein Modul _Access_.
 
+Wenn du dies öffnest, siehst du verschiedene Einträge. Wir werden zwei davon nutzen:
 
+* **Policies**
+* **Applications**
 
-========= AB HIER NEU
+Eine _Policy_ ist ein Satz Regeln für die Zugriffsverwaltung, welcher modular wiederverwendet werden kann. Wir können unter anderem sehr granular definieren, wer berechtigt wird, auf unser NAS zuzugreifen.
 
-Dies bitte öffnen und auf _Policies_ gehen.
+Eine _Application_ hingegen ist sozusagen eine Zwischenschicht, die sich zwischen den anfragenden Nutzer und unseren Endpunkt schiebt und die Policy durchsetzt. Wenn also jemand `photos.meinedomain.de` aufruft, kann ich eine _Application_ definieren, die sich bei dieser URL zwischenschiebt und die Policy forciert.
 
-Eine _Policy_ ist ein Satz Regeln 
+### Policy erstellen
 
+Wähle also im Navigationsbaum erstmal _Policies_ und dann „Add a policy“. Du kannst der Policy einen aussagekräftigen Namen geben und dann bei den **Rules** auswählen, wie der anfragende Nutzer verifiziert werden soll. Schau dir die Liste gern genauer an, es gibt einige Möglichkeiten. Für unser Beispiel nutzen wir „Emails“ als _Selector_ und die Email Adressen, dessen Besitzer einen Verifizierungscode erhalten sollen. Im einfachsten Fall erstmal nur deine eigene Email Adresse. Du kannst aber auch mehrere angeben.
 
+Der Rest kann erstmal so bleiben und du kannst die Policy speichern.
 
+### Application erstellen
 
+Nun brauchen wir noch die _Application_. Also im Navigationsbaum, unter _Access_ auf _Applications_ und eine neue Applikation anlegen. Unsere Applikation, unser NAS, ist _Self-Hosted_ also wählen wir auch das aus.
 
-Eine _Rule Group_ ist ein Set an Regeln für die Zugriffsverwaltung, das wir modular wiederverwenden können. Wir können beispielsweise Regeln aufstellen, wie...
-* ... jeder, der eine Email Adresse besitzt, die auf folgenden Namen endet: "@tueti.space"...
-* ... jede, der folgenden Email Adressen
-* ... jeder in dieser IP Range
-* ... und viele Weitere
-
-Da es sich um _Rule **Groups**_ handelt, können wir auch mehrere Regeln aufstellen und definieren, ob eine, ein Teilset oder alle Regeln zutreffen müssen. Und diese Regelgruppen können wir modular vor alle oder nur einzelne unserer Hostnames legen, sodass ein Zugriff auf diese Hostnames die Erfüllung aller definierten Zugriffsregeln voraussetzt.
-
-Nun also auf "Add a group" klicken.
-
-### Regel erstellen
-
-Gib der Regel bei **Basic Information** einen Namen und im Kasten **Rules** wähle ich für das genannte Ziel der Email Verifizierung den _Selector_ "Emails" aus. Im _Value_ gebe ich nun alle Email Adressen an, die einen Verifizierungscode erhalten sollen. Das können all meine eigenen Email Adressen sein oder alle aus dem eigenen Haushalt, Freunde, Familie, wer auch immer für euch passt.
-
-Dann speichern und du solltest nun in der Übersicht deiner _Rule Groups_ den Namen des eben angelegten Regelwerkes sehen.
-
-### Eine Cloudflare Application erstellen
-
-Wir müssen nun eine Application erstellen, die sich zwischen unsere URL und unserem Ziel (unser NAS) hängt und die extra Schicht an Authentifizierung bringt. Hierzu im selben _Access_ Modul des Navigationsbaums auf _Applications_ klicken und "Add an application" wählen. Unsere Applikation, unser NAS, ist _Self-Hosted_ also wählen wir auch das aus.
-
-Nun müssen wir die Applikation konfigurieren. In den **Basic Information** können wir den Namen und die Sessiondauer angeben (wann muss sich jemand neu verifizieren).
+Nun müssen wir die Applikation ebenfalls konfigurieren. In den **Basic Information** können wir den Namen und die Sessiondauer angeben (wann muss sich jemand neu verifizieren).
 
 Beim **Public hostname** musst du exakt die hostname eintragen, den du im Tunnel konfiguriert hast.
 
-Darunter gibt es einen Abschnitt "_Create reusable application policies_", in welchem du per "Add a policy" eine neue Policy anlegen kannst. Das wollen wir machen
+Und zu guter Letzt verknüpfst du nun noch die eben angelegte Policy im entsprechenden Abschnitt. Auf den folgenden Seiten kannst du noch konfigurieren, wie die zwischengeschaltete Seite aussehen soll, für unsere Bedürfnisse reicht aber erstmal der Standard. Klicke dich also durch die restlichen Seiten, belasse aber dabei die Standardwerte, bis du am Ende speichern kannst.
+
+Wenn du nun die Application erstellt und richtig mit der Policy verknüpft hast und auch die korrekten Hostnames in der Application hinterlegt sind, dann sollte nun alles abgesichert sein!
+
+Öffne einmal (am besten in einem privaten Tab oder einem anderen Browser) die URL, die du in deiner Application angegeben hast und du solltest eine Cloudflare Seite sehen, die dich auffordert, deine Email Adresse anzugeben. Nur die in der Policy hinterlegte Email Adresse bekommt dann auch einen Verifizierungscode, wenn du diese Email Adresse im Feld angibst und erst, wenn der Verifizierungscode eingegeben wurde, wirst du auf dein NAS weitergeleitet.
+
+Und schon kommt nicht mehr Jedermann, der deine URL kennt, auf dein NAS. Glückwunsch zur extra Schicht Sicherheit und viel Spaß mit deiner _Private Cloud_.
