@@ -169,7 +169,7 @@ Dann nur noch speichern und fertig!
 
 ### Eine Anmerkung zum Tunnel ohne Subdomain
 
-Cloudflare Tunnel nutzt CNAME Einträge für deine Domain. Möchtest du deine Hauptdomain, `{ meinedomain.de }`, tunneln, dann musst du die A Record Einträge für deine Domain und für www löschen und als neuen public hostname im Tunnel eintragen. Das klingt erstmal nicht intuitiv, aber wenn du die A Records bestehen lässt, wirst du diese nicht als Tunnel nutzen können. Es erscheint dann eine Fehlermeldung, dass diese Route bereits als A Record vergeben ist.
+Cloudflare Tunnel nutzt CNAME Einträge für deine Domain. Möchtest du deine Hauptdomain, `{ meinedomain.de }`, tunneln, dann musst du die A Record Einträge für deine Domain und für www löschen und als neuen public hostnames im Tunnel eintragen. Das klingt erstmal nicht intuitiv und wäre unter regulärer DNS Konformität auch nicht erlaubt, glaube ich, aber Cloudflare nutzt sogenanntes _dns flattening_, um auch deine Hauptdomain per CNAME Eintrag zu routen. Mehr noch, lässt du deine A Records bestehen, kann ein Cloudflare Tunnel zu diesen URLs nicht erstellt werden, da kein CNAME angelegt werden kann.
 
 ## Der Test
 
