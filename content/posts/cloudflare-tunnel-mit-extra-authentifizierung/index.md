@@ -3,8 +3,8 @@ author: ["Chrischi"]
 title: "Cloudflare Tunnel mit extra Authentifizierung"
 slug: "Cloudflare Tunnel mit extra Authentifizierung"
 date: "2025-07-21"
-draft: true
-description: "Nachdem wir einen Cloudflare Tunnel aufgebaut und so unsere eigene _Private Cloud_ hochgezogen haben, sollten wir einige Pfade besonders schützen. Cloudflare bietet vielfältige und granulare Möglichkeiten, die Endpunkte vor unbefugtem Zugriff zu schützen. Lass uns das mal gemeinsam beleuchten."
+draft: false
+description: "Nachdem wir einen Cloudflare Tunnel aufgebaut und so unsere eigene Private Cloud hochgezogen haben, sollten wir einige Pfade besonders schützen. Cloudflare bietet vielfältige und granulare Möglichkeiten, die Endpunkte vor unbefugtem Zugriff zu schützen. Lass uns das mal gemeinsam beleuchten."
 ShowToc: true
 TocOpen: false
 tags: ["Synology", "Cloudflare"]
@@ -12,10 +12,11 @@ categories: ["Tutorials", "Synology NAS"]
 series: ["Private Cloud mit einem Synology NAS"]
 cover:
   image: featured-image.webp
-  caption: Erstellt von ChatGPT
+  caption: Foto von [Growtika](https://unsplash.com/de/@growtika?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) auf [Unsplash](https://unsplash.com/de/fotos/diagramm-Am6pBe2FpJw?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)
+      
 ---
 
-Unsere [Private Cloud](/synology-nas-als-private-cloud-via-cloudflare-tunnel-ohne-portweiterleitung) steht und ich erfreue mich noch immer regelmäßig daran. Aber ich würde sie gern mehr absichern. Einige URLs im Cloudflare Tunnel mit extra Authentifizierung versehen und genau diese Möglichkeit bietet uns der Dienst - selbst im "Free" Tier.
+Unsere [Private Cloud steht](/synology-nas-als-private-cloud-via-cloudflare-tunnel-ohne-portweiterleitung) und ich erfreue mich noch immer regelmäßig daran. Aber ich würde sie gern mehr absichern. Einige URLs im Cloudflare Tunnel mit extra Authentifizierung versehen und genau diese Möglichkeit bietet uns der Dienst - selbst im "Free" Tier.
 
 ## Grundlegende Sicherheit bei Cloudflare
 
@@ -43,11 +44,13 @@ Wenn du dies öffnest, siehst du verschiedene Einträge. Wir werden zwei davon n
 
 Eine _Policy_ ist ein Satz Regeln für die Zugriffsverwaltung, welcher modular wiederverwendet werden kann. Wir können unter anderem sehr granular definieren, wer berechtigt wird, auf unser NAS zuzugreifen.
 
-Eine _Application_ hingegen ist sozusagen eine Zwischenschicht, die sich zwischen den anfragenden Nutzer und unseren Endpunkt schiebt und die Policy durchsetzt. Wenn also jemand `photos.meinedomain.de` aufruft, kann ich eine _Application_ definieren, die sich bei dieser URL zwischenschiebt und die Policy forciert.
+Eine _Application_ hingegen ist so etwas, wie eine Zwischenschicht, die sich zwischen den anfragenden Nutzer und unseren Endpunkt schiebt und die Policy durchsetzt. Wenn also jemand `photos.meinedomain.de` aufruft, kann ich eine _Application_ definieren, die sich bei dieser URL zwischenschiebt und die Policy forciert.
 
 ### Policy erstellen
 
 Wähle also im Navigationsbaum erstmal _Policies_ und dann „Add a policy“. Du kannst der Policy einen aussagekräftigen Namen geben und dann bei den **Rules** auswählen, wie der anfragende Nutzer verifiziert werden soll. Schau dir die Liste gern genauer an, es gibt einige Möglichkeiten. Für unser Beispiel nutzen wir „Emails“ als _Selector_ und die Email Adressen, dessen Besitzer einen Verifizierungscode erhalten sollen. Im einfachsten Fall erstmal nur deine eigene Email Adresse. Du kannst aber auch mehrere angeben.
+
+![Beispiel einer Cloudflare Access Policy mit Namen und Beispiel-Email](cloudflare-policy.webp "Beispiel einer Cloudflare Access Policy mit Namen und Beispiel-Email")
 
 Der Rest kann erstmal so bleiben und du kannst die Policy speichern.
 
@@ -55,14 +58,25 @@ Der Rest kann erstmal so bleiben und du kannst die Policy speichern.
 
 Nun brauchen wir noch die _Application_. Also im Navigationsbaum, unter _Access_ auf _Applications_ und eine neue Applikation anlegen. Unsere Applikation, unser NAS, ist _Self-Hosted_ also wählen wir auch das aus.
 
-Nun müssen wir die Applikation ebenfalls konfigurieren. In den **Basic Information** können wir den Namen und die Sessiondauer angeben (wann muss sich jemand neu verifizieren).
+Nun müssen wir die Applikation ebenfalls konfigurieren. In den **Basic Information** können wir den Namen und die Sessiondauer angeben (wann muss sich jemand neu verifizieren). Ob der Standardwert von 24 Stunden in Ordnung ist, musst du natürlich selbst entscheiden.
 
-Beim **Public hostname** musst du exakt die hostname eintragen, den du im Tunnel konfiguriert hast.
+Außerdem musst du direkt darunter via "+ Add public hostname" genau die Subdomain und Domain eintragen (bzw. auswählen), für die du diese Applikation zwischenschalten möchtest. Du kannst auch mehrere Hostnames hier eintragen, wenn die Applikation bei mehreren Routen Sicherheit bieten soll.
 
-Und zu guter Letzt verknüpfst du nun noch die eben angelegte Policy im entsprechenden Abschnitt. Auf den folgenden Seiten kannst du noch konfigurieren, wie die zwischengeschaltete Seite aussehen soll, für unsere Bedürfnisse reicht aber erstmal der Standard. Klicke dich also durch die restlichen Seiten, belasse aber dabei die Standardwerte, bis du am Ende speichern kannst.
+Danach musst du bei den **Access Policies** nun noch über "Select existing policy" deine eben angelegt Policy auswählen und verknüpfen.
 
-Wenn du nun die Application erstellt und richtig mit der Policy verknüpft hast und auch die korrekten Hostnames in der Application hinterlegt sind, dann sollte nun alles abgesichert sein!
+Am Ende solltest du diese drei Bereiche befüllt haben:
+![Beispiel einer Cloudflare Access Application](cloudflare-application.webp "Beispiel einer Cloudflare Access Application")
 
-Öffne einmal (am besten in einem privaten Tab oder einem anderen Browser) die URL, die du in deiner Application angegeben hast und du solltest eine Cloudflare Seite sehen, die dich auffordert, deine Email Adresse anzugeben. Nur die in der Policy hinterlegte Email Adresse bekommt dann auch einen Verifizierungscode, wenn du diese Email Adresse im Feld angibst und erst, wenn der Verifizierungscode eingegeben wurde, wirst du auf dein NAS weitergeleitet.
+Damit ist die wichtigste Konfiguration erledigt und du könntest die via "Next" diese und die folgenden Seiten durcharbeiten, bis du am Ende die Applikation speicherst.
+
+Natürlich steht dir frei, dir die folgenden zwei Seiten bei der Applikationsanlage genauer anzusehen. Du kannst hier unter Anderem das Aussehen der zwischengeschalteten Seite noch verändern. Allerdings weiß ich nicht genau, wie sehr das im "Free" Tier geht. Für mich reichte hier immer der Standard aus.
+
+Am Ende speicherst du die Applikation und sofern du diese korrekt mit der Policy verknüpft und die Hostnames richtig eingetragen hast, sollte ab sofort eine Authentifizierungsseite deinem NAS vorgeschaltet sein.
+
+Öffne einmal (am besten in einem privaten Tab oder einem anderen Browser) die URL, die du in deiner Application angegeben hast und du solltest eine Cloudflare Seite sehen, die dich auffordert, deine Email Adresse anzugeben.
+
+![Cloudflare Access Control](cloudflare-application-security.webp "Cloudflare Access Control")
+
+Natürlich wird ein Verifizierungscode nur verschickt, wenn jemand die Email Adresse angibt, die wir in der Policy definiert haben. Erst, wenn dann der Code eingegeben wurde, geht's weiter zum NAS.
 
 Und schon kommt nicht mehr Jedermann, der deine URL kennt, auf dein NAS. Glückwunsch zur extra Schicht Sicherheit und viel Spaß mit deiner _Private Cloud_.
