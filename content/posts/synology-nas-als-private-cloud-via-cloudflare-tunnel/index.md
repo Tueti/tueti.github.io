@@ -152,7 +152,7 @@ Synology Photos ist eine Anwendung, die im Standard keinen eigenen Port besitzt.
 
 ![Beispiel für die Portkonfiguration von Synology Photos](syno-anmeldeportal-photos.webp "Beispiel für die Portkonfiguration von Synology Photos")
 
-Du kannsz du deinen Hostname so konfigurieren, dass du
+Du kannst nun deinen Hostname folgendermaßen konfigurieren:
 
 > **Hostname**  
 > Subdomain: photos  
@@ -166,6 +166,10 @@ Du kannsz du deinen Hostname so konfigurieren, dass du
 Wir haben auf deinem NAS einen https Port vergeben (siehe Screenshot). Ich weiß nicht, ob du ein selbst signiertes Zertifikat hast, aber wenn du die Synology Photos via `{ DEINE-NAS-IP:1234 }` öffnest, wirst du aktuell einen Zertifikatsfehler bekommen. Bei der Konfiguration der Hostnames kannst du _Additional application settings_ und dort _TLS_ öffnen. Lege den Schalter bei _No TLS Verify_ um. Dies ignoriert den lokalen Zertifikatsfehler. Wichtig: Die Verbindung von deinem Browser über Cloudflare zu deinem NAS ist TLS verschlüsselt! Es handelt sich um das interne Routing von auf deinem NAS von dem Docker Container mit cloudflared zu deiner Photos App, welches den Zertifikatsfehler ignorieren soll. Der ein- und außgehende Traffic durch den cloudflared Tunnel ist verschlüsselt. Du kannst den Schalter also bedenkenlos umlegen.
 
 Dann nur noch speichern und fertig!
+
+### Eine Anmerkung zum Tunnel ohne Subdomain
+
+Cloudflare Tunnel nutzt CNAME Einträge für deine Domain. Möchtest du deine Hauptdomain, `{ meinedomain.de }`, tunneln, dann musst du die A Record Einträge für deine Domain und für www löschen und als neuen public hostname im Tunnel eintragen. Das klingt erstmal nicht intuitiv, aber wenn du die A Records bestehen lässt, wirst du diese nicht als Tunnel nutzen können. Es erscheint dann eine Fehlermeldung, dass diese Route bereits als A Record vergeben ist.
 
 ## Der Test
 
