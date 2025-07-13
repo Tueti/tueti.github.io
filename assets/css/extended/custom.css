@@ -35,7 +35,12 @@
 }
 
 
-/* --- NEUE STILE FÜR DIE KOMBINIERTE "CATEGORIES & TAGS"-SEITE --- */
+/* --- NEUE STILE FÜR DIE KOMBINIERTE "INDEXED_ARCHIVE"-SEITE --- */
+
+/* Top Margin */
+.indexed-archive {
+    margin-top: 40px; /* Abstand oben */
+}
 
 /* Wrapper für die gesamte Sektion (Categories ODER Tags) */
 .terms-section {
