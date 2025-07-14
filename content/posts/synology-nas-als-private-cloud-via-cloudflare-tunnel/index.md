@@ -28,6 +28,12 @@ Und die Absicherung deines Netzwerkes wird dir abgenommen. Du musst dich nicht u
 
 Cloudflare sichert den Zugriff auf deine _Private Cloud_ vermutlich besser ab, als wir es selbst könnten. Dieses Tutorial begleitet dich durch die Einrichtung eines solchen Cloudflare Tunnes auf einem Synology NAS. Da das Setup jedoch stark auf Docker basiert, kann es eigentlich überall umgesetzt werden, wo du den Docker Container laufen lassen kannst. Am Ende solltest du mindestens einen Service auf deinem NAS über das Internet erreichen können. Viel Spaß und Erfolg!
 
+## Ein Wort der Warnung
+
+Bevor es losgeht, ein Wort der Warnung. Cloudflare untersagt im [Abschnitt zum _Content Delivery Network (Free, Pro, or Business)_ in seinen Terms of Service](https://www.cloudflare.com/en-gb/service-specific-terms-application-services/#content-delivery-network-terms) das Verteilen großer Daten, wie Videos oder auch überproportional viele Bilder. Außer, man zahlt für ein höheres Serviceangebot. Da wir die "Free" Tiers nutzen werden, empfehle ich, keinen Medienserver über einen solchen Cloudflare Tunnel einzurichten und dann Filme zu streamen. Ich mache selbst mein Bilder Backup nicht direkt aufs NAS, sondern transferiere diese in Richtung pCloud und synchronisiere diese via rclone. Einen Artikel zu dem Setup gibt es [hier](/rclone-auf-dem-synology-nas-installieren).
+
+Seid euch dessen also bitte bewusst. Für ein Setup, um Medienserver von außen zu erreichen, wird ein Blog Beitrag folgen. Nun kann es aber mit dem Cloudflare Tunnel losgehen.
+
 ## Das Setup vorbereiten
 
 Also was brauchst du, um das Setup umzusetzen?
