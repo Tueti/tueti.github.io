@@ -2,7 +2,7 @@
 author: ["Chrischi"]
 title: "Das iPad als Arbeitsgerät: Meine Top Apps"
 slug: "das-ipad-als-arbeitsgeraet-meine-top-apps"
-date: "2025-07-28"
+date: "2025-08-04"
 draft: true
 description: "iPad Apps, ohne die es bei mir nicht geht"
 summary: "Das iPad kann sehr viel mehr sein, als nur ein Tablet für Medienkonsum. Das Gerät ist mit einer irrsinnigen Leistung ausgestattet, da fehlen oft nur die passenden Apps, um die Leistung zu nutzen. Hier meine Tipps."
