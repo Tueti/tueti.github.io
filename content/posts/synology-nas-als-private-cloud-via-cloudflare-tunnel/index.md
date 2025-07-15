@@ -67,11 +67,7 @@ Du erhälst nun deine Name Server von Cloudflare, die du exakt so als Einträge 
 
 ### Für alle, die ihre Domain bei INWX registriert haben
 
-Bei INWX wirkt diese Konfiguration erstmal recht simpel, aber man muss die Daten tatsächlich an zwei Stellen eintragen. Für den ersten Schritt wähle in der linken Menüleiste erstmal "Nameserver" aus und tippe bei deiner Domain auf das Auge rechts daneben. Es öffnen sich DNS Einträge für deine Domain und du kannst die "NS" Records setzen. Das sollte dann ungefähr so aussehen:
-
-![Der Workflow für DNS Einträge bei INWX](inwx-dns-eintraege.webp "Der Workflow für DNS Einträge bei INWX")
-
-Damit ist es aber nicht getan. Als nächstes musst du in der Navigation links auf "Domainliste" und dann beim Zahnrädchen deiner gewünschten Domain "Externe Nameserver" auswählen:
+Anfangs dachte ich, dass ich die Cloudflare Nameserver einfach beim Menüpunkt "Nameserver" eintragen muss. Aber bitte lest die dort stehende Info, wenn ihr bereits auf der Seite seid. Diese Info verweist auf [diesen Hilfe-Artikel](https://kb.inwx.com/de-de/3-nameserver/100-wie-kann-ich-externe-nameserver-eintragen), der beschreibt, wie externe Nameserver genutzt werden können. Dies geschieht nämlich unter dem Menüpunkt "Domainliste". Öffne diesen Punkte, dann siehst du deine Domains und kannst beim Zahnrädchen deiner gewünschten Domain "Externe Nameserver" auswählen:
 
 ![Der Workflow für externe Nameserver bei INWX](inwx-ext-nameserver.webp "Der Workflow für externe Nameserver bei INWX")
 
