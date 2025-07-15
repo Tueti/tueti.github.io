@@ -13,7 +13,6 @@ series: ["Private Cloud mit einem Synology NAS"]
 cover:
   image: featured-image.webp
   caption: Foto von [Growtika](https://unsplash.com/de/@growtika?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) auf [Unsplash](https://unsplash.com/de/fotos/diagramm-Am6pBe2FpJw?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)
-      
 ---
 
 Unsere [Private Cloud steht](/synology-nas-als-private-cloud-via-cloudflare-tunnel-ohne-portweiterleitung) und ich erfreue mich noch immer regelmäßig daran. Aber ich würde sie gern mehr absichern. Einige URLs im Cloudflare Tunnel mit extra Authentifizierung versehen und genau diese Möglichkeit bietet uns der Dienst - selbst im "Free" Tier.
