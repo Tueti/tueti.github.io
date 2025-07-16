@@ -19,8 +19,8 @@ cover:
 
 In den beiden letzten Artikeln habe ich mich des Problems angenommen, das [heimische NAS via Cloudflare Tunnel aus dem Internet heraus erreichbar zu machen](/synology-nas-als-private-cloud-via-cloudflare-tunnel-ohne-portweiterleitung) und dann auch noch [abzusichern](/cloudflare-tunnel-mit-extra-authentifizierung). Das Setup funktioniert soweit, aber es hat zwei Haken:
 
-* Den ersten Haken erwähnte ich bereits im entsprechenden Post: Streaming, beispielsweise vom heimischen Medienserver, darf über Cloudflare nicht durchgeführt werden.
-* Und natürlich geht unser Traffic über Cloudflare. Jeder darf selbst entscheiden, ob und in wieweit man Cloudflare vertrauen möchte, aber ich verstehe jeden, der seinen Traffic gern vollständig in der eigenen Hand hat.
+* Den ersten Haken erwähnte ich bereits im entsprechenden Post: Der Status des Streaming ist in der Community ungewiss
+* Und natürlich geht unser Traffic über Cloudflare. Jeder darf selbst entscheiden, ob und in wie weit man Cloudflare vertrauen möchte, aber ich verstehe jeden, der seinen Traffic gern vollständig in der eigenen Hand hat.
 
 Wie im Beitrag zum Setup des Cloudflare Tunnels erwähnt, haben manche von uns einfach nicht die Möglichkeit, Portfreigaben einzurichten und müssen deshalb Kompromisse eingehen. Wenn wir keine Portfreigaben einrichten können oder wollen, dann brauchen wir eine weitere Komponente, mit der wir aus dem Internet heraus auf unsere Services im Heimnetzwerk zugreifen können.
 
@@ -43,7 +43,17 @@ Ein solcher Server hat natürlich monatliche Kosten. Hetzner rechnet tatsächlic
 
 Mein letzter, wichtiger Hinweis: Ich werde in diesem Tutorial nicht beschreiben, wie du deinen Server bekommst oder eine sinnvolle Ersteinrichtung zur Absicherung aussieht. Dies ist ein Tutorial mit Fokus auf das Setup eines eigenen Zugriffstunnels vom Internet auf heimische Services und diesen Fokus will ich auch halten.
 
-Aber nun, hast du alles? Dann kann's losgehen 😎
+## Unser Ziel-Setup
 
-## Nun geht's los!
+Worauf arbeiten wir hier eigentlich hin? Es gibt ein zweistufiges Ziel. Der erste Schritt ist, auf unserem VPS einen VPN-Server (wir nutzen WireGuard) zu installieren. Unser NAS, sowie unsere gewünschten Clients berechtigen wir für dieses VPN. Damit sollten wir unseren Clients (Smartphone, Tabelet, Notebook) ermöglichen, von überall aus auf unser NAS zugreifen zu können - allerdings nur mit aktiver VPN-Verbindung. Wer damit zufrieden ist, ist dann auch fertig.
+
+Im zweiten Teil möchte ich dann aber noch bestimmte Services aus unserem VPN-Netz nach außen öffnen. Wenn ihr eurer Familie Zugriff auf ein Familien-Fotoalbum oder einen Medienserver geben wollt, dann ist es schwierig, diesen zu erklären, dass sich sich die WireGuard App installieren und eure Client Config hinzufügen sollen. Das schreit förmlich nach dem nächsten Support-Anruf. Einfacher ist es, diese Services über einen Reverse Proxy (dazu kommen wir später) ins Internet zu öffnen. Und dies ist das Ziel des zweiten Teils.
+
+Wenn wir dazu kommen, muss ich natürlich den Disclaimer bringen, dass diese Services natürlich angreifbar werden und geschützt werden sollten. Aber dazu später mehr.
+
+Dieser Beitrag ist Teil 1, Ziel ist also erstmal ein VPN-Netz. Ich werde trotzdem schon jetzt zu Beginn einen Reverse Proxy installieren. Wenn du den zweiten Schritt nicht planst und auch weißt, dass du einen Reverse Proxy nicht brauchen wirst, kannst du diesen Schritt überspringen. Ich sage dir trotzdem, wie du weiter kommst. Aber ein Reverse Proxy kann trotzdem als sinnvoll angesehen werden, selbst, wenn wir nur die UI für unser WireGuard Admin Interface ohne Portangabe aufrufen wollen. Ich empfehle also, diesen trotzdem zu installieren.
+
+Da du nun die Voraussetzungen kennst (und hoffentlich erfüllst) und auch das Ziel vor Augen hast, kann's losgehen 😎
+
+## Los geht's
 
