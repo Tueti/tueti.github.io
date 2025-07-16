@@ -16,6 +16,9 @@ cover:
   caption: Erstellt von ChatGPT
 ---
 
+_Update vom 16.07.2025: Der Abschnitt zu Cloudflares Terms of Service wurde nach weiterer Recherche umgeschrieben, um meinen aktuellen Stand wiederzugeben._
+
+---
 ## Eine Private Cloud: Wieso der Cloudflare Tunnel?
 
 Die meisten, die ein NAS haben, wollen dies vermutlich aus dem Internet heraus erreichen können, als Art _Private Cloud_. In diesem Beitrag will ich dir zeigen, wie wir unser NAS mit Cloudflare, ohne Portweiterleitung aus dem Internet erreichbar machen. Der wichtige Teil dabei ist: _ohne Portweiterleitung_. Wir wollen hier über einen _Cloudflare Tunnel_ gehen. Ein solcher Tunnel erlaubt es uns, Services aus dem heimischen Netzwerk publik zu machen. So können wir sie dann aus dem Internet heraus erreichen. Gänzlich, ohne Einfallstore - wie offene Ports - zu erschaffen.
@@ -28,11 +31,17 @@ Und die Absicherung deines Netzwerkes wird dir abgenommen. Du musst dich nicht u
 
 Cloudflare sichert den Zugriff auf deine _Private Cloud_ vermutlich besser ab, als wir es selbst könnten. Dieses Tutorial begleitet dich durch die Einrichtung eines solchen Cloudflare Tunnes auf einem Synology NAS. Da das Setup jedoch stark auf Docker basiert, kann es eigentlich überall umgesetzt werden, wo du den Docker Container laufen lassen kannst. Am Ende solltest du mindestens einen Service auf deinem NAS über das Internet erreichen können. Viel Spaß und Erfolg!
 
-## Ein Wort der Warnung
+## Cloudflare und deren Terms of Service
 
-Bevor es losgeht, ein Wort der Warnung. Cloudflare untersagt im [Abschnitt zum _Content Delivery Network (Free, Pro, or Business)_ in seinen Terms of Service](https://www.cloudflare.com/en-gb/service-specific-terms-application-services/#content-delivery-network-terms) das Verteilen großer Daten, wie Videos oder auch überproportional viele Bilder. Außer, man zahlt für ein höheres Serviceangebot. Da wir die "Free" Tiers nutzen werden, empfehle ich, keinen Medienserver über einen solchen Cloudflare Tunnel einzurichten und dann Filme zu streamen. Ich mache selbst mein Bilder Backup nicht direkt aufs NAS, sondern transferiere diese in Richtung pCloud und synchronisiere diese via rclone. Einen Artikel zu dem Setup gibt es [hier](/rclone-auf-dem-synology-nas-installieren).
+Wir werden im Folgenden den Cloudflare Tunnel nutzen, um vom Internet aus, auf unser NAS zugreifen zu können. Ich kenne euch doch und weiß, ihr wollt sicher auch Medienserver, wie Jellyfin oder Emby erreichbar machen. Betreibt man nun ein wenig Internetrecherche findet man viele Beiträge, die sich auf Cloudflares alten Abschnitt 2.8 der Terms of Service beziehen und die das Verteilen großer Daten, wie Videos, untersagen.
 
-Seid euch dessen also bitte bewusst. Für ein Setup, um Medienserver von außen zu erreichen, wird ein Blog Beitrag folgen. Nun kann es aber mit dem Cloudflare Tunnel losgehen.
+Im Mai 2023 aktualisierte Cloudflare die eigenen Terms of Service und bloggte darüber mit dem Titel [_"Goodbye, section 2.8 and hello to Cloudflare's new terms of service"_](https://blog.cloudflare.com/updated-tos/). Darin beschreiben sie, dass Cloudflare sich als Plattform weiterentwickelte und sie diese Restriktion in einen [CDN-spezifischen Abschnitt](https://www.cloudflare.com/en-gb/service-specific-terms-application-services/#content-delivery-network-terms) der Terms of Service verschoben haben.
+
+Wir nutzen deren _Zero Trust Service_ für die Cloudflare Tunnel und auch diese haben einen [eigenen Abschnitt in den TOS](https://www.cloudflare.com/en-gb/service-specific-terms-zero-trust-services/#cf-zero-trust-terms), darin befindet sich jedoch nichts dergleichen. Kein Verbot, über eine Tunnelverbindung Medien zu transferieren. Auch die Terms of Service zum allgemeinen [_Self-Serve Subscription Agreement_](https://www.cloudflare.com/de-de/terms/) beinhalten eine solche Limitierung nicht.
+
+Wenn man sucht, findet man ein paar Berichte, dass auch nach Änderung der Terms of Service Nutzer noch gedrosselt wurden. Ich vermag nicht einhunderprozentig zu sagen, ob diese Limitierung, die im Abschnitt zum CDN erwähnt ist, auch für uns greift. Hiermit habt ihr nun aber meinen Wissensstand und könnt entscheiden, was ihr damit anfangt.
+
+In einem späteren Post (Link wird hier folgen, sobald verfügbar) zeige ich nochmal ein Setup ohne Cloudflare. Nun kann es aber mit dem Cloudflare Tunnel losgehen.
 
 ## Das Setup vorbereiten
 
