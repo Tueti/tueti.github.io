@@ -36,10 +36,13 @@ Aber lass dich davon nicht abschrecken! Meine Empfehlung für VPS Hosting Servic
 
 Um diesem Tutorial folgen zu können, brauchst du...
 
-* ... einen Server, den du aus dem Internet heraus erreichen kannst und auf dem Docker laufen kann
+* ... einen Server, den du aus dem Internet heraus erreichen kannst
+* ... eine lauffähige Docker-Installation auf dem Server
 * ... optional eine Domain oder einen DynDNS, wie beispielsweise von [IPv64](https://ipv64.net/) oder [DuckDNS](https://www.duckdns.org/)
 
 Ein solcher Server hat natürlich monatliche Kosten. Hetzner rechnet tatsächlich stundenweise ab. Du kannst also auch dem Tutorial folgen, alles aufsetzen, entscheiden, dass alles doof war und den Server abreißen. Dann zahlst du nur die Stunden, die der Server tatsächlich existierte. Sollte dies aber eine Dauerlösung werden, musst du monatlich für den Server zahlen. Auch deine Domain kann etwas kosten, sofern du eine eigene erworben hast.
+
+Docker sollte installiert sein, da eine Anleitung für die Installation den Rahmen dieses Tutorials sprengen würde. Die offiziell empfohlene Routine, an dich auch ich mich gehalten habe, könnte sich geändert haben und dein Server könnte ein ganz anderes Betriebssystem haben, als meins. Deshalb, bitte, installiere Docker selbst auf dem Server. Die offizielle Anleitung für alle Plattformen gibt es [hier bei Docker selbst](https://docs.docker.com/engine/install/).
 
 Mein letzter, wichtiger Hinweis: Ich werde in diesem Tutorial nicht beschreiben, wie du deinen Server bekommst oder eine sinnvolle Ersteinrichtung zur Absicherung aussieht. Dies ist ein Tutorial mit Fokus auf das Setup eines eigenen Zugriffstunnels vom Internet auf heimische Services und diesen Fokus will ich auch halten.
 
