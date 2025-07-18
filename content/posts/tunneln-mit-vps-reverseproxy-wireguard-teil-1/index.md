@@ -39,7 +39,8 @@ Um diesem Tutorial folgen zu können, brauchst du...
 
 * ... einen Server, den du aus dem Internet heraus erreichen kannst
 * ... eine lauffähige Docker-Installation auf dem Server
-* ... optional eine Domain oder einen DynDNS, wie beispielsweise von [IPv64](https://ipv64.net/) oder [DuckDNS](https://www.duckdns.org/)
+* ... eine Domain oder einen DynDNS, wie beispielsweise von [IPv64](https://ipv64.net/) oder [DuckDNS](https://www.duckdns.org/)
+* ... Für die Anbindung des NAS in Teil 2: Ein NAS auf dem Docker (bei Synology mittlerweile _Container Manager_) installiert ist
 
 Ein solcher Server hat natürlich monatliche Kosten. Hetzner rechnet tatsächlich stundenweise ab. Du kannst also auch dem Tutorial folgen, alles aufsetzen, entscheiden, dass alles doof war und den Server abreißen. Dann zahlst du nur die Stunden, die der Server tatsächlich existierte. Sollte dies aber eine Dauerlösung werden, musst du monatlich für den Server zahlen. Auch deine Domain kann etwas kosten, sofern du eine eigene erworben hast.
 
