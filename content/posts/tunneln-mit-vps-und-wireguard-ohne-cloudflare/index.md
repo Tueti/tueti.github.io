@@ -3,7 +3,7 @@ author: ["Chrischi"]
 title: "Eigener Zugriffstunnel mit virtuellem privaten Server & WireGuard (diesmal ohne Cloudflare) - Teil 1"
 slug: "eigener uugriffstunnel mit virtuellem privaten server und wireguard diesmal ohne cloudflare-teil-1"
 date: "2025-07-28"
-draft: false
+draft: true
 description: "Wenn wir das heimische Netzwerk aus dem Internet heraus erreichen, aber keine Portweiterleitung einrichten wollen, geht dies nicht nur über Cloudflare. Ein solcher Tunnel kann auch selbst eingerichtet werden: Mit virtuellem privaten Server (VPS) und einem VPN. Dabei nutzen wir heute WireGuard."
 ShowToc: true
 TocOpen: false
