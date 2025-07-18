@@ -48,7 +48,7 @@ Mein letzter, wichtiger Hinweis: Ich werde in diesem Tutorial nicht beschreiben,
 
 ## Unser Ziel-Setup
 
-Worauf arbeiten wir hier eigentlich hin? Es gibt ein zweistufiges Ziel. Der erste Schritt ist, auf unserem VPS einen VPN-Server (wir nutzen WireGuard) zu installieren. Unser NAS, sowie unsere gewünschten Clients berechtigen wir für dieses VPN. Damit sollten wir unseren Clients (Smartphone, Tabelet, Notebook) ermöglichen, von überall aus auf unser NAS zugreifen zu können - allerdings nur mit aktiver VPN-Verbindung. Wer damit zufrieden ist, ist dann auch fertig.
+Worauf arbeiten wir hier eigentlich hin? Es gibt ein mehrstufiges Ziel. Der erste Schritt ist, auf unserem VPS einen VPN-Server (wir nutzen WireGuard) zu installieren. Unser NAS, sowie unsere gewünschten Clients berechtigen wir für dieses VPN. Damit sollten wir unseren Clients (Smartphone, Tabelet, Notebook) ermöglichen, von überall aus auf unser NAS zugreifen zu können - allerdings nur mit aktiver VPN-Verbindung. Wer damit zufrieden ist, ist dann auch fertig.
 
 Im zweiten Teil möchte ich dann aber noch bestimmte Services aus unserem VPN-Netz nach außen öffnen. Wenn ihr eurer Familie Zugriff auf ein Familien-Fotoalbum oder einen Medienserver geben wollt, dann ist es schwierig, diesen zu erklären, dass sich sich die WireGuard App installieren und eure Client Config hinzufügen sollen. Das schreit förmlich nach dem nächsten Support-Anruf. Einfacher ist es, diese Services über einen Reverse Proxy (dazu kommen wir später) ins Internet zu öffnen. Und dies ist das Ziel des zweiten Teils.
 
@@ -60,3 +60,13 @@ Da du nun die Voraussetzungen kennst (und hoffentlich erfüllst) und auch das Zi
 
 ## Los geht's
 
+Meine Schritte:
+1. Domain / DynDNS auf Server IP verweisen
+2. docker-compose.yml für Zoraxy und wg-easy (Admin Ports offen)
+3. In Zoraxy Routen erstellen und Zertifikate holen (proxy.domain.de & vpn.domain.de) => prüfen
+4. docker-compose.yml anpassen und Admin-Ports auskommentieren
+5. docker compose up -d
+.... warten
+Ab jetzt Zugriff auf Reverse Proxy und WireGuard per HTTPS Subdomains
+
+WireGuard einrichten...
