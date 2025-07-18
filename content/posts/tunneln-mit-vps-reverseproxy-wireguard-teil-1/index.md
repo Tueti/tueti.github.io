@@ -4,7 +4,8 @@ title: "NAS als Private Cloud: Eigener Tunnel mit virtuellem privaten Server, Re
 slug: "nas als cloud eigener tunnel mit virtuellem privaten server reverse proxy und wireguard teil 1"
 date: "2025-07-28"
 draft: false
-description: "Wenn wir das heimische Netzwerk aus dem Internet heraus erreichen, aber keine Portweiterleitung einrichten wollen, geht dies nicht nur über Cloudflare. Ein solcher Tunnel kann auch selbst eingerichtet werden: Mit virtuellem privaten Server (VPS) und einem VPN. Dabei nutzen wir heute WireGuard."
+description: "Eine Private Cloud geht auch als DIY-Lösung mit eigenem Server. In Teil 1 starten wir das Setup."
+summary: "Wenn wir das heimische Netzwerk aus dem Internet heraus erreichen, aber keine Portweiterleitung einrichten wollen, geht dies nicht nur über Cloudflare. Ein solcher Tunnel kann auch selbst eingerichtet werden: Mit virtuellem privaten Server (VPS) und einem VPN. Dabei nutzen wir heute WireGuard."
 ShowToc: true
 TocOpen: false
 tags: ["Synology", "WireGuard", "Zoraxy", "Virtual Private Server"]

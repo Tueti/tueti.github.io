@@ -4,7 +4,8 @@ title: "Cloudflare Tunnel mit extra Authentifizierung"
 slug: "Cloudflare Tunnel mit extra Authentifizierung"
 date: "2025-07-21"
 draft: false
-description: "Nachdem wir einen Cloudflare Tunnel aufgebaut und so unsere eigene Private Cloud hochgezogen haben, sollten wir einige Pfade besonders schützen. Cloudflare bietet vielfältige und granulare Möglichkeiten, die Endpunkte vor unbefugtem Zugriff zu schützen. Lass uns das mal gemeinsam beleuchten."
+description: "Dank Cloudflare und Reverse Proxy einen Zugriff zum heimischen NAS bekommen - jetzt abgesichert!"
+summary: "Nachdem wir einen Cloudflare Tunnel aufgebaut und so unsere eigene Private Cloud hochgezogen haben, sollten wir einige Pfade besonders schützen. Cloudflare bietet vielfältige und granulare Möglichkeiten, die Endpunkte vor unbefugtem Zugriff zu schützen. Lass uns das mal gemeinsam beleuchten."
 ShowToc: true
 TocOpen: false
 tags: ["Synology", "Cloudflare"]
