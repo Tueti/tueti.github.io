@@ -42,7 +42,7 @@ Um diesem Tutorial folgen zu können, brauchst du...
 * ... einen Server, den du aus dem Internet heraus erreichen kannst
 * ... eine lauffähige Docker-Installation auf dem Server
 * ... eine Domain oder einen DynDNS, wie beispielsweise von [IPv64](https://ipv64.net/) oder [DuckDNS](https://www.duckdns.org/)
-* ... Für die Anbindung des NAS in Teil 2: Ein NAS auf dem Docker (bei Synology mittlerweile _Container Manager_) installiert ist
+* ... ein NAS mit mindestens einem Kernel Version 3.10 - ansonsten wird WireGuard nicht laufen ([hier ist eine Kompatibilitätsliste](https://github.com/runfalk/synology-wireguard?tab=readme-ov-file#compatibility-list))
 
 Ein solcher Server hat natürlich monatliche Kosten. Hetzner rechnet aber sogar stundenweise ab und deckelt monatlich. Du kannst also auch dem Tutorial folgen, alles aufsetzen, entscheiden, dass alles doof war und den Server abreißen. Dann zahlst du nur die Stunden, die der Server tatsächlich existierte. Sollte dies aber eine Dauerlösung werden, musst du monatlich für den Server zahlen. Auch deine Domain kann etwas kosten, sofern du eine eigene erworben hast.
 
