@@ -152,12 +152,18 @@ sudo docker compose up -d
 
 WireGuard können wir noch nicht konfigurieren, da ein Login im Standard nur per HTTPS (verschlüsselt) möglich ist und das wollen wir direkt anständig umsetzen. Deshalb widmen wir uns zuerst Zoraxy.
 
-Öffne im Browser nun `{DeineDomain.de}:8000` (kann natürlich auch `{DeinDynDNS}:8000` sein). Das Zoraxy Webinterface sollte sich öffnen. Du musst einen Benutzer für das Interface anlegen. Bedenke hierbei, das Interface ist aus dem Internet heraus erreichbar. Das können wir später ändern, aber aktuell ist es so. Wähle ein entsprechendes Passwort - ein Punkt hinter _qwertz123_ gilt dabei nicht 😜
+Öffne im Browser nun `http://{DeineDomain.de}:8000` (kann natürlich auch `{DeinDynDNS}:8000` sein). Das Zoraxy Webinterface sollte sich öffnen. Du musst einen Benutzer für das Interface anlegen. Bedenke hierbei, das Interface ist aus dem Internet heraus erreichbar. Das können wir später ändern, aber aktuell ist es so. Wähle ein entsprechendes Passwort - ein Punkt hinter _qwertz123_ gilt dabei nicht 😜
 
 Sobald du dich dann mit dem neu angelegten Nutzer eingeloggt hast, solltest du das Dashboard sehen. Cool!
 ![Das Zoraxy Dashboard](zoraxy-dashboard.webp "Das Zoraxy Dashboard")
 
+Jetzt sichern wir erstmal die Admin-Webseiten von Zoraxy und wg-easy ab, indem wir zwei Subdomains für diese anlegen und uns die entsprechenden Zertifikate beschaffen.
 
+Erst die Zertifikate, navigiere hierzu in der linken Menüleiste, im Abschnitt "Security" zu "TLS / SSL certificates". Hier kannst du Zertifikate entweder manuell hinterlegen oder aber Zoraxy das Beschaffen der Zertifikate übernehmen lassen. Wir nehmen hier diesen Weg, da dann auch die automatische Erneuerung aktiviert werden kann. Scrolle nach ganz unten zum Punkt _Certificate Authority (AC) and Auto Renew (ACME)_.
+
+Die _Preferred CA_ lassen wir auf "Let's Encrypt" (also du kannst wählen, was du willst, aber ich nehme "Let's Encrypt") und bei der _ACME Email_ gibst du deine Email Adresse an. _Save Settings_.
+
+Nun auf den Button ganz unten, "Open ACME Tool", klicken, dann öffnet sich ein Wizard.
 
 ---
 
