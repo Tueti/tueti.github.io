@@ -59,26 +59,22 @@ Dann ganz unten auf der Seite _speichern_, du landest wieder auf der Hauptseite 
 
 ## Das NAS verbinden
 
-Mit dem NAS machen wir es uns einfach. Wir installieren wireguard (diesmal ohne Admin Webseite) per Docker, mappen einen Ordner für die Konfig-Datei und hinterlegen diese einfach. Mit einem Start des Containers sollte dann hoffentlich schon alles laufen.
+Prüfe [hier](https://github.com/runfalk/synology-wireguard?tab=readme-ov-file#compatibility-list) nochmal, ob dein NAS kompatibel mit der WireGuard-Lösung ist. NAS mit einem zu alten Kernel werden WireGuard nicht zu Laufen kriegen. Leider wird WireGuard generell nicht nativ von Synology angeboten und es gibt auch (für DSM 7) kein Communitypaket. Es gibt aber die Möglichkeit, das Paket selber zu kompilieren oder einfach aus [diesem Google Drive](https://drive.google.com/drive/folders/1Ci-8oWZ_gW8tH3mv5wKL19nKE1pR8ZfH) zu laden. Allerdings muss man dann demjenigen vertrauen, der es kompiliert hat.
 
-Öffne einmal das DSM deines NAS im Browser.
+Bevor ihr das Paket für euch kompilieren könnt, müsst ihr eure NAS CPU Architektur herausfinden. Dafür stellt Synology selbst eine [nette Übersicht](https://kb.synology.com/en-global/DSM/tutorial/What_kind_of_CPU_does_my_NAS_have) zur Verfügung. Öffnet diese Seite einmal und prüft den "Package Arch" eures NAS. Außerdem benötigt ihr Docker und Git, dann solltet ihr dies auch auf eurem eigenen Rechner machen können.
 
----
+Wenn ihr alles habt, geht's los.
 
-```
-services:
-  wireguard:
-    image: linuxserver/wireguard
-    container_name: wireguard-client
-    cap_add:
-      - NET_ADMIN
-    environment:
-      - PUID=1000
-      - PGID=100
-      - TZ=Europe/Berlin
-    volumes:
-      - /volume1/docker/wireguard/config:/config
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
-    restart: unless-stopped
-```
+### Paket kompilieren
+
+https://github.com/runfalk/synology-wireguard?tab=readme-ov-file#compiling
+
+### Paket installieren
+
+https://github.com/runfalk/synology-wireguard?tab=readme-ov-file#installation
+
+### Konfig hinzufügen und Interface starten
+
+https://github.com/runfalk/synology-wireguard?tab=readme-ov-file#installation
+
+## Unser Smartphone verbinden
