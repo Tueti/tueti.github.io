@@ -54,9 +54,9 @@ Ich gehe also davon aus, dass du Zugriff auf einen Server hast, welcher sowohl g
 
 Worauf arbeiten wir hier eigentlich hin? Es gibt ein mehrstufiges Ziel. Am Ende möchte ich mein NAS aus dem Internet heraus erreichen können. Für die allermeisten Services auf meinem NAS reicht es mir, wenn diese mit bestehender VPN-Verbindung meiner Clients erreichbar sind. Einige Services möchte ich aber auch über das Internet erreichbar machen.
 
-Dieser Artikel ist Teil 1 der Reihe. Zwischenziel ist ein Setup, welches für die Einrichtung des Netzwerkes bereit ist. Ich wollte erst die Einrichtung des VPN-Netzes mit einbringen, aber habe gemerkt, dass das initiale Setup bereits lang genug ist. In diesem Teil ziehen wir also die benötigten Container (den _Reverse Proxy_ und den _VPN Server_) hoch. Sichern unsere Routen ab, sodass die Ports für die Admin Interfaces nicht mehr öffentlich nutzbar sind und stellen sicher, dass wir unsere Interfaces per Subdomains über HTTPS erreichen können.
+Dieser Artikel ist Teil 1 der Reihe. Zwischenziel ist ein Setup, welches für die Einrichtung des Netzwerkes bereit ist. Ich wollte erst die Einrichtung des VPN-Netzes mit einbringen, habe jedoch gemerkt, dass das initiale Setup bereits lang genug ist. In diesem Teil ziehen wir also die benötigten Container (den _Reverse Proxy_ und den _VPN Server_) hoch. Sichern unsere Routen ab, sodass die Ports für die Admin Interfaces nicht mehr öffentlich nutzbar sind und stellen sicher, dass wir unsere Interfaces per Subdomains über HTTPS erreichen können.
 
-Teil 2 kümmert sich dann um die Einrichtung des VPN-Netzes und Teil 3 ist optional für alle, die einige Routen öffentlich erreichbar machen wollen.
+Teil 2 kümmert sich dann um die Einrichtung des VPN-Netzes und in Teil 3 geben wir unseren Endpunkten erstmal schöne Adressen und bestimmen, welche Routen nur mit verbundenem VPN erreicht werden sollen (wie unsere späteren Admin Interfaces) und welche öffentlich aus dem Internet heraus zu erreichen sind (wie beispielsweise ein _nextcloud_, falls vorhanden).
 
 Da du nun die Voraussetzungen kennst (und hoffentlich erfüllst) und auch das Ziel vor Augen hast, kann's losgehen 😎
 
