@@ -283,4 +283,6 @@ sudo docker compose up -d
 
 Die Admin Interfaces sind nun erstmal nicht mehr erreichbar, da die Container neu starten. Zoraxy braucht wieder ein paar Minuten (nicht ungeduldig werden), bis auch die Route auf das eigene Interface steht. Gib deinem System so 10-15 Minuten und dann teste mal deine beiden Subdomains. Beide sollten hoffentlich erreichbar sein, wobei ein direkter Zugriff via `{ServerIP}:8000` oder `{Domain}:8000` (und beides auch mit IP 51821) nicht mehr funktionieren sollte.
 
-Wenn das alles soweit klappt, dann schonmal **meinen Glückwunsch**! Die Container stehen und sind bereit. Weiter geht es im nächsten Teil, in welchem wir uns ein VPN-Netzwerk erstellen, das NAS und einen weiteren Client hinzufügen, um so eine Kommunikation via VPN über das Internet zu erreichen. Bis dahin... ☕️
+## Fazit
+
+Wenn das alles soweit klappt, dann **meinen Glückwunsch**! Die Container stehen und sind bereit und damit ist das Ziel des ersten Teils dieser Reihe erreicht. Mit diesem Setup können wir nun unser Netz aufbauen (Teil 2) und dann verfeiern (Teil 3). Weiter geht es im nächsten Teil, in welchem wir uns ein VPN-Netzwerk erstellen, das NAS und einen weiteren Client hinzufügen, um so eine Kommunikation via VPN über das Internet zu erreichen. Bis dahin... ☕️
