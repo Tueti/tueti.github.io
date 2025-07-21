@@ -20,7 +20,7 @@ cover:
 
 In den beiden letzten Artikeln habe ich mich des Problems angenommen, das [heimische NAS via Cloudflare Tunnel aus dem Internet heraus erreichbar zu machen](/synology-nas-als-private-cloud-via-cloudflare-tunnel-ohne-portweiterleitung) und dann auch noch [abzusichern](/cloudflare-tunnel-mit-extra-authentifizierung). Das Setup funktioniert soweit, aber es hat zwei Haken:
 
-* Den ersten Haken erwähnte ich bereits im entsprechenden Post: Der Status des Streaming ist in der Community ungewiss
+* Den ersten Haken erwähnte ich bereits im entsprechenden Post: Der Status des Streamings ist in der Community ungewiss
 * Und natürlich geht unser Traffic über Cloudflare. Jeder darf selbst entscheiden, ob und in wie weit man Cloudflare vertrauen möchte, aber ich verstehe jeden, der seinen Traffic gern vollständig in der eigenen Hand hat.
 
 Wie im Beitrag zum Setup des Cloudflare Tunnels erwähnt, haben manche von uns einfach nicht die Möglichkeit, Portfreigaben einzurichten und müssen deshalb Kompromisse eingehen. Wenn wir keine Portfreigaben einrichten können oder wollen, dann brauchen wir eine weitere Komponente, mit der wir aus dem Internet heraus auf unsere Services im Heimnetzwerk zugreifen können.
@@ -42,8 +42,12 @@ Um diesem Tutorial folgen zu können, brauchst du...
 * ... einen Server, den du aus dem Internet heraus erreichen kannst
 * ... eine lauffähige Docker-Installation auf dem Server
 * ... eine Domain oder einen DynDNS, wie beispielsweise von [IPv64](https://ipv64.net/) oder [DuckDNS](https://www.duckdns.org/)
-* ... ein NAS mit mindestens einem Kernel Version 3.10 - ansonsten wird WireGuard nicht laufen ([hier ist eine Kompatibilitätsliste](https://github.com/runfalk/synology-wireguard?tab=readme-ov-file#compatibility-list))
+* ... ein NAS mit mindestens einem Kernel Version 3.10 - ansonsten wird WireGuard nicht laufen ([hier ist eine Kompatibilitätsliste](https://github.com/runfalk/synology-wireguard?tab=readme-ov-file#compatibility-list))*
 
+{{< details summary="*Anmerkung zum NAS">}}
+Du brauchst natürlich kein NAS, wenn du ein anderes System, wie einen Raspberry Pi von außen erreichbar machen möchtest. Der zweite Teil dieses Tutorials befasst sich aber mit den Gegebenheiten eines NAS. 
+{{< /details >}}  
+<br/>
 Ein solcher Server hat natürlich monatliche Kosten. Hetzner rechnet aber sogar stundenweise ab und deckelt monatlich. Du kannst also auch dem Tutorial folgen, alles aufsetzen, entscheiden, dass alles doof war und den Server abreißen. Dann zahlst du nur die Stunden, die der Server tatsächlich existierte. Sollte dies aber eine Dauerlösung werden, musst du monatlich für den Server zahlen. Auch deine Domain kann etwas kosten, sofern du eine eigene erworben hast.
 
 Docker sollte installiert sein, da eine Anleitung für die Installation den Rahmen des Tutorials sprengen würde. Die offiziell empfohlene Routine, an dich auch ich mich gehalten habe, könnte sich geändert haben und dein Server könnte ein ganz anderes Betriebssystem haben, als meins. Deshalb, bitte, installiere Docker selbst auf dem Server. Die offizielle Anleitung für alle Plattformen gibt es [hier bei Docker selbst](https://docs.docker.com/engine/install/).
@@ -66,7 +70,7 @@ Da du nun die Voraussetzungen kennst (und hoffentlich erfüllst) und auch das Zi
 
 Um die Zertifikate zu bestellen und die Kommunikation aus dem Internet heraus mit TLS abzusichern, müssen wir uns als erstes bei unserem Domain Registrar einloggen und die A Records auf die öffentliche IP unseres Server richten.
 
-Hast du deinen Server bei hochgezogen, dann logge dich in der [Hetzner Console](https://console.hetzner.com/) ein und wähle dann deinen Server aus. Die öffentliche IP sollte dir dann direkt ins Auge springen. Bei deinem Domain Registrar setze die A Records für die `Domain`, `www`und `*` auf die IP deines Servers. Bei INWX sollte dies dann so aussehen:
+Hast du deinen Server bei Hetzner hochgezogen, dann logge dich in der [Hetzner Console](https://console.hetzner.com/) ein und wähle dann deinen Server aus. Die öffentliche IP sollte dir direkt ins Auge springen. Bei deinem Domain Registrar setze die A Records für die `Domain`, `www`und `*` auf die IP deines Servers. Bei INWX sollte dies dann so aussehen:
 ![Die A Records bei INWX](inwx-a-records.webp "Die A Records bei INWX")
 
 _Anmerkung für diejenigen, die dieselbe Domain nutzen, die ihr für mein Cloudflare-Tutorial genutzt habt. Ihr müsst die Nameserver entweder wieder zurücksetzen, sodass Cloudflare eure Domain nicht mehr administriert oder ihr müsst die A Records bei Cloudflare setzen. Dann ist Cloudflare aber weiterhin involviert._
@@ -79,27 +83,25 @@ Wir brauchen zwei Docker Container für unser Setup. Einen _Reverse Proxy_ und u
 
 Ich habe mich für [_Zoraxy_](https://github.com/tobychui/zoraxy) und [_Wireguard im wg-easy Container_](https://github.com/wg-easy/wg-easy) entschieden. Ich glaube, sucht man nach "Reverse Proxy", stößt man als erstes auf den "Nginx Proxy Manager", "Caddy" oder "Traefik". _Zoraxy_ ist ein recht junges Projekt und trotzdem alt genug, um eine gewisse Stabilität zu haben (2021 erste Commits). Der Entwickler scheint sehr engagiert und auch funktionell bietet es etwas mehr, als der "Nginx Proxy Manager", hat aber ein schönes, modernes Interface, um gut bedienbar zu sein.
 
-Beim VPN habe ich mich für _WireGuard_ entschieden. WireGuard ist Open Source, gilt als sehr sicher und bietet trotzdem einen benutzerfreundlichen Einstieg. Gerade mit dem wg-easy Interface ist ein einfaches Setup schnell möglich. _wireguard-ui_ ist eine bekannte Alternative, die man bei Hetzner sogar als one-click application vorinstallieren kann. Aber das Projekt ist seit längerer Zeit scheinbar nicht mehr weiter entwickelt wurden. Man könnte argumentieren, dass wg-easy fast **zu** leichtgewichtig ist. Aber die Client-Änderungen, die wir vornehmen müssen, können wir in den Config files auch selbst machen, falls notwendig.
+Beim VPN habe ich mich für _WireGuard_ entschieden. WireGuard ist Open Source, gilt als sehr sicher und vor allem schnell und bietet trotzdem einen benutzerfreundlichen Einstieg. Gerade mit dem wg-easy Interface ist ein einfaches Setup schnell möglich. _wireguard-ui_ ist eine bekannte Alternative, die man bei Hetzner sogar als one-click application vorinstallieren kann. Aber das Projekt ist seit längerer Zeit scheinbar nicht mehr weiter entwickelt wurden. Man könnte argumentieren, dass wg-easy fast **zu** leichtgewichtig ist. Aber die Client-Änderungen, die wir vornehmen müssen, können wir in den Config files auch selbst machen, falls notwendig.
 
 Diese beiden Container müssten wir also zum Laufen bringen. Informationen und einen Blueprint für `docker compose` gibt es [hier für Zoraxy](https://hub.docker.com/r/zoraxydocker/zoraxy) und [hier für wg-easy](https://wg-easy.github.io/wg-easy/latest/examples/tutorials/basic-installation/). Schaut man sich das tatsächliche `docker-compose.yml` von wg-easy jedoch an, sieht man, dass dieser Container ein eigenes Netzwerk aufbaut. Eine Routing von Zoraxy ist dann nicht so einfach möglich. Deshalb ist es am einfachsten, ein **gemeinsames** `docker-compose.yml` zu erstellen und so auch Zoraxy in das Netzwerk von wg-easy zu integrieren. So können wir sauber routen.
 
-Ich habe das zusammengefasste `docker-compose.yml` hier eingefügt. In Zeile 38 musst du danach noch für die config Dateien von Zoraxy den lokalen Pfad auf dem Server so anpassen, wie du es wünscht.
+Ich habe das zusammengefasste `docker-compose.yml` hier eingefügt und du kannst es als [GitHub Gist auch in meinem GitHub Account](https://gist.github.com/Tueti/3c3ef492bbab310eae16a6391b02fa16) ansehen. Die markierte Zeile 38 musst du später anpassen, um den Pfad für die config Dateien von Zoraxy festzulegen. Dies kann ein Ordner deiner Wahl sein. Auch, wenn ich das Gefühl habe, dass solche Fragen im Linux-Umfeld manchmal wie Grundsatzdiskussionen geführt werden, habe ich mich ganz einfach für `~/docker/zoraxy/config/` entschieden. Damit habe ich einen dedizierten Ort für die Zoraxy-Konfigurationen. Und selbst, wenn ich Zoraxy später mal ohne WireGuard hochziehen will, habe ich bereits entsprechende, einzelne Ordner.
 
-Im Linux-Umfeld habe ich immer das Gefühl, es gibt dort so etwas, wie Grundsatzdiskussionen zu gewissen Themen. So auch zum Thema, wo am besten diese Docker Dateien liegen sollen. Mir das das recht egal, ich möchte bei mir einfach, dass es für mich(!) Sinn ergibt. Mein Weg (und du kannst gern einen Anderen gehen, wenn du möchtest) ist, im `home` Verzeichnis einen Ordner `docker` anzulegen. Dort gibt es dann Unterordner pro Container bzw. Containergruppe. In diesen Ordnern sind die gemappten Ordner zum Container und die `docker-compose.yml` Dateien. Meine Datei liegt also unter `~/docker/wg-easy-networksetup/docker-compose.yml`.
+Das `docker-compose.yml` musst du auch gleich lokal speichern. Dies habe ich allerdings in `~/docker/wg-easy-networksetup` hinterlegt. Denn dieses compose ist ein kombiniertes File für Zoraxy im wg-easy Netzwerk. So trenne ich die Zugehörigkeiten und so ergibt es für mich Sinn. Du kannst die Pfade ganz selbst bestimmen 😎.
 
-Zeile 38 habe ich zu `- ~/docker/zoraxy/config/:/opt/zoraxy/config/` angepasst. So liegt die Konfig zwar nicht unter `~/docker/wg-easy-networksetup`, aber dafür bin ich abgesichert, sollte ich Zoraxy später mal mit eigener `docker-compose.yml` aufbauen - ohne WireGuard. Dann liegt die Konfig schom in korrekten Ordner. Dem kannst du folgen oder auch nicht 😎
-
-Logge dich also per SSH auf deinem Server (entweder per öffentlicher Server IP, aber deine Domain sollte auch als Endpunkt funktionieren, wenn die A Records schon greifen) ein.
+Aber zurück zum eigentlichen Thema, logge dich per SSH auf deinem Server ein - entweder per öffentlicher Server IP oder mit deiner Domain. Diese sollte auch als Endpunkt funktionieren, wenn die A Records schon greifen.
 
 ```
 ssh USERNAME@DEINSERVER
 ```
 
-Mit dem folgenden Befehl wird das Script in den eben genannten Ordner gespeichert. Du kannst den Pfad natürlich anpassen, musst aber später daran denken, wenn wir die Datei editieren wollen. Lädt man solche Skripte per `curl` herunter, sollte man diese unbedingt prüfen, bevor man sie ausführt. Alternativ kannst du die Datei auch manuell anlegen (zweite Variante).
+Mit dem folgenden Befehl speicherst du nun das `docker-compose.yml` aus meinem GitHub Gist in dem eben genannten Ordner. Du kannst den Pfad natürlich anpassen, musst aber später daran denken, wenn wir die Datei editieren wollen. Lädt man solche Skripte per `curl` herunter, sollte man diese unbedingt prüfen, bevor man sie ausführt. Das hast du natürlich getan. Alternativ kannst du die Datei auch manuell anlegen (zweite Variante).
 
 **Variante a)** Direkt speichern per `curl` (sollte dein System sagen, dass es `curl` nicht besitzt, dann `sudo apt install curl`):
 ```
-curl --create-dirs -o ~/docker/wg-easy-networksetup/docker-compose.yml https://tueti.space/wg-easy-zoraxy-docker-compose.yml
+curl --create-dirs -o ~/docker/wg-easy-networksetup/docker-compose.yml https://gist.githubusercontent.com/Tueti/3c3ef492bbab310eae16a6391b02fa16/raw/375ba18b9d0b596a303f4c368a1a8c9ecc797149/wgeasy-zoraxy-docker-compose.yml
 ```
 
 **Variante b)** Du kannst die Datei auch manuell anlegen - du musst hinterher per vim oder nano den Inhalt selbst in die Datei einfügen:
@@ -110,7 +112,7 @@ touch ~/docker/wg-easy-networksetup/docker-compose.yml
 
 Wie auch immer du es getan hast, du solltest nun eine `docker-compose.yml` besitzen, mit diesem Inhalt:
 
-```
+```{hl_lines=[38]}
 volumes:
   etc_wireguard:
 
@@ -127,7 +129,7 @@ services:
       - /lib/modules:/lib/modules:ro
     ports:
       - "51820:51820/udp"
-      - "51821:51821/tcp" # Zugriff via Reverse Proxy
+      - "51821:51821/tcp" # Access later via Reverse Proxy
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
@@ -146,9 +148,9 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 8000:8000 # Zugriff via looped Reverse Proxy
+      - 8000:8000 # Access later via Reverse Proxy
     volumes:
-      - /path/to/zoraxy/config/:/opt/zoraxy/config/  # ⚠️ PFAD ANPASSEN!
+      - /path/to/zoraxy/config/:/opt/zoraxy/config/  # ⚠️ ADJUST PATH
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime
     networks:
@@ -167,22 +169,20 @@ networks:
 
 Wenn du dir den Code ansiehst, entdeckst du zwei Kommentare in den Zeilen 17 und 36. Diese Ports werden wir später auskommentieren, um einen Zugriff nur über den Reverse Proxy zu ermöglichen. Noch benötigen wir diese Ports aber für die erste Einrichtung.
 
-Um nun Zeile 38 zu editieren, öffne den Texteditor `nano`:
+Zeile 38 (markiert) musst du aber bereits jetzt editieren, öffne den Texteditor `nano`:
 
 ```
 nano ~/docker/wg-easy-networksetup/docker-compose.yml
 ```
 
-Editiere den Pfad so, wie du es möchtest und speichere die Datei - überschreibe dabei die alte Version:
-
+Editiere den Pfad so, wie du es möchtest (wie gesagt, ich nutze `~/docker/zoraxy/config/`) und speichere die Datei - überschreibe dabei die alte Version:
 ```
 Ctrl+X
 Y
 Enter
 ```
 
-Liegt nun ein `docker-compose.yml` auf deinem Server und hat den obigen Inhalt? Top, dann navigiere in den Ordner und erstelle die Container per
-
+Das nun fertiggestellte `docker-compose.yml` können wir also nutzen, um die Container zu starten:
 ```
 cd ~/docker/wg-easy-networksetup/
 sudo docker compose up -d
@@ -192,7 +192,7 @@ sudo docker compose up -d
 
 WireGuard können wir noch nicht konfigurieren, da ein Login im Standard nur per HTTPS (verschlüsselt) möglich ist und das wollen wir direkt anständig umsetzen. Deshalb widmen wir uns zuerst Zoraxy.
 
-Öffne im Browser nun `http://{DeineDomain.de}:8000` (kann natürlich auch `{DeineDomain}:8000` oder `{DeinDynDNS}:8000` sein). Das Zoraxy Webinterface sollte sich öffnen. Du musst einen Benutzer für das Interface anlegen. Bedenke hierbei, das Interface ist aus dem Internet heraus erreichbar. Das können wir später ändern, aber aktuell ist es so. Wähle ein entsprechendes Passwort - ein Punkt hinter _qwertz123_ gilt dabei nicht 😜
+Öffne im Browser nun `http://{DeineDomain.de}:8000` (kann natürlich auch `{DeineServerIP}:8000` oder `{DeinDynDNS}:8000` sein). Das Zoraxy Webinterface sollte sich öffnen. Du musst einen Benutzer für das Interface anlegen. Bedenke hierbei, das Interface ist aus dem Internet heraus erreichbar. Das können wir später ändern, aber aktuell ist es so. Wähle ein entsprechendes Passwort - ein Punkt hinter _qwertz123_ gilt dabei nicht 😜
 
 Sobald du dich dann mit dem neu angelegten Nutzer eingeloggt hast, solltest du das Dashboard sehen. Cool!
 ![Das Zoraxy Dashboard](zoraxy-dashboard.webp "Das Zoraxy Dashboard")
@@ -253,7 +253,7 @@ nano ~/docker/wg-easy-networksetup/docker-compose.yml
 
 Ändere den Pfad der Datei, wenn du dies vorhin auch getan hast und scrolle in die Zeilen 17 und 36 und setze ein Hash-Symbol (#) an den Anfang, sodass es so aussieht:
 
-```
+```{hl_lines=[4,10]}
 ...
     ports:
       - "51820:51820/udp"
