@@ -198,6 +198,6 @@ Uns muss nun bewusst sein. Der in Cloudflare konfigurierte Hostname ist öffentl
 
 Noch immer in deinem Zero Trust Dashboard, siehst du in der linken Navigationsleiste _Access_. Dort kannst du deine Zugriffsverwaltung regulieren und beispielsweise noch eine zusätzliche Authentifizierung für alle Zugriffe einrichten. Du kannst granular einzelne Email-Adresse freischalten oder auch Email-Endungen, wie `@tueti.space`. Es wird dann eine Cloudflare Auth Seite vorgeschaltet, die auffordert, eine Email Adresse anzugeben. Passt diese Email Adresse in das von dir angebene Muster (endet auf eine bestimmte Domain oder ist in der Liste der angegeben Adressen), dann wird ein Verifizierungscode am diese Adresse verschickt, welcher eingegeben werden muss. Erst bei erfolgreicher Verifizierung öffnet sich dann die Seite auf deinem NAS.
 
-Eine Tutorial dazu folgt dann aber nächste Woche, sonst wird dieser Beitrag deutlich zu lang.
+~~Eine Tutorial dazu folgt dann aber nächste Woche, sonst wird dieser Beitrag deutlich zu lang.~~ Update: Das Tutorial dazu ist nun [hier](/cloudflare-tunnel-mit-extra-authentifizierung/) online. Es kann also gleich weiter gehen.
 
 Also nochmal: Viel Spaß mit deinem Synology NAS als Private Cloud via Cloudflare Tunnel!
