@@ -3,7 +3,7 @@ author: ["Chrischi"]
 title: "NAS als Private Cloud: Eigener Tunnel mit virtuellem privaten Server, Reverse Proxy & WireGuard - Teil 1"
 slug: "nas als cloud eigener tunnel mit virtuellem privaten server reverse proxy und wireguard teil 1"
 date: "2025-07-28"
-draft: true
+draft: false
 description: "Eine Private Cloud geht auch als DIY-Lösung mit eigenem Server. In Teil 1 starten wir das Setup."
 summary: "Wenn wir das heimische Netzwerk aus dem Internet heraus erreichen, aber keine Portweiterleitung einrichten wollen, geht dies nicht nur über Cloudflare. Ein solcher Tunnel kann auch selbst eingerichtet werden: Mit virtuellem privaten Server (VPS) und einem VPN. Dabei nutzen wir heute WireGuard."
 ShowToc: true
@@ -31,7 +31,7 @@ Eine Möglichkeit, die uns sehr viel Kontrolle ermöglicht, wäre ein _eigener Z
 
 Ich sage so einfach, wir nutzen einen _privaten virtuellen Server_ (kurz VPS), da dieser viel Kontrolle in die eigene Hand legt. Aber Kontrolle ist Macht und _mit großer Macht kommt auch große Verantwortung (Onkel Ben)_. Ein virtueller privater Server - gerade, wenn dieser als Cloud Service irgendwo gehostet ist - ist ein vollständiger Server, der aus dem Internet heraus erreichbar ist. Ein Server, auf dem ihr vermutlich Admin-Rechte besitzt und der wahrscheinlich auch erstmal keine Firewall aktiviert hat. Kurzum, ein Server, den ihr selbst bestmöglich schützen müsst!
 
-Klingt abschreckend, aber probiere es trotzdem aus! Meine Empfehlung für VPS Hosting Services ist [Hetzner](https://www.hetzner.com/de/cloud). Die bieten für den Anfang gute Tutorials zur [Ersteinrichtung eines Ubuntu Servers](https://community.hetzner.com/tutorials/howto-initial-setup-ubuntu/de) und der [grundlegenden Sicherheit](https://community.hetzner.com/tutorials/howto-initial-setup-ubuntu/de) bei frischen Servern. Außerdem sind die wirklich günstig. 
+Klingt abschreckend, aber probiere es trotzdem aus! Meine Empfehlung für VPS Hosting Services ist [Hetzner](https://www.hetzner.com/de/cloud). Die bieten für den Anfang gute Tutorials zur [Ersteinrichtung eines Ubuntu Servers](https://community.hetzner.com/tutorials/howto-initial-setup-ubuntu/de) und der [grundlegenden Sicherheit](https://community.hetzner.com/tutorials/howto-initial-setup-ubuntu/de) bei frischen Servern. Außerdem sind die wirklich günstig. Aber Achtung, am Ende des Tutorials werden wir `nftables` nutzen, um den Datenverkehr auf unserem Server zu steuern. Mit `nftables` kann man aber auch das "Eingangstor" etwas schließen und Firewall-Regeln etablieren. Wenn ihr dieser Ersteinrichtung folgt, lasst erstmal die Finger von `iptables` und der `ufw`. Wenn ihr dies am Ende dieses Teils immer noch einrichten wollt, könnt ihr das machen.
 
 Mit diesem Disclaimer komme ich aber auch schon zu den Voraussetzungen.
 
@@ -65,10 +65,9 @@ Um diesem Tutorial folgen zu können, brauchst du...
 * ... eine Domain oder einen DynDNS, wie beispielsweise von [IPv64](https://ipv64.net/) oder [DuckDNS](https://www.duckdns.org/), die auf deinen Server zeigt
 * ... ein NAS mit mindestens einem Kernel Version 3.10 - ansonsten wird WireGuard nicht laufen ([hier ist eine Kompatibilitätsliste](https://github.com/runfalk/synology-wireguard?tab=readme-ov-file#compatibility-list))*
 
-{{< details summary="_Anmerkung zum NAS_">}}
-Du brauchst natürlich kein NAS, wenn du ein anderes System, wie einen Raspberry Pi von außen erreichbar machen möchtest. Der zweite Teil dieses Tutorials befasst sich aber mit den Gegebenheiten eines NAS.
-{{< /details >}}  
-Wenn du also all diese Voraussetungen erfüllst, können wir loslegen. **Disclaimer:** Wie bereits beschrieben, dein Server sollte grundlegend abgesichert sein. Ich baue hier das konkrete Setup auf und natürlich widmen wir uns dabei auch ein wenig der Firewall, es liegt aber in deiner Hand, deinen Server nicht völlig offen zu lassen.
+*_Du brauchst natürlich kein NAS, wenn du ein anderes System, wie einen Raspberry Pi von außen erreichbar machen möchtest. Der zweite Teil dieses Tutorials befasst sich aber mit den Gegebenheiten eines NAS._
+
+Wenn du also all diese Voraussetungen erfüllst, können wir loslegen.
 
 ## Starten wir das Setup
 
@@ -79,8 +78,8 @@ Jetzt da es tatsächlich losgeht und wir bereits einen Überblick haben, was wir
 | VPN               | WireGuard   | Damit verbinden wir uns zum Heimnetz                                                       | nativ / bare metal |
 | Reverse Proxy     | Caddy       | Zuständig für das Routing zu ansprechenden Subdomains und Bezug von Zertifikaten für HTTPS | nativ / bare metal |
 | Container Manager | Docker      | Zum Aufbau unserer weiteren Apps                                                           | nativ / bare metal |
+| DNS Server        | dnsmasq     | Zur Erstellung schöner Subdomains, die nur aus dem VPN-Netz erreichbar sind                | nativ / bare metal   |
 | VPN Admin Seite   | wireguard-ui| Macht die Konfiguration der Clients sehr viel einfacher                                    | Docker Container   |
-| DNS Server        | dnsmasq ??  | Zur Erstellung schöner Subdomains, die nur aus dem VPN-Netz erreichbar sind                | Docker Container   |
 | SSO Provider      | Authentik   | Zur Absicherung unserer Routen ins Internet. Bietet besseren Auth-Schutz                   | Docker Container   |
 
 Dass _Docker_ nativ installiert werden muss, wird klar sein. Bei _WireGuard_ und _Caddy_ habe ich mich dafür entschieden, weil diese Applikationen recht systemnah sind. Caddy gibt auf seiner [Installationsseite](https://caddyserver.com/docs/install#static-binaries) sogar an, _"Install Caddy as a system service. This is strongly recommended, especially for production servers."_. Daran halten wir uns natürlich, denn so kann Caddy zwischen den Netzwerkinterfaces `eth0` und `wg0` routen, ohne, dass wir große Routingtabellen anlegen müssen.
@@ -94,12 +93,12 @@ Nun soll es aber losgehen. Als erstes installieren wir WireGuard. Meine Befehle 
 sudo apt install wireguard -y
 ```
 
-Dem [Quickstart](ip link add dev wg0 type wireguard) (für uns angepasst) folgend, müssen wir nun das Netzwerk Interface anlegen und mit unserer `wg0` verknüpfen. Die Anlage des Interfaces sollte auch die entsprechenden Kernel Module laden.
+Dem [Quickstart](https://www.wireguard.com/quickstart/) (für uns angepasst) folgend, müssen wir nun das Netzwerk Interface anlegen und mit unserer `wg0` verknüpfen. Die Anlage des Interfaces sollte auch die entsprechenden Kernel Module laden.
 ```
 sudo ip link add dev wg0 type wireguard
 ```
 
-Dann vergibst du eine IP Addressbereich. Überlege dir, wie groß dieser sein soll (ändere `X` und `Y` auf für dich schöne Zahlen zwischen 0 und 255). Ich nutze im Tutorial das Beispiel `10.8.0.1/24`
+Dann vergibst du einen IP-Addressbereich, ich nutze im Tutorial das Beispiel `10.8.0.1/24`. Dir steht frei, auch das anzupassen (denk dann aber später daran).
 ```
 sudo ip address add dev wg0 10.8.0.1/24
 ```
@@ -124,7 +123,7 @@ Nun teste bitte einmal, ob folgender Befehl einen Fehler wirft oder nicht (dann 
 modprobe wireguard
 ```
 
-Sofern keine Meldung kommt, kannst du weiter machen. Denn als nächstes wollen wir den WireGuard Service immer neustarten, wenn sich diese Konfigdatei `wg0.conf` ändert. Dafür erstellen wir einen `watcher`, die diese Datei(en) überwacht und bei Bedarf einen Service aufruft, der wireguard neu startet.
+Sofern keine Meldung kommt, kannst du weiter machen. Denn als nächstes wollen wir den WireGuard Service immer neustarten, wenn sich diese Konfigdatei `wg0.conf` ändert. Dafür erstellen wir einen `watcher`, die diese Datei(en) überwacht und bei Bedarf einen Service aufruft, der `wireguard` neu startet.
 
 Die benötigten Dateien werden angelegt:
 ```
@@ -151,8 +150,15 @@ WantedBy=multi-user.target
 
 Kurze Erklärung zu den Abschnitten:
 > `[Unit] => Description`: Beschreibt, wozu dieser Watcher erstellt wird (inkl. Link zu ManPage)  
-> `[Path] => PathChanged`: Enthält den Pfad, der auf Änderungen überwacht werden soll. Hier mit Platzhalter für alle Configs. Bei uns wird dort nur `wg0.conf` liegen.  
+> `[Path] => PathChanged`: Enthält den Pfad, der auf Änderungen überwacht werden soll. Hier mit Variable für alle Configs. Bei uns wird dort nur `wg0.conf` liegen.  
 > `[Install] => WantedBy`: Beschreibt den Systemzustand, ab welchem dieser Service ausgeführt werden kann (Beispiel nach einem Neustart). `multi-user.target` heißt, das System muss bereit sein, dass sich alle User anmelden könnten. Also fertig hochgefahren.
+
+Speichern und schließen:
+```
+<ctrl>+X
+Y
+<Enter>
+```
 
 Nun geht es weiter mit der `.service` Datei. Erst öffnen:
 ```
@@ -180,6 +186,13 @@ Auch hier eine kurze Erläuterung:
 > `[Service]`: Der danach kommende Befehl soll nur einmalig ausgeführt werden, dann kommt der eigentliche Restart-Befehl.  
 > `[Install]`: Zeigt die Verbindung zu dem eben erstellten Watcher, sodass diese der Watcher diesen Restart ausführen darf.
 
+Auch diese Datei speichern und schließen:
+```
+<ctrl>+X
+Y
+<Enter>
+```
+
 Jetzt müssen wir den Watcher noch aktivieren:
 ```
 sudo systemctl enable --now wg-quick-watcher@wg0.path
@@ -202,7 +215,7 @@ Erstmal müssen wir uns entscheiden, wo wir das Caddy Binary (die auszuführende
 echo $PATH
 ```
 
-Eine Mit `:` getrennte Liste an Ordner wird ausgegeben. Bei mir ist beispielsweise `/usr/bin/` und `/usr/local/bin` enthalten. Einer dieser Ordner passt schon. Ich werde Caddy in `/usr/local/bin` ablegen (du musst erneut Pfade anpassen, wenn du es woanders haben möchtest).
+Eine Mit `:` getrennte Liste an Ordner wird ausgegeben. Bei mir sind beispielsweise `/usr/bin/` und `/usr/local/bin` enthalten. Einer dieser Ordner passt schon. Ich werde Caddy in `/usr/local/bin` ablegen (du musst erneut Pfade anpassen, wenn du es woanders haben möchtest).
 ```
 cd /usr/local/bin
 ```
@@ -323,14 +336,14 @@ Damit sind WireGuard und Caddy installiert 🎉
 
 ### Docker
 
-Noch motiviert? Dann geht es mit Docker weiter, das letzte Tool, das wir nativ installieren. Auch Docker bietet einen [super Installationsanleitung für alle Systeme](https://docs.docker.com/engine/install/), an die ich mich für [Ubuntu](https://docs.docker.com/engine/install/ubuntu/) halte. Auch hier gebe ich der Vollständigkeit halber die Befehle wieder. Aber bitte prüfen, wenn diese Anleitung ein wenig älter sein sollte, wenn du das ließt.
+Noch motiviert? Dann geht es mit Docker weiter, das letzte Tool, das wir nativ installieren. Auch Docker bietet einen [super Installationsanleitung für alle Systeme](https://docs.docker.com/engine/install/), an die ich mich für [Ubuntu](https://docs.docker.com/engine/install/ubuntu/) halte. Auch hier gebe ich der Vollständigkeit halber die Befehle wieder. Aber bitte immer prüfen.
 
 Erst werden alle möglichen Pakete, über die Docker installiert sein könnte, deinstalliert. Auf einem frischen System sollte nichts davon vorhanden sein:
 ```
 for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
 ```
 
-Dockers `apt` repository muss erst eingerichtet werden, dafür erst die GPG Schlüssel holen:
+Dockers `apt` repository muss erst eingerichtet werden, dafür müssen wir erst Dockers GPG Schlüssel holen:
 ```
 sudo apt-get update
 sudo apt-get install ca-certificates curl
@@ -353,11 +366,11 @@ Und aus diesen Quellen wird nun via `apt install` einfach Docker installiert:
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
-Und damit ist auch Docker und somit alle _bare metal_ Installationen abgeschlossen 🥳
+Und damit ist auch Dockers Installation abgeschlossen 🥳
 
 ### wireguard-ui als Container installieren
 
-Wir kommen nun zurück zu WireGuard, genauer zur Admin-Oberfläche. Der Entwickler stellt in seinem GitHub Repo verschiedene `docker compose` Templates zur Verfügung, um diese für gewisse Szenarien zu verwenden. Ein solches Szenario ist die Nutzung der Applikation mit einem nativ installierten WireGuard. Das wollen wir.
+Wir kommen nun zurück zu WireGuard, genauer zur Admin-Oberfläche. Der Entwickler stellt in seinem [GitHub Repo](https://github.com/ngoduykhanh/wireguard-ui/) verschiedene `docker compose` Templates zur Verfügung, um diese für gewisse Szenarien zu verwenden. Ein solches Szenario ist die Nutzung der Applikation mit einem nativ installierten WireGuard. Das wollen wir.
 
 Auch hier sind meine Ordner wieder _opinionated_ und du kannst dem folgen oder nicht. Dann denk aber bitte überall an die Anpassungen der Pfade, wenn diese von meinen abweichen. Ich lade meine docker compose Dateien in `~/docker/{ContainerName}` und als Template will ich das vorgegebene compose file nutzen. Also laden wir uns das erstmal herunter (wozu wir uns vorher das Zielverzeichnis anlegen):
 ```
@@ -402,7 +415,7 @@ services:
       - /etc/wireguard:/etc/wireguard
 ```
 
-Auch, wenn `version` mittlerweile nicht mehr benötigt wird, belassen wir die Struktur der Datei so. Du kannst das Passwort hier ändern oder in eine `.env` Datei auslagern oder einfach so belassen und später in der UI ändern (aber bitte zügig, das Interface wird erstmal über das Internet erreichbar!). Ein `SESSION_SECRET` kannst du auch erstellen, wenn du deine Cookies und andere Settings über Sessions hinweg, wenn der Container neu startet, behalten willst. Um einen 32stelligen Code zu bekommen, kannst du folgenden Befehl nutzen:
+Auch, wenn `version` mittlerweile nicht mehr benötigt wird, belassen wir die Struktur der Datei so. Du kannst das Passwort hier ändern oder in eine `.env` Datei auslagern oder einfach so belassen und später in der UI ändern (aber bitte zügig, das Interface wird vorerst über das Internet erreichbar sein!). Ein `SESSION_SECRET` kannst du auch erstellen, wenn du deine Cookies und andere Settings über Sessions hinweg, wenn der Container neu startet, behalten willst. Um einen 32stelligen Code zu bekommen, kannst du folgenden Befehl nutzen:
 ```
 openssl rand -hex 32
 ```
@@ -451,7 +464,15 @@ Aber wir müssen zwei Dinge tun, um VPN-Verbindungen sauber zu erlauben. Portfor
 sudo nano /etc/sysctl.conf
 ```
 
-Suche dort die beiden Einträge `# net.ipv4.ip_forward = 1` und `# net.ipv6.conf.all.forwarding = 1` und entferne die `#`, damit diese Zeilen nicht mehr auskommentiert sind. Dann die Änderungen speichern
+Suche dort die beiden Einträge
+```
+...
+# net.ipv4.ip_forward = 1
+...
+# net.ipv6.conf.all.forwarding = 1
+...
+```
+und entferne die `#`, damit diese Zeilen nicht mehr auskommentiert sind. Dann die Änderungen speichern
 ```
 <ctrl>+X
 Y
@@ -726,7 +747,7 @@ table ip ipv4_nat {
         # und über dein öffentliches Interface (z.B. eth0) ins Internet gehen.
         # Die Quell-IP wird dabei durch die öffentliche IP-Adresse des Servers ersetzt.
         # Das ist notwendig, damit die Internet-Server die Pakete beantworten können.
-        # STELL SICHER, DASS "eth0" DURCH DEN NAMEN DEINES ÖFFENTLICHEN INTERFACES ERSETZT IST!
+        # Passe "eth0" an, wenn dies nicht der Name deines öffentlichen Interfaces ist!
         masquerade iifname "wg0" oifname "eth0" comment "NAT for WireGuard clients to Internet"
     }
 }
@@ -744,9 +765,10 @@ Danach können wir die Syntax überprüfen, die Konfig anwenden und nftables neu
 sudo nft -c -f /etc/nftables.conf
 sudo systemctl restart nftables
 ```
+## Für heute fertig!
 
 Und damit ist deine Konfiguration abgeschlossen!
 
-Für diesen Beitrag soll es das auch gewesen sein, da dieser schon irre lang geworden ist und einfach sehr viel Konfiguration beinhaltet. Im zweiten Teil widmen wir uns dann der Konfiguration des VPN Netzes. Wir werden WireGuard-UI nutzen, um VPN-Clients zu erstellen und wir werden unser NAS ins VPN-Netz bringen, was ebenfalls nochmal einiger Konfiguration bedarf.
+Für diesen Beitrag soll es das auch gewesen sein, da dieser schon irre lang geworden ist und einfach sehr viel Konfiguration beinhaltet. Wir haben WireGuard (inklusive WireGuard-UI), Caddy und Docker installiert und darüber hinaus das Routing für die VPN-Nutzung vorbereitet. Das war Einiges! Im zweiten Teil widmen wir uns dann der eigentlichen Konfiguration des VPN Netzes. Wir werden WireGuard-UI nutzen, um VPN-Clients zu erstellen und wir werden unser NAS ins VPN-Netz bringen, was ebenfalls nochmal einiger Konfiguration bedarf.
 
 Im dritten und letzten Teil geht es dann um die Absicherung der Routen. Welche Routen nur aus dem VPN heraus und welche öffentlich und wie implementieren wir einen Authentication Service. Bis dahin haben wir uns alle einen Kaffee verdient! ☕️
