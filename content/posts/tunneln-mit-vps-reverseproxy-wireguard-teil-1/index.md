@@ -727,7 +727,7 @@ Y
 <Enter>
 ```
 
-Danach können wir sie anwenden:
+Danach können wir die Syntax überprüfen, die Konfig anwenden und nftables neustarten:
 ```
 sudo nft -c -f /etc/nftables.conf
 sudo systemctl restart nftables
