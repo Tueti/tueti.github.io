@@ -465,7 +465,9 @@ sudo sysctl -p
 
 Nun gehen wir an die `nftables`. Dieses Tool ist dabei mehr, als nur eine Firewall, es übernimmt auch Routing und NAT Übersetzungsregeln. Wichtig für uns ist, hier können wir einerseits festlegen, welche Pakete _von unserem Server angenommen_ werden sollen und welche Pakete wie geroutet werden müssen. Man kann natürlich auch ausgehende Verbindungen konfigurieren. Das Tool ist mächtig! Wer lieber mit `iptables` arbeitet, macht das gern. Aber wenn du weiß, dass du lieber `iptables` nutzt, dann weißt du sicher auch, wie du die Regeln dort rein bekommst.
 
-Für alle, die hier jetzt folgen, ist es wichtig, zu verstehen: Es gibt eine Datei `/etc/nftables.conf`, welche unsere Regeln persistiert. Diese Datei werden wir also anpassen.
+**Wichtig**, wenn du anfangs meinem Link zum Hetzner-Beitrag gefolgt bist und deinen Server so abgesichert hast (entweder per ufw oder mit iptables), dann solltest du diese wieder deaktivieren, wenn du nun `nftables` nutzt, um deinen Server zu konfigurieren. Wir wollen keine konkurrierenden Systeme. Alternativ kannst du das benötigte, grundlegende Regelwerk auch in `iptables` umsetzen. Du musst es dir dann nur _übersetzen_.
+
+Mit diesem Hinweis können wir nun `nftables` nutzen und dessen Regelwerk wird in der Datei `/etc/nftables.conf` persistiert. Diese Datei werden wir also anpassen:
 ```
 sudo nano /etc/nftables.conf
 ```
