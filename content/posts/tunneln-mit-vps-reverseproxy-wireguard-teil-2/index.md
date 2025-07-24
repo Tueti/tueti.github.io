@@ -16,29 +16,32 @@ cover:
   caption: Der Tunnel zur Cloud - Erstellt von ChatGPT
 ---
 
-Lasst uns direkt einsteigen, wo wir [letztes Mal](/nas-als-cloud-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard-teil-1/) aufgehört haben. Unser VPS steht, wir haben [Zoraxy](https://github.com/tobychui/zoraxy) und [WireGuard](https://github.com/wg-easy/wg-easy) via Docker installiert und die Admin Webseiten über Subdomains erreichbar gemacht.
+Lasst uns direkt einsteigen, wo wir [letztes Mal](/nas-als-cloud-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard-teil-1/) aufgehört haben. Unser VPS steht und WireGuard inklusive aller notwendigen Einstellungen (für Interface und Routing) ist eingerichtet. Außerdem haben wir Caddy und Docker installiert und WireGuard-UI als Container hochgezogen. Caddy läuft auch mit der ersten reverse proxy Regel und wir konnten WireGuard-UI per eigens definierter Subdomain öffnen.
+
+Das klingt alles bekannt? Dann kann es weitergehen.
 
 ## Weiter zum Ziel
 
-Ziel dieses Teils der Reihe ist es, unser VPN-Netzwerk zu etablieren. Unser Server läuft und über das Interface von wg-easy können wir relativ leicht Client Konfigurationen erstellen. Wir werden also das NAS als Client im Interface anlegen, um eine solche Konfiguration zu bekommen. Wir müssen außerdem auch WireGuard auf unserem NAS installieren, damit es sich mit unserem Server verbinden kann. Dabei sind ein paar Dinge zu beachten, da wir ja nicht den gesamten Traffic des NAS über unseren Server leiten wollen. DSM-Updates und anderer regulärer Internetzugriff soll weiterhin über unseren normalen Internetzugang zu Hause laufen. Nur Zugriff auf andere VPN-Clients und den Server sollen auch über VPN abgewickelt werden. Zu guter Letzt werden wir noch ein weiteres Gerät, beispielsweise ein Smartphone als Client hinzufügen, um zu testen, ob wir aus dem Mobilfunknetz, mit verbundenem VPN, auf das NAS zugreifen können.
+Ziel dieses Teils der Reihe ist es, unser VPN-Netzwerk aufzubauen. Unser Server läuft und über das Interface von WireGuard-UI können wir relativ leicht Client Konfigurationen erstellen. Wir werden also das NAS als Client im Interface anlegen, um eine solche Konfiguration zu bekommen. Wir müssen außerdem auch WireGuard auf unserem NAS installieren, damit es sich mit unserem Server verbinden kann. Dabei sind ein paar Dinge zu beachten, da wir ja nicht den gesamten Traffic des NAS über unseren Server leiten wollen. DSM-Updates und anderer regulärer Internetzugriff soll weiterhin über unseren normalen Internetzugang zu Hause laufen. Nur Zugriff auf andere VPN-Clients und den Server sollen auch über VPN abgewickelt werden. Zu guter Letzt werden wir noch ein weiteres Gerät, beispielsweise ein Smartphone als Client hinzufügen, um zu testen, ob wir aus dem Mobilfunknetz, mit verbundenem VPN, auf das NAS zugreifen können.
 
-Wenn dieses Setup steht, dann könntet ihr einfach alle gewünschten Clients in wg-easy anlegen, den WireGuard Client auf den Geräten installieren und die Konfiguration dort hinterlegen und habt ein voll funktionsfähiges VPN-Netz, mit welchem ihr aus dem Internet heraus per VPN aufs heimische NAS zugreifen könnt.
+Wenn dieses Setup steht, dann könntet ihr einfach alle gewünschten Clients in WireGuard-UI anlegen, den entsprechenden WireGuard Client auf den Geräten installieren und die Konfiguration dort hinterlegen. Danach habt ihr ein voll funktionsfähiges VPN-Netz, mit welchem ihr aus dem Internet heraus per VPN aufs heimische NAS zugreifen könnt.
 
 Im dritten Teil werden wir unsere Services dann über ansprechende Domains erreichbar machen und selektieren, welche Routen öffentlich und welche nur aus dem VPN-Netz heraus erreichbar sind.
 
 Da wir alle wieder auf demselben Stand sind, lasst uns loslegen!
 
-## WG Easy vorbereiten
+## WireGuard-UI vorbereiten
 
-Du solltest via `{deineErstellteSubdomain}` nun ganz einfach auf das wg-easy Admin Interface zugreifen können. Hierzu haben wir die [Proxy Routen in Teil 1](/nas-als-cloud-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard-teil-1/#proxy-routen-anlegen) der Reihe angelegt.
 
-Beim ersten Öffnen musst du einen Admin Account in dem Interface anlegen und dich danach mit ebendiesem Account anmelden. Danach erscheint eine super aufgeräumte Oberfläche und genau das macht den Charme dieser Lösung aus. Bevor du nun voreilig auf den Button klickst, um einen neuen Client hinzuzufügen, klicke einmal oben rechts auf _Administrator_ => _Admin-Konsole_ und dann links auf _Konfiguration_.
+>>>>>>AB HIER NEU<<<<<<<<
 
-Hier kannst du ein paar ... nunja ... Konfigurationen setzen 🤓 Für Clients, die du via VPN ins Internet verbinden willst, siehst du beispielsweise den eingetragenen DNS Server. `1.1.1.1` ist der DNS von Cloudflare, Google wäre `8.8.8.8` und `8.8.4.4`. Du kannst dir einen aussuchen. Der [Chaos Computer Club bewirbt](https://www.ccc.de/censorship/dns-howto/) zum Beispiel den zensurfreien DNS von [digitalcourage](https://digitalcourage.de/support/zensurfreier-dns-server) unter der IPv4 `5.9.164.112` und der IPv6 `2a01:4f8:251:554::2`. Ihr dürft eintragen, was ihr wollt oder den Cloudflare DNS belassen, die Info war ein freier Service, falls ihr die Alternativen noch nicht kanntet. Unser NAS wird das Internet von eurem Heimnetz weiter verwenden und nicht den eingetragenen DNS nutzen (zumindest, wenn ihr meinem Tutorial folgt). Aber auch als DNS für eurer Heimnetz könnte die Info ja hilfreich gewesen sein.
+Gehen wir kurz das Interface durch:
+* Im Menüpunkt _Administrator:{Username}_ kannst du deinen Username oder Passwort ändern. Bitte sichere dein Interface ab!
+* _WireGuard Clients_ nutzen wir gleich, um Clients anzulegen
+* Im _WireGuard Server_ kannst du deine IP Range angeben. Vermutlich wurde die IP Range von vorhin überschrieben und du kannst die vorhandene IP Range ersetzen durch `10.X.Y.1/24` (`X` und `Y` wieder ersetzen). Ich nutze als Beispiel `10.8.0.1/24`
+* In _Global Settings_ kannst du deinen Endpunkt setzen, also deine Domain oder deine öffentliche Server IP.
 
-Prüft einmal euren **Host** als ersten Eintrag. Dies sollte entweder eure Server IP oder besser noch, eure Domain sein, die auf eure Server IP zeigt ([hier in Teil 1 eingerichtet](/nas-als-cloud-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard-teil-1/#domain--dyndns-auf-server-ip-richten)).
 
-Nun könnt ihr wieder auf die Hauptseite navigieren und einen neuen Client anlegen.
 
 ### Konfig für das NAS
 
@@ -194,19 +197,19 @@ Der DNS Eintrag ist nun nicht mehr gültig und du kannst erneut testen, ob du ei
 sudo wg-quick up wg0
 ```
 
-Diesmal sollte am Ende etwas stehen, wie _connection established_ oder so. Du kannst auch dein WireGuard Admin Interface (wg-easy) im Browser aufrufen und solltest sehen, dass die Verbindung steht.
+Diesmal sollte am Ende etwas stehen, wie _connection established_ oder so. Du kannst auch dein WireGuard Admin Interface (wireguard-ui) im Browser aufrufen und solltest sehen, dass die Verbindung steht.
 
-![Das wg-easy Interface zeigt ein per WireGuard verbundenes Synology NAS](wgeasy-nas-connected.webp "Das wg-easy Interface zeigt ein per WireGuard verbundenes Synology NAS")
+![Das wireguard-ui Interface zeigt ein per WireGuard verbundenes Synology NAS](wgeasy-nas-connected.webp "Das wireguard-ui Interface zeigt ein per WireGuard verbundenes Synology NAS")
 
 Bis hierhin kamst du mit und du hast ein verbundenes NAS? Dann **Glückwunsch** 🥳! Die Verbindung anderer Clients ist ein Kinderspiel.
 
 ## Unser Smartphone verbinden
 
-Okay, das NAS ist verbunden, aber das bringt nichts, wenn kein Client damit per VPN kommunizieren kann. Nutze den "+ Neu" Button, um einen weitern Client hinzuzufügen. Nimm gern dein Smartphone und gib dem Client einen sprechenden Namen in wg-easy. Dann speichere den Client mit "Client erstellen".
+Okay, das NAS ist verbunden, aber das bringt nichts, wenn kein Client damit per VPN kommunizieren kann. Nutze den "+ Neu" Button, um einen weitern Client hinzuzufügen. Nimm gern dein Smartphone und gib dem Client einen sprechenden Namen in wireguard-ui. Dann speichere den Client mit "Client erstellen".
 
-Klicke auch hier auf den "Edit" Button und editiere die Liste der **Erlaubten IP-Adressen**, füge die IP Range `10.8.0.0/24` hinzu und speichere am Ende der Seite. Da wir Zoraxy und wg-easy auf demselben Server laufen lassen, kann es auf dem Server zu Routingproblemen kommen, wenn du die IP Range nicht begrenzt. Im Regelfall wird alles "normale" funktionieren, aber ein Zugriff auf die Admin Interfaces ist dann erstmal nicht mehr möglich. Der Traffic kommt über VPN, aber dem "öffentlichen Eingangstor von Zoraxy" herein. Zoraxy bzw. unser Server wollen dann nach dem Routing den Traffic über die normale Netzwerkschnittstelle zurückgeben - nicht über die Docker Bridge. Deshalb, begrenze bitte vorerst die Liste der _erlaubten IP-Adressen_.
+Klicke auch hier auf den "Edit" Button und editiere die Liste der **Erlaubten IP-Adressen**, füge die IP Range `10.8.0.0/24` hinzu und speichere am Ende der Seite. Da wir Zoraxy und wireguard-ui auf demselben Server laufen lassen, kann es auf dem Server zu Routingproblemen kommen, wenn du die IP Range nicht begrenzt. Im Regelfall wird alles "normale" funktionieren, aber ein Zugriff auf die Admin Interfaces ist dann erstmal nicht mehr möglich. Der Traffic kommt über VPN, aber dem "öffentlichen Eingangstor von Zoraxy" herein. Zoraxy bzw. unser Server wollen dann nach dem Routing den Traffic über die normale Netzwerkschnittstelle zurückgeben - nicht über die Docker Bridge. Deshalb, begrenze bitte vorerst die Liste der _erlaubten IP-Adressen_.
 
-Nun lade dir die WireGuard App auf dein Smartphone herunter. Diese ist im App Store und im Play Store (und vermutlich auch in alternativen Android Stores) verfügbar. Klicke dann in der App auf "Tunnel hinzufügen" und wähle "Aus QR-Code erstellen". Im wg-easy Interface kannst du über den zweiten Button einen QR Code für deinen Client anzeigen lassen und diesen kannst du dann mit deinem Smartphone scannen. Gib dem Tunnel einen Namen, speichere diesen und erlaube eventuell, dass die App ein VPN-Profil auf deinem Gerät hinterlegen darf (dies muss mit Code bestätigt werden).
+Nun lade dir die WireGuard App auf dein Smartphone herunter. Diese ist im App Store und im Play Store (und vermutlich auch in alternativen Android Stores) verfügbar. Klicke dann in der App auf "Tunnel hinzufügen" und wähle "Aus QR-Code erstellen". Im wireguard-ui Interface kannst du über den zweiten Button einen QR Code für deinen Client anzeigen lassen und diesen kannst du dann mit deinem Smartphone scannen. Gib dem Tunnel einen Namen, speichere diesen und erlaube eventuell, dass die App ein VPN-Profil auf deinem Gerät hinterlegen darf (dies muss mit Code bestätigt werden).
 
 Fertig! Sobald du die Verbindung aufbaust, kannst du mit deinem Smartphone dein Heimnetz verlassen und trotzdem im Browser die VPN-IP deines NAS mit Port 5001 für dein DSM Interface (Beispiel 10.8.0.2:5001) öffnen und dein NAS sollte erreichbar sein!
 
@@ -216,6 +219,6 @@ Damit ist das Ziel des zweiten Teils erreicht, unser VPN-Netz steht und du kanns
 
 Mit dem Netz, das wir aufgebaut und den Konfigurationen, die wir genutzt haben, hat unser NAS eine dauerhafte Verbindung zum VPN-Server (dank keepalive von 25 Sek.), routet aber nur den internen VPN-Traffic über den Server. Machen wir DSM-Updates oder aktualisieren Pakete, dann routen wir den Internetverkehr weiterhin über unseren Router und dann über unsere heimische Internetvernindung. Das spart Bandbreite auf unserem Server.
 
-Im nächsten Teil geben wir all unseren Routen schönere Namen, sodass wir sie nicht über die IP ansprechen müssen und öffnen selektierte Routen zum Internet, sodass diese auch ohne VPN erreichbar sind. Unsere Routen zu den Admin Interfaces (wg-easy und Zoraxy) sichern wir hingegen ab, sodass diese nur noch mit verbundenem VPN erreichbar sind.
+Im nächsten Teil geben wir all unseren Routen schönere Namen, sodass wir sie nicht über die IP ansprechen müssen und öffnen selektierte Routen zum Internet, sodass diese auch ohne VPN erreichbar sind. Unsere Routen zu den Admin Interfaces (wireguard-ui und Zoraxy) sichern wir hingegen ab, sodass diese nur noch mit verbundenem VPN erreichbar sind.
 
 Jetzt haben wir uns einen Kaffee verdient und ich hoffe, das Tutorial ar hilfreich!
