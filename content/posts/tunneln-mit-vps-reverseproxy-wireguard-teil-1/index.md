@@ -99,9 +99,9 @@ Dem [Quickstart](ip link add dev wg0 type wireguard) (für uns angepasst) folgen
 sudo ip link add dev wg0 type wireguard
 ```
 
-Dann vergibst du eine IP Addressbereich. Überlege dir, wie groß dieser sein soll (ändere `X` und `Y` auf für dich schöne Zahlen zwischen 0 und 255):
+Dann vergibst du eine IP Addressbereich. Überlege dir, wie groß dieser sein soll (ändere `X` und `Y` auf für dich schöne Zahlen zwischen 0 und 255). Ich nutze im Tutorial das Beispiel `10.8.0.1/24`
 ```
-sudo ip address add dev wg0 10.X.Y.1/24
+sudo ip address add dev wg0 10.8.0.1/24
 ```
 
 Jetzt erstellst du die `wg0.conf`, die später deine Konfiguration enthält:
@@ -494,9 +494,16 @@ table inet filter {
         # 'hook input': Diese Chain wird für alle eingehenden Pakete angewendet, die für den lokalen Server bestimmt sind.
         # 'priority 0': Legt die Reihenfolge fest, in der Chains ausgeführt werden (Standard).
 
-        policy accept;    # Standardmäßig alles zulassen, was für den Server eingeht
+        # Standardmäßig alles zulassen, was für den Server eingeht
+        policy accept;
 
-        iif "lo" accept   # Loopback-Verkehr immer zulassen (wichtig für lokale Server-Kommunikation wie Caddy -> WG-UI)
+        # DNS-Anfragen von WireGuard-Clients an den dnsmasq-Server erlauben
+        # UDP für normale DNS-Abfragen und TCP für größere DNS-Antworten oder Zonentransfers (privat unwahrscheinlich, aber schadet nicht)
+        iifname wg0 udp dport 53 ip saddr 10.8.0.0/24 counter accept comment "Allow DNS from VPN clients (UDP)"
+        iifname wg0 tcp dport 53 ip saddr 10.8.0.0/24 counter accept comment "Allow DNS from VPN clients (TCP)"
+
+        # Loopback-Verkehr immer zulassen (wichtig für lokale Server-Kommunikation wie Caddy -> WG-UI)
+        iif "lo" accept
     }
 
     # Chain für weitergeleiteten Verkehr (Forward):
@@ -592,8 +599,13 @@ table inet filter {
         # DNS (Domain Name System) erlauben:
         # Erlaubt eingehende Anfragen auf Port 53 für UDP (für normale DNS-Abfragen) und TCP (für größere Antworten oder Zonentransfers).
         # Wenn dein Server als DNS-Server fungiert.
-        udp dport 53 accept
-        tcp dport 53 accept #z.B. für Zone Transfers oder sehr große Antworten
+        # udp dport 53 accept
+        # tcp dport 53 accept #z.B. für Zone Transfers oder sehr große Antworten
+
+        # DNS-Anfragen von WireGuard-Clients an den dnsmasq-Server erlauben
+        # UDP für normale DNS-Abfragen und TCP für größere DNS-Antworten oder Zonentransfers (privat unwahrscheinlich, aber schadet nicht)
+        iifname wg0 udp dport 53 ip saddr 10.8.0.0/24 counter accept comment "Allow DNS from VPN clients (UDP)"
+        iifname wg0 tcp dport 53 ip saddr 10.8.0.0/24 counter accept comment "Allow DNS from VPN clients (TCP)"
 
         # WireGuard VPN-Port erlauben:
         # Erlaubt eingehende UDP-Verbindungen auf dem WireGuard-Port 51820,
