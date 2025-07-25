@@ -1,7 +1,7 @@
 ---
 author: ["Chrischi"]
-title: "NAS als Private Cloud: Eigener Tunnel mit virtuellem privaten Server, Reverse Proxy & WireGuard - Teil 1"
-slug: "nas als cloud eigener tunnel mit virtuellem privaten server reverse proxy und wireguard teil 1"
+title: "NAS als Private Cloud #1: Eigener Tunnel mit virtuellem privaten Server, Reverse Proxy & WireGuard"
+slug: "nas als private cloud 1 eigener tunnel mit virtuellem privaten server reverse proxy und wireguard"
 date: "2025-07-28"
 draft: false
 description: "Eine Private Cloud geht auch als DIY-Lösung mit eigenem Server. In Teil 1 starten wir das Setup."
