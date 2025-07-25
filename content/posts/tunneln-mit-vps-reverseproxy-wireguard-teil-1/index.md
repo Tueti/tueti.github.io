@@ -617,12 +617,6 @@ table inet filter {
         # Ermöglicht, dass Webserver (wie Caddy selbst) Anfragen über HTTP und HTTPS entgegennehmen können.
         tcp dport { 80, 443 } accept
 
-        # DNS (Domain Name System) erlauben:
-        # Erlaubt eingehende Anfragen auf Port 53 für UDP (für normale DNS-Abfragen) und TCP (für größere Antworten oder Zonentransfers).
-        # Wenn dein Server als DNS-Server fungiert.
-        # udp dport 53 accept
-        # tcp dport 53 accept #z.B. für Zone Transfers oder sehr große Antworten
-
         # DNS-Anfragen von WireGuard-Clients an den dnsmasq-Server erlauben
         # UDP für normale DNS-Abfragen und TCP für größere DNS-Antworten oder Zonentransfers (privat unwahrscheinlich, aber schadet nicht)
         iifname wg0 udp dport 53 ip saddr 10.8.0.0/24 counter accept comment "Allow DNS from VPN clients (UDP)"
@@ -765,6 +759,9 @@ Danach können wir die Syntax überprüfen, die Konfig anwenden und nftables neu
 sudo nft -c -f /etc/nftables.conf
 sudo systemctl restart nftables
 ```
+
+Das war eine Handvoll, oder? Ich hoffe, mit den Kommentaren konnte die Konfiguration ein wenig nachvollzogen werden. Auch, wenn das zweite Regelset den Zugriff von außen etwas strikter filtert, reicht das als Absicherung eines Servers nicht komplett aus. Denk noch über _Fail2Ban_ und eine dedizierte Firewall nach. Absicherung des Servers ist außerhalb des Fokuses für diesen Beitrag, aber da ich das Thema mit dem `nftables` Regelwerk ein wenig angeschnitten habe, wollte ich es nicht unkommentiert lassen.
+
 ## Für heute fertig!
 
 Und damit ist deine Konfiguration abgeschlossen!
