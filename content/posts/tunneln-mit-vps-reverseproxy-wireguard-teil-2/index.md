@@ -53,7 +53,19 @@ In **WireGuard Clients** kannst du nun auf _"New Client"_ klicken, gibst dem Cli
 Der Client sollte nun als Karte in der Übersicht deiner _WireGuard Clients_ auftauchen, das sollte dann ungefähr so aussehen:
 !['Ein angelegter Client in WireGuard-UI namens "Synology NAS"'](wireguardui-clients.webp 'Ein angelegter Client in WireGuard-UI namens "Synology NAS"')
 
-Speichere die Konfig via "Download" Button unter dem Namen `wg0.conf` auf deinem Rechner.
+Speichere die Konfig via "Download" Button unter dem Namen `wg0.conf` auf deinem Rechner. Außerdem nutze auch den "Apply Config" Button, der in dieser Übersicht oben rechts existiert, wenn du Neues angelegt hast. Dieser aktualisiert deine `wg0.conf` auf dem Server und durch unseren Watcher sollte WireGuard die neue Konfig ziehen. Prüfen kannst du das mit dem folgenden Befehl, welcher dir die letzten Ausführungen des Watchers anzeigt.
+```
+sudo journalctl -u wg-quick-watcher@wg0.service
+```
+
+{{< details summary="*Sollten Fehler angezeigt werden*" >}}
+Es kann sein, dass du das `wg0` Interface einmal manuell neu starten musst.
+
+```
+sudo wg-quick down wg0
+sudo systemctl restart wg-quick@wg0.service
+```
+{{< /details >}}  
 
 ## Das NAS verbinden
 
