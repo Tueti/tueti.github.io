@@ -8,7 +8,7 @@ description: "Eine Private Cloud geht auch als DIY-Lösung mit eigenem Server. I
 summary: "Wenn wir das heimische Netzwerk aus dem Internet heraus erreichen, aber keine Portweiterleitung einrichten wollen, geht dies nicht nur über Cloudflare. Ein solcher Tunnel kann auch selbst eingerichtet werden: Mit virtuellem privaten Server (VPS) und einem VPN. Dabei nutzen wir heute WireGuard."
 ShowToc: true
 TocOpen: false
-tags: ["Synology", "WireGuard", "Zoraxy", "Virtual Private Server"]
+tags: ["Synology", "WireGuard", "Caddy", "nftables", "Virtual Private Server"]
 categories: ["Tutorials", "Synology NAS"]
 series: ["Private Cloud mit einem Synology NAS"]
 cover:
