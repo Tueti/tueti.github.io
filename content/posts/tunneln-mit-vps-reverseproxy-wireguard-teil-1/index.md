@@ -494,7 +494,7 @@ sudo nano /etc/nftables.conf
 ```
 
 Das grundlegende Regelwerk, was du für dein VPN brauchst, ist dieses hier und die Erklärung ist im Code-Block.
-```
+```{hl_lines=[61]}
 #!/usr/sbin/nft -f
 
 # Leere alle vorhandenen Regeln
@@ -517,11 +517,6 @@ table inet filter {
 
         # Standardmäßig alles zulassen, was für den Server eingeht
         policy accept;
-
-        # DNS-Anfragen von WireGuard-Clients an den dnsmasq-Server erlauben
-        # UDP für normale DNS-Abfragen und TCP für größere DNS-Antworten oder Zonentransfers (privat unwahrscheinlich, aber schadet nicht)
-        iifname wg0 udp dport 53 ip saddr 10.8.0.0/24 counter accept comment "Allow DNS from VPN clients (UDP)"
-        iifname wg0 tcp dport 53 ip saddr 10.8.0.0/24 counter accept comment "Allow DNS from VPN clients (TCP)"
 
         # Loopback-Verkehr immer zulassen (wichtig für lokale Server-Kommunikation wie Caddy -> WG-UI)
         iif "lo" accept
@@ -564,9 +559,10 @@ table ip ipv4_nat {
     }
 }
 ```
+In Zeile 61 kann es zu Anpassungen deinerseits kommen. Du musst die IP Range so anpassen, wie du sie im VPN-Netz später vergeben willst. Damit können Clients deines VPN-Netzes später den eigenen DNS Server nutzen und du musst in Zeile 66 eventuell den Namen des öffentlichen Interfaces anpassen. Oft ist es `eth0`, dieser kann aber bei dir anders sein und müsste dann hier angepasst werden.
 
-Mit diesem Regelwerk bleibt dein Server sehr offen! Ich würde empfehlen, es noch etwas zu verschärfen und es so anzulegen:
-```
+Und mit diesem Regelwerk bleibt dein Server sehr offen, es wird also kein eingehender Verkehr limitiert. Ich würde empfehlen, es noch etwas zu verschärfen und es so anzulegen:
+```{hl_lines=[45,92,97,170]}
 #!/usr/sbin/nft -f
 
 # Leere alle vorhandenen Regeln
@@ -588,9 +584,9 @@ table inet filter {
         # 'hook input': Diese Chain wird für alle eingehenden Pakete angewendet, die für den lokalen Server bestimmt sind.
         # 'priority 0': Legt die Reihenfolge fest, in der Chains ausgeführt werden (Standard).
 
-        policy drop;
         # Die Standard-Policy ('policy drop') besagt, dass jedes Paket, das nicht explizit durch eine
         # 'accept'-Regel zugelassen wird, verworfen wird. Ist eine sichere Standardeinstellung.
+        policy drop;
 
         # Bestehende und zugehörige Verbindungen erlauben:
         # Erlaubt, dass Pakete, die Teil einer bereits etablierten (z.B. nach einem SSH-Login)
@@ -619,8 +615,8 @@ table inet filter {
 
         # DNS-Anfragen von WireGuard-Clients an den dnsmasq-Server erlauben
         # UDP für normale DNS-Abfragen und TCP für größere DNS-Antworten oder Zonentransfers (privat unwahrscheinlich, aber schadet nicht)
-        iifname wg0 udp dport 53 ip saddr 10.8.0.0/24 counter accept comment "Allow DNS from VPN clients (UDP)"
-        iifname wg0 tcp dport 53 ip saddr 10.8.0.0/24 counter accept comment "Allow DNS from VPN clients (TCP)"
+        iifname wg0 udp dport 53 counter accept comment "Allow DNS from VPN clients (UDP)"
+        iifname wg0 tcp dport 53 counter accept comment "Allow DNS from VPN clients (TCP)"
 
         # WireGuard VPN-Port erlauben:
         # Erlaubt eingehende UDP-Verbindungen auf dem WireGuard-Port 51820,
@@ -675,12 +671,6 @@ table inet filter {
         # Sie würde Pakete erlauben, die vom wg0 kommen, unabhängig davon, wohin sie gehen.
         # Für das aktuelle Setup nicht schädlich, aber könnte entfernt werden.
         iifname "wg0" accept
-
-        # Die folgenden Regeln (Kommentar und ICMP) sind im Kontext der vorherigen Regeln nicht mehr nötig,
-        # da die spezifischeren "accept"-Regeln darüber bereits den relevanten Traffic abdecken.
-        # 'iifname != "wg0" oifname "wg0" accept' würde Verkehr ins VPN von anderen Interfaces erlauben.
-        # Diese Regel ist auskommentiert, d.h. sie ist inaktiv.
-        # iifname != "wg0" oifname "wg0" accept
 
         # ICMP (Ping) & ICMPv6 erlauben für weitergeleiteten Verkehr:
         # Ermöglicht, dass Ping-Anfragen und -Antworten durch den Server geleitet werden.
@@ -747,7 +737,11 @@ table ip ipv4_nat {
 }
 ```
 
-Wenn du dich für eine Konfiguration entschieden hast, speichere diese wieder:
+Mit dieser Konfiguration limitierst du den eingehenden Traffic so, dass nur die Ports Traffic durchlassen, die wir benötigen (ICMP, SSH, HTTP[S] und VPN) und zusätzlich wird der VPN-Traffic korrekt geroutet. Auch hier sind einige Anpassungen notwendig (siehe markierte Zeilen):
+* Zeile 45: Wenn du deinen SSH-Port geändert hast, musst du dies in dieser Regel beachten, sonst sperrst du dich aus!
+* In den Zeilen 92, 97 und 170 kann es sein, dass du das Netzwerkinterface `eth0` umbenennen musst, wenn dein öffentliches Interface einen anderen Namen hat.
+
+Ich hoffe, der Rest war aufgrund meiner Anmerkungen verständlich und wenn du dich für eine Konfiguration entschieden hast, speichere diese wieder:
 ```
 <ctrl>+X
 Y
