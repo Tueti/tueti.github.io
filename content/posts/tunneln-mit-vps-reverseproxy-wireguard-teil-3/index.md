@@ -14,6 +14,8 @@ series: ["Private Cloud mit einem Synology NAS"]
 cover:
   image: featured-image.webp
   caption: Der Tunnel zur Cloud - Erstellt von ChatGPT
+sitemap:
+  priority: 0.8
 ---
 
 Willkommen zum dritten - und letzten - Teil der Tutorialreihe zur Einrichtung des NAS als Private Cloud. Nachdem in [Teil 1](/nas-als-private-cloud-1-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard/) unser virtueller privater Server vorbereitet und in [Teil 2](/nas-als-private-cloud-2-wireguard-für-synology-nas-und-konfiguration-des-vpn/) das VPN-Netz aufgebaut wurde, geht es jetzt mit diesem Teil an den Abschluss des Setups. Dieser Beitrag widmet sich zwei Themen. Erstens wollen wir einen DNS Server einrichten, welcher dafür sorgt, dass Clients, die mit dem VPN verbunden sind, die nicht öffentlichen Endpunkte trotzdem mit einer schönen URL erreichen können. Damit kommen wir auch schon zum Ziel des heutigen Beitrags.

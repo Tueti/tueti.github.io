@@ -14,6 +14,8 @@ series: ["Private Cloud mit einem Synology NAS"]
 cover:
   image: featured-image.webp
   caption: Der Tunnel zur Cloud - Erstellt von ChatGPT
+sitemap:
+  priority: 0.8
 ---
 
 ## Wieso nicht einfach Cloudflare?

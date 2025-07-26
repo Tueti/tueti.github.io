@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /index.xml
+Disallow: /atom.xml
+Disallow: /feed/
+
+Sitemap: https://tueti.space/sitemap.xml

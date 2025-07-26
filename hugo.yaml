@@ -50,6 +50,12 @@ outputs:
     - RSS
     - JSON
 
+sitemap:
+  filename: sitemap.xml
+  changefreq: monthly
+  priority: 0.5
+
+
 params:
   env: production # to enable google analytics, opengraph, twitter-cards and schema.
   description: "Meine Gedanken zum iPad und dessen Familie."
