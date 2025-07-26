@@ -34,7 +34,7 @@ jobs:
         key: ${{ secrets.UBERSPACE_SSH_KEY }}
         port: 22
         source: public/*
-        target: /var/www/virtual/${{ secrets.UBERSPACE_USER }}/html
+        target: ~/website_archives
 
     - name: Move content out of ~/html/public/ into ~/html/ and clean up
       uses: appleboy/ssh-action@v1
@@ -44,5 +44,5 @@ jobs:
         key: ${{ secrets.UBERSPACE_SSH_KEY }}
         port: 22
         script: |
-          rsync -a --delete ~/html/public/ ~/html/
-          rm -rf ~/html/public
+          rsync -a --delete ~/website_archives/public/ ~/html/
+          rm -rf ~/website_archives/public
