@@ -44,5 +44,5 @@ jobs:
         key: ${{ secrets.UBERSPACE_SSH_KEY }}
         port: 22
         script: |
-          rsync -a ~/html/public/ ~/html/
+          rsync -a --delete ~/html/public/ ~/html/
           rm -rf ~/html/public
