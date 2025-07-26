@@ -80,7 +80,6 @@ Jetzt da es tatsächlich losgeht und wir bereits einen Überblick haben, was wir
 | VPN               | WireGuard   | Damit verbinden wir uns zum Heimnetz                                                       | nativ / bare metal |
 | Reverse Proxy     | Caddy       | Zuständig für das Routing zu ansprechenden Subdomains und Bezug von Zertifikaten für HTTPS | nativ / bare metal |
 | Container Manager | Docker      | Zum Aufbau unserer weiteren Apps                                                           | nativ / bare metal |
-| DNS Server        | dnsmasq     | Zur Erstellung schöner Subdomains, die nur aus dem VPN-Netz erreichbar sind                | nativ / bare metal   |
 | VPN Admin Seite   | wireguard-ui| Macht die Konfiguration der Clients sehr viel einfacher                                    | Docker Container   |
 | SSO Provider      | Authentik   | Zur Absicherung unserer Routen ins Internet. Bietet besseren Auth-Schutz                   | Docker Container   |
 
