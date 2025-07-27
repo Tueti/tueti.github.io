@@ -560,7 +560,7 @@ table ip ipv4_nat {
     }
 }
 ```
-In Zeile 61 kann es zu Anpassungen deinerseits kommen. Du musst die IP Range so anpassen, wie du sie im VPN-Netz später vergeben willst. Damit können Clients deines VPN-Netzes später den eigenen DNS Server nutzen und du musst in Zeile 66 eventuell den Namen des öffentlichen Interfaces anpassen. Oft ist es `eth0`, dieser kann aber bei dir anders sein und müsste dann hier angepasst werden.
+In Zeile 61 musst du eventuell den Namen des öffentlichen Interfaces anpassen. Oft ist es `eth0`, dieser kann aber bei dir anders sein und müsste dann hier angepasst werden.
 
 Und mit diesem Regelwerk bleibt dein Server sehr offen, es wird also kein eingehender Verkehr limitiert. Ich würde empfehlen, es noch etwas zu verschärfen und es so anzulegen:
 ```{hl_lines=[45,92,97,170]}
