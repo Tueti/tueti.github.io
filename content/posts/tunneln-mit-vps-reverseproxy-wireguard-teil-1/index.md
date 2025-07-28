@@ -45,17 +45,18 @@ Das Ziel ist deshalb, einen _virtuellen privaten Server_ im Internet zu hosten (
 
 ```
 |------------------------------|                                                |-----------------------|
-|                              |                 |--------------|               |                       |
-|   Meine Geräte im Internet   |  --- HTTPS -->  |   Mein VPS   |  <-- VPN -->  |   Mein Heimnetzwerk   |   
-|                              |                 |--------------|               |                       |
+|                              |  --- HTTPS -->  |--------------|               |                       |
+|   Meine Geräte im Internet   |                 |   Mein VPS   |  <-- VPN -->  |   Mein Heimnetzwerk   |   
+|                              |  ---  VPN  -->  |--------------|               |                       |
 |------------------------------|                                                |-----------------------|
 ```
 
 Mein VPS soll als Art _Türsteher_ agieren und ein paar Anforderungen erfüllen:
-- Eingehenden Traffic nur mit TLS verschlüsselt (HTTPS) erlauben
-- Nette Endpunkte für Services bereitstellen (in etwa so: `nextcloud.meinedomain.de`, `photos.meinedomain.de`, ...)
-- Manche Endpunkte offen im Internet bereitstellen (dafür aber sicher via SSO und Authentication)
-- Zugang zu anderen Endpunkten nur erlauben, wenn der anfragende Client per VPN verbunden ist (nicht offen im Internet)
+- Eingehenden Traffic nur nur über VPN oder mit TLS verschlüsselt (HTTPS) erlauben
+- Ich möchte _alle_ gewünschten Endpunkte per VPN erreichen
+- Ich möchte aber nur _eine Auswahl_ an Endpunkten über HTTPS (das freie Internet) erreichen
+- Die Endpunkte sollen eine nette URL besitzen (in etwa so: `nextcloud.meinedomain.de`, `photos.meinedomain.de`, ...)
+- Endpunkte im Internet sollen mit einer extra Authentifizierung (am besten SSO) abgesichert werden
 
 Wir werden einige Dinge installieren und konfigurieren müssen, um dieses Setup zu erreichen. Speziell, wenn du auch ein NAS hast, das sich beim Thema _WireGuard_ etwas querstellt. Deshalb ist dieser Beitrag in mehrere Teile aufgeteilt. Hier in **Teil 1** wollen wir erstmal den Server weitestgehend vorbereiten und die notwendigen Apps installieren.
 
@@ -80,6 +81,7 @@ Jetzt da es tatsächlich losgeht und wir bereits einen Überblick haben, was wir
 | VPN               | WireGuard   | Damit verbinden wir uns zum Heimnetz                                                       | nativ / bare metal |
 | Reverse Proxy     | Caddy       | Zuständig für das Routing zu ansprechenden Subdomains und Bezug von Zertifikaten für HTTPS | nativ / bare metal |
 | Container Manager | Docker      | Zum Aufbau unserer weiteren Apps                                                           | nativ / bare metal |
+| DNS Server        | dnsmasq     | Für ansprechende Routen über VPN (zum Zeitpunkt des Schreibens aber noch nicht sicher)     | nativ / bare metal |
 | VPN Admin Seite   | wireguard-ui| Macht die Konfiguration der Clients sehr viel einfacher                                    | Docker Container   |
 | SSO Provider      | Authentik   | Zur Absicherung unserer Routen ins Internet. Bietet besseren Auth-Schutz                   | Docker Container   |
 
