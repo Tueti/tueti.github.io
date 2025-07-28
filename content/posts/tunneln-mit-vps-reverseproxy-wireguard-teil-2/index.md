@@ -289,8 +289,10 @@ Fertig! Sobald du die Verbindung aufbaust, kannst du mit deinem Smartphone dein 
 
 Damit ist das Ziel des zweiten Teils erreicht, unser VPN-Netz steht und du kannst nun weitere Clients hinzufügen. Für WireGuard Apps, die beispielsweise auf Rechnern laufen, kannst du die config herunterladen und per "Tunnel hinzufügen" importieren. Geräte mit Kamera funktionieren am einfachsten mit dem QR Code.
 
-Da wir in den _Global Settings_ einen Persistent Keepalive von 25 Sekunden behalten haben (dies war der Standard), werden die Clients sich alle 25 Sekunden beim VPN Server melden, um die Verbindung nicht zu verlieren. Das sorgt auch dafür, dass dein NAS die Verbindung aufrecht erhalten wird. Aktuell geht dann der interne VPN Traffic über den VPN Server, Verbindungen "nach außen", also ins Internet nutzen die eigene Internetverbindung des Gerätes. Das spart Bandbreite auf unserem Server.
+Da wir in den _Global Settings_ einen Persistent Keepalive von 25 Sekunden behalten haben (dies war der Standard), werden die Clients sich alle 25 Sekunden beim VPN Server melden, um die Verbindung nicht zu verlieren. Diese Option ist für das NAS sinnvoll, da dieses die Verbindung aufrecht erhält. Ob deine anderen Clients das brauchen, kannst du entscheiden. Aktuell geht der interne VPN Traffic über den VPN Server, Verbindungen "nach außen", also ins Internet nutzen die eigene Internetverbindung des Gerätes. Das spart Bandbreite auf unserem Server.
 
-Aktuell sind unsere Clients nur über die IP erreichbar, das ändern wir im nächsten Teil. Dort selektieren wir, welche Routen öffentlich werden und welche intern bleiben sollen. Außerdem wollen wir die internen Routen ebenfalls zu einer schönen Subdomain ändern, damit wir uns nicht IP und Port für alles merken müssen.
+Mit diesem Setup wärst du bereit, dein internes Netz aus dem Internet zu erreichen. Alles über VPN. Dein VPN Admin Interface (WireGuard-UI) ist allerdings noch über die öffentliche Route `vpn.meinedomain.de` erreichbar. Aber bis auf diesen Haken, ist dein Netz einsatzbereit!
+
+Im nächsten Teil will ich mich genau dieser Thematik widmen: Welche Routen sollen direkt aus dem Internet erreichbar sein und welche nicht und wie können wir die internen Routen "verschönern", damit wir uns die IPs nicht alle merken müssen.
 
 Jetzt haben wir uns aber natürlich erstmal wieder einen Kaffee verdient und ich hoffe, das Tutorial ar hilfreich! ☕️
