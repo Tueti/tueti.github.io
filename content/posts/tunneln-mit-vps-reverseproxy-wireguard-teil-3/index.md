@@ -102,8 +102,81 @@ Die Version ist die gleich, wie bei der vorigen Installation. Bei der Auflistung
 
 Damit können wir Caddy nutzen, um Zertifikate per DNS Challenge von unserem Provider zu bekommen.
 
+## dnsmasq einrichten
+
+Bevor wir nun mit Caddy weitermachen (aktuell sollte noch alles so funktionieren, wie vorher), will ich `dnsmasq` einrichten. Dazu müssen wir das Paket installieren und ein wenig konfigurieren.
+
+Linux Distributionen nutzen im Standard `systemd-resolve` mit der Konfigurationsdatei `/etc/resolve.conf`, um Namensauflösungen zu vollziehen. Nachdem wir also `dnsmasq` installiert haben, müssen wir einmal dnsmasq konfigurieren (dazu nutzen wir dessen config `/etc/dnsmasq.conf`) und dann in einer eigenen `/etc/resolve.conf` hinterlegen, dass für Namensauflösungen dnsmasq verwendet werden soll.
+
+--- 
+
+### Legen wir los mit der Installation
+
+```
+sudo apt update && sudo apt upgrade
+sudo apt install dnsmasq
+```
+
+Es kann sein, dass bei der Installation ein Fehler auftritt, dass eine andere Applikation auf Port 53 horcht und deshalb der Listener nicht erstellt werden konnte. Das ist erstmal kein Problem. Damit konnte dnsmasq erstmal nur nicht gestartet werden. Da es vermutlich `systemd-resolved` ist, was auf den Port hört, sind die nächsten Schritte trotzdem identisch für alle (egal, ob mit oder ohne diesen Fehler). Denn wir wollen `systemd-resolved` sowieso beenden und vor allem deaktivieren, damit es sich nicht beim nächsten Reboot des Servers wieder aktiviert.
+
+```
+sudo systemctl stop systemd-resolved
+sudo systemctl disable systemd-resolved
+```
+
+Danach bennen wir die bestehende `/etc/resolve.conf` um. Du könntest sie auch löschen, aber was, wenn man die Konfiguration später zurückdrehen will? Danach erstellen wir eine eigene Version der Datei, welche als `nameserver` den `localhost` nutzt. Damit verweist unsere Version dieser Datei dann auf `dnsmasq` und so werden interne Anfragen zur Namensauflösung ebenfalls an `dnsmasq` weitergeleitet. Außerdem müssen wir dafür sorgen, dass alle die Datei lesen können. All das passiert mit den folgenden Commands:
+```
+sudo mv /etc/resolve.conf /etc/resolve.conf.bkp
+sudo touch /etc/resolve.conf
+sudo echo "nameserver 127.0.0.1 >> /etc/resolve.conf
+sudo chmod 644 /etc/resolve.conf
+```
+
+Jetzt editieren wir die Konfig-Datei für `dnsmasq`:
+```
+sudo nano /etc/dnsmasq.conf
+```
+
+Die Datei ist groß, deshalb gebe ich hier nur die Zeilen an, die geändert werden sollen:
+
+| Alter Wert | Neuer Wert |
+|------------|------------|
+|     -      |       -    |
+
+Mit dem folgenden Befehl kannst du nun prüfen, welche Zeilen in der Datei aktiviert sind, das Ergebnis siehst du (für dich wohl leicht angepasst) darunter.
+```
+grep -v -e "^#" -e "^$" /etc/dnsmasq.conf
+```
+`grep` steht für "Global Regular Expression Print" und kann Ausgaben anhand von _Regular Expression_ erzeugen. _Regular Expression_ sind sozusagen Muster, die in einem Text erkannt werden können und die Passagen, die auf dieses Muster zutreffen, werden selektiert. 
+
+* `-v` steht für die Umkehrung der folgenden Muster. Also es soll alles ausgegeben werden, was _nicht_ dem Muster entspricht
+* `-e "^#"` steht für _"Jede Zeile, die mit einem Hash-Symbol beginnt"_
+* `-e "^$"` steht für _"Leere Zeile: '^' heißt Zeilenanfang und '$' heißt Zeilenende. Also Anfang direkt vor Ende, nicht dazwischen_
+
+Somit gibt diese _Regular Expression_ aus, _"Alle Zeilen, die **nicht** (-v) mit einem Hashsymbol beginnen und **nicht** (-v) leer sind, aus der Datei /etc/dnsmasq.config"_. Das Ergebnis sollte so aussehen:
+```
+no-resolv
+server=1.1.1.1
+listen-address=127.0.0.1,10.8.0.1
+domain-needed
+bogus-priv
+address=/internal.{deinedomain.de}/10.8.0.1
+```
+
+Eine kurze Erklärung dazu. `no-resolv` weist `dnsmasq` an, nicht den Standard-System-Resolver zu verwenden (den wir bereits deaktiviert haben). Der `server` ist der DNS-Server, der verwendet werden soll, wenn der Name nicht lokal aufgelöst werden kann (Web-Adressen, wie _google.de_). Hier nutzen wir Cloudflare, dir steht frei, welchen du nutzt. `listen-address` gibt an, auf welchen Interfaces `dnsmasq` auf Anfragen hören soll, wir nutzen beide Interfaces. `domain-needed` sagt, dass nur volle Domainnamen an die DNS Server geleitet werden. Dinge, wie "mycomputer" werden über `/etc/hosts` aufgelöst. `bogus-priv` verhindert umgekehrte DNS Lookups (PTR Records) und schlussendlich das Kernstück: `address` gibt an, dass die Domain selbst (`internal.deinedomain.de`), sowie alle Subdomains (`*.internal.deinedomain.de`) an 10.8.0.1 geleitet werden. Dahinter hängt dann unser Caddy, der diese Anfragen entgegennimmt und anhand seiner Proxy Routen weiterleiten kann. Statt `internal` kannst du hier wieder ein Kürzel wählen, wie du es möchtest.
+
+Jetzt müssen wir nochmal alles testen bzw. verifizieren und dann können wir `dnsmasq` (neu) starten und aktivieren, damit es nach Neustarts automatisch aktiviert wird.
+```
+sudo dnsmasq --test
+sudo systemctl restart dnsmasq
+sudo systemctl status dnsmasq
+sudo systemctl enable dnsmasq
+```
+
+Sollte dein `dnsmasq` anfangs auf den Portfehler gelaufen sein, muss du in der zweiten Zeile nur `start` statt `restart` eingeben. Und damit läuft dein lokaler DNS Server!
+
 ## Caddyfile vorbereiten
 
-## dnsmasq einrichten
+Nachdem `dnsmasq` nun läuft, müssen wir die Routen in Caddy auch entgegennehmen und sauber auf die Services routen.
 
 ## DNS für VPN Clients hinterlegen
