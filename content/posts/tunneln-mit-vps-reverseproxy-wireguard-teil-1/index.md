@@ -54,9 +54,9 @@ Das Ziel ist deshalb, einen _virtuellen privaten Server_ im Internet zu hosten (
 Mein VPS soll als Art _Türsteher_ agieren und ein paar Anforderungen erfüllen:
 - Eingehenden Traffic nur nur über VPN oder mit TLS verschlüsselt (HTTPS) erlauben
 - Ich möchte _alle_ gewünschten Endpunkte per VPN erreichen
-- Ich möchte aber nur _eine Auswahl_ an Endpunkten über HTTPS (das freie Internet) erreichen
-- Die Endpunkte sollen eine nette URL besitzen (in etwa so: `nextcloud.meinedomain.de`, `photos.meinedomain.de`, ...)
-- Endpunkte im Internet sollen mit einer extra Authentifizierung (am besten SSO) abgesichert werden
+- Ich möchte in der Lage sein, _eine Auswahl_ an Endpunkten über HTTPS (das freie Internet) erreichbar zu machen
+- Die Endpunkte sollen eine nette URL besitzen (in etwa so: `opencloud.meinedomain.de`, `photos.vpn.meinedomain.de`, ...)
+- HTTPS-Endpunkte im Internet möchte ich, sofern vorhanden, mit einer extra Authentifizierung (am besten SSO) absichern
 
 Wir werden einige Dinge installieren und konfigurieren müssen, um dieses Setup zu erreichen. Speziell, wenn du auch ein NAS hast, das sich beim Thema _WireGuard_ etwas querstellt. Deshalb ist dieser Beitrag in mehrere Teile aufgeteilt. Hier in **Teil 1** wollen wir erstmal den Server weitestgehend vorbereiten und die notwendigen Apps installieren.
 
@@ -83,7 +83,7 @@ Jetzt da es tatsächlich losgeht und wir bereits einen Überblick haben, was wir
 | Container Manager | Docker      | Zum Aufbau unserer weiteren Apps                                                           | nativ / bare metal |
 | DNS Server        | dnsmasq     | Für ansprechende Routen über VPN (zum Zeitpunkt des Schreibens aber noch nicht sicher)     | nativ / bare metal |
 | VPN Admin Seite   | wireguard-ui| Macht die Konfiguration der Clients sehr viel einfacher                                    | Docker Container   |
-| SSO Provider      | Authentik   | Zur Absicherung unserer Routen ins Internet. Bietet besseren Auth-Schutz                   | Docker Container   |
+| SSO Provider      | Authentik   | Zur Absicherung unserer Routen ins Internet. Bietet besseren Auth-Schutz (optional)        | Docker Container   |
 
 Dass _Docker_ nativ installiert werden muss, wird klar sein. Bei _WireGuard_ und _Caddy_ habe ich mich dafür entschieden, weil diese Applikationen recht systemnah sind. Caddy gibt auf seiner [Installationsseite](https://caddyserver.com/docs/install#static-binaries) sogar an, _"Install Caddy as a system service. This is strongly recommended, especially for production servers."_. Daran halten wir uns natürlich, denn so kann Caddy zwischen den Netzwerkinterfaces `eth0` und `wg0` routen, ohne, dass wir große Routingtabellen anlegen müssen.
 
