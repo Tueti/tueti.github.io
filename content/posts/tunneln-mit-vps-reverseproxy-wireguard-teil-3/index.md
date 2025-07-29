@@ -225,7 +225,15 @@ vpn.deinedomain.de {
   }
   
   @nas host nas.internal.deinedomain.de
-  reverse_proxy @nas 10.8.0.2:5001
+  reverse_proxy @nas 10.8.0.2:5001 {
+    # Wird das DSM via HTTPS erreicht,
+    # kann die Zertifikatswarnung unterdrückt werden
+    transport http {
+      tls_client_auth {
+        insecure_skip_verify
+      }
+    }
+  }
 
   @photos host photos.internal.deinedomain.de
   reverse_proxy @photos 10.8.0.2:2000
@@ -252,3 +260,9 @@ Fertig, damit sollte Caddy Anfragen zu den entsprechenden `internal...` Subdomai
 Als letztes müssen wir also den DNS Server bei unseren VPN Clients hinterlegen.
 
 ## DNS für VPN Clients hinterlegen
+
+Jetzt hast du zwei Optionen, deine bestehenden WireGuard Clients zu aktualisieren. Entweder du editierst die `wg0.conf` überall manuell oder du wirfst die Clients nochmal aus WireGuard-UI heraus, editierst die _Global Config_, wo du bei den DNS Servern nun die VPN IP eintragen kannst und fügst diese Konfig dann nochmal bei deinen Clients hinzu (dabei musst du auch auf den Clients dann die alte Konfig löschen).
+
+Solltest du in [Teil 2]() dein NAS mit einer WireGuard Konfig versehen haben, müsstest du das NAS eigentlich nicht ändern. Du wirst ja vermutlich nicht vom NAS aus (also per SSH oder aus dem DSM heraus) auf die lokalen Routen zugreifen, die wir eben erstellt haben. Bei denen geht es ja eher darum, dass du diese Domains auf deinem Rechner, Smartphone oder Tablet nutzen kannst.
+
+Ich denke, mit diesen zwei Wegen kannst du die Anpassung der Clients selber durchführen und sobald einer, deiner Clients eine neue Konfig mit dem entsprechenden DNS Server hat, heißt es, deine Route mal zu testen. Öffne mal `https://dns.internal.deinedomain.de` und du solltest mit gültigem Zertifikat auf das DSM deines NAS geleitet werden.
