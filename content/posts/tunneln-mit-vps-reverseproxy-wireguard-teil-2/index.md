@@ -30,7 +30,7 @@ In diesem Tutorial werde ich die Konfigurationen so erstellen, dass _ausschließ
 
 Schlussendlich wollen wir am Ende des Tutorials ein VPN-Netz haben, in welchem sich unsere Clients (Smartphone, Tablet, Rechner) aus dem Internet heraus über VPN mit unserem heimischen NAS verbinden können. Obwohl wir hinter [CGNat](https://de.wikipedia.org/wiki/Carrier-grade_NAT) sitzen und keine Portfreigaben eingerichtet haben.
 
-Im dritten Teil werden wir unsere Services dann über ansprechende Domains erreichbar machen und selektieren, welche Routen öffentlich und welche nur aus dem VPN-Netz heraus erreichbar sind.
+Es wird dann noch einen weiteren Teil geben, in welchem wir uns der _Usability_ widmen. Ich will die internen Routen sinnvoll ansprechen können (und werde auch der Familie nicht klar machen können, dass sie `10.8.0.2:PORT` statt `photos.vpn.meinedomain.de` nutzen müssen) und ich möchte auch beleuchten, ob es Services gibt, bei denen es sinnvoll ist, diese ohne VPN aus dem Internet heraus erreichbar zu machen. Dann aber mit sicherer(er) Authentifizierung mit Authentik.
 
 Da wir alle wieder auf demselben Stand sind, lasst uns loslegen!
 
