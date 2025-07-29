@@ -177,6 +177,78 @@ Sollte dein `dnsmasq` anfangs auf den Portfehler gelaufen sein, muss du in der z
 
 ## Caddyfile vorbereiten
 
-Nachdem `dnsmasq` nun läuft, müssen wir die Routen in Caddy auch entgegennehmen und sauber auf die Services routen.
+Nachdem `dnsmasq` jetzt läuft, müssen wir die Routen in Caddy auch entgegennehmen und sauber auf die Services routen. Also aktualisieren wir als nächstes das `Caddyfile`.
+```
+sudo nano /etc/caddy/Caddyfile
+```
+
+Aufgrund des [ersten Teils](/nas-als-private-cloud-1-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard/) dieser Serie, sollte dein Caddyfile ungefähr so aussehen:
+
+```
+{
+  # Used for automatic HTTPS
+  email {DEINE EMAIL-ADRESSE}
+}
+
+vpn.deinedomain.de {
+  reverse_proxy localhost:5000
+}
+```
+
+Das müssen wir nun anpassen, um die DNS Challenge einzubauen und die gewünschten Routen aufzubauen. Diese können bei dir natürlich anders aussehen:
+```
+{
+  # Globaler Block für DNS Challenge
+  # Kann auch ein Token sein.
+	acme_dns inwx {
+		username <username>
+		password <password>
+		shared_secret <shared_secret>
+	}
+}
+
+{
+  # Globaler Block für HTTP Challenge
+  # Dafür wird die Email-Adresse benötigt
+  email {DEINE EMAIL-ADRESSE}
+}
+
+vpn.deinedomain.de {
+  # Nutzt implizit HTTP Challenge
+  reverse_proxy localhost:5000
+}
+
+*.internal.deinedomain.de {
+  # Nutzt explizit die DNS Challenge
+  tls {
+    dns inwx
+  }
+  
+  @nas host nas.internal.deinedomain.de
+  reverse_proxy @nas 10.8.0.2:5001
+
+  @photos host photos.internal.deinedomain.de
+  reverse_proxy @photos 10.8.0.2:2000
+
+  @media host media.internal.deinedomain.de
+  reverse_proxy @media 10.8.0.2:8097
+}
+```
+
+Und damit sollte es geschafft sein. Datei speichern und schließen:
+```
+<ctrl> + X
+Y
+<enter>
+```
+
+Und abschließend Caddy noch einmal neustarten:
+```
+sudo systemctl restart caddy
+```
+
+Fertig, damit sollte Caddy Anfragen zu den entsprechenden `internal...` Subdomains an die korrekten Services leiten und die Routen sollten dank DNS Challenge per HTTPS abgesichert sein. Diese Domains haben aber keinen öffentlichen A Record, sondern werden vom _lokalen DNS Server_ an Caddy geleitet.
+
+Als letztes müssen wir also den DNS Server bei unseren VPN Clients hinterlegen.
 
 ## DNS für VPN Clients hinterlegen
