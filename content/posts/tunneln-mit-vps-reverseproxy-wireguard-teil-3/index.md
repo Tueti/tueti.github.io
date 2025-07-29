@@ -22,21 +22,21 @@ Willkommen zum dritten Teil der Tutorialreihe zur Einrichtung des NAS als Privat
 
 ## Das Ziel vor Augen: Was wollen wir erreichen?
 
-Es ist kein Problem,
+Ich möchte irgendwann einige Services, die aktuell über Cloud-Dienste konsumiert werden, auf der eigenen Hardware bereitstellen. Das heißt aber auch, dass manche Dienste von meiner Familie genutzt werden. Auf deren Geräten _WireGuard_ zu installieren und konfigurieren und zu zeigen, wie man über das Kontrollzentrum der Geräte VPN aktiviert (sollte es mal aus sein, es könnte ja dauerhaft laufen), ist kein Problem. Aber dann für gewisse Dienste IPs, statt schönen DNS-Namen zu nutzen, ist deutlich schwieriger.  
+_"Wie war nochmal die Adresse vom Foto-Dienst"_? - _"10.8.0.14:5725"_  
+... das wird nichts. Da muss es etwas geben, wie _"photos.vpn.meinedomain.de"_.
 
-Genau genommen möchte ich zwei Ziele erreichen. Erstens will ich einen lokalen DNS Server einrichten, der uns ansprechende Domains für lokale Routen zur Verfügung stellt. Diesen DNS Server möchte ich dann in den Client Configs der VPN Clients hinterlegen, sodass diese ansprechenden Routen aufgelöst wird. Genau genommen wird es _eine_ Route, zu unserem Reverse Proxy _Caddy_. In Zusammenarbeit mit Caddy sollen dann Subdomains zu internen Routen aufgelöst werden. Grund ist, dass in meinem Setup die IP von Services gleich sein kann und nur der Port anders ist. Das ist via DNS nicht darstellbar.
+Deshalb geht es erstmal darum, unsere internen Routen aufzuhübschen:
+- Eine URL, die man sich merken kann (am besten ohne Ports)
+- Keine HTTPS-Warnung, da diese im _internen Netz_ eher nervig sind (für das Internet natürlich sehr sinnvoll!)
 
-Das zweite Ziel ist die extra Authentifizierung mit _Authentik_. Einige Endpunkte sollen ganz bewusst über das Internet erreichbar sein und diese will ich mit einem extra Service absichern. Da manche Services mit _Authentik_ integrierbar sind, könnten wir teilweise sogar ein Single-Sign-On erreichen.
+## Setup für eigene private Routen
 
-Eine weiteres Ziel habe ich: Ich will, dass alle Routen per HTTPS abgesichert sind, um diese nervigen _"Diese Webseite ist nicht sicher"_-Warnungen nicht zu bekommen. Also diese Meldungen sind in der freien Wildbahn natürlich _nicht_ nervig und wirklich sinnvoll. Aber im Kontext unseres _privaten_ Netzes, will ich das nicht. Aber das führt zu einer zusätzlichen Herausforderung.
+Eigene private Routen können wir nicht einfach in _Caddy_ anlegen. Jede Route dort ist über eine öffentliche URL erreichbar. Deshalb können wir aktuell `vpn.meinedomain.de` ohne verbundenem VPN Client aus dem Internet heraus erreichen. Bei unserem Registrar haben wir den Wildcard A Record auf die öffentlich erreichbare IP unseres Servers gerichtet.
 
-## Eigene private Routen
+Das war auch wichtig, damit Caddy auf einfache Art und Weise ein TLS Zertifikat für diesen Route bekommen konnte. Für Routen bei unserer Domain, die aber nicht öffentlich erreichbar sein sollen, geht das nicht so einfach. Lass uns hierzu mal einen kurzen Blick hinter die Kulissen werfen, um zu verstehen, wieso wir nun einen etwas anderen Weg gehen müssen.
 
-Eigene private Routen können wir nicht einfach in _Caddy_ anlegen. Jede Route dort ist über eine öffentliche URL erreichbar. Deshalb können wir aktuell `vpn.meinedomain.de` ohne verbundenem VPN Client aus dem Internet heraus erreichen. Bei unserem Registrar haben wir den Wildcard A Record auf die öffentlich erreichbare IP unseres Services gerichtet.
-
-Das war auch wichtig, damit Caddy auf einfache Art und Weise ein TLS Zertifikat für diesen Route bekommen konnte. Lass uns hierzu mal einen kurzen Blick hinter die Kulissen werfen, um zu verstehen, wieso wir nun einen etwas anderen Weg gehen müssen.
-
-### Wie bekommt man eigentlich ein TLS Zertifikat?
+## Wie bekommt man eigentlich ein TLS Zertifikat?
 
 Es gibt verschiedene Arten, ein TLS Zertifikat zu bekommen. _Let's Encrypt_ beschreibt diese in [der eigenen Doku](https://letsencrypt.org/docs/challenge-types/) recht ausführlich. Für uns wichtig sind dabei die zwei Wege.
 
@@ -55,7 +55,7 @@ Caddy erhält den Token und braucht nun einen Weg, um diesen Eintrag tatsächlic
 
 Bei diesem Weg gibt es zwei wesentliche Unterschiede zur _HTTP Challenge_. Erstens müssen wir Caddy tatsächlich ermächtigen, den Eintrag zu setzen (Zugangsdaten oder Token vom Domain Registrar), aber zweitens können wir damit Zertifikate für Domains holen, die **keinen A Record Eintrag haben**.
 
-### DNS Challenge vorbereiten
+## DNS Challenge mit Caddy vorbereiten
 
 Caddy kann von Haus aus keine DNS Challenge durchführen, aber es gibt `caddy-dns` Plugins für diverse Domain Registrare (Cloudflare, route53, duckDNS, Digital Ocean, Hetzner und auch INWX). Besucht dafür einfach mal die [Caddy Download Seite](https://caddyserver.com/download) und sucht nach eurem Registrar. Für INWX finde ich das Plugin `caddy-dns/inwx`.
 !["Das Download Center von Caddy mit der Suche nach INWX"](/caddy_downloadcenter.webp "Das Download Center von Caddy mit der Suche nach INWX")
@@ -71,32 +71,39 @@ Also, tauschen wir das vorhandene Binary mit diesem aus. Im [ersten Teil](/nas-a
 ```
 ssh USERNAME@DEINEDOMAIN.DE
 caddy --version
-caddy list-modules
+caddy list-modules | grep dns
 ```
 
 Damit siehst du die aktuelle Caddy Version, sowie alle installierten Module. Am Ende siehst du, wie viele Standard Module, wie viele Extra Module und wie viele unbekannte Module vorhanden sind.
 
-Von dieser Version machst du ein Backup (oder du kannst sie auch löschen, da wir sie einfach wieder herunterladen und dort platzieren können)
-
+Von dieser Version machst du ein Backup (optional, da wir es immer wieder herunterladen können) und löscht dann das eigentliche File:
 ```
-mv /usr/local/bin/caddy /usr/local/bin/_caddy.bkp
+sudo tar -czvf /usr/local/bin/caddy.tar.gz /usr/local/bin/caddy
+sudo rm /usr/local/bin/caddy
 ```
 
 Dann per `exit` die SSH Session verlassen und die heruntergeladene Caddy Datei auf den Server kopieren (passe dabei deinen lokalen Pfad an):
 ```
 exit
-scp ~/Downloads/caddy_linux_amd64_custom NUTZER@DEINEDOMAIN:/usr/local/bin/caddy
+scp ~/Downloads/caddy_linux_amd64_custom NUTZER@DEINEDOMAIN:~/caddy
 ```
+Achtung, wenn du SSH auf einen anderen Port gelegt hast, wird dieser (anders, als bei SSH) mit einem `P` als Großbuchstabe spezifiziert, `scp -P 2222 ~/Downloads/...`.
 
-Danach geht's wieder per `ssh` auf den Server, um die Version nun kurz ebenfalls zu untersuchen:
+Danach geht's wieder per `ssh` auf den Server, wir legen die Datei in den korrekten Ordner (per scp hatten wir die Rechte nicht), machen sie ausführbar und vergleichen sie mit der ursprünglichen Version:
 ```
 ssh USERNAME@DEINEDOMAIN.DE
+sudo mv ~/caddy /usr/local/bin/
+sudo chmod +x /usr/local/bin/caddy
 caddy --version
-caddy list-modules
+caddy list-modules | grep dns
 ```
 
---- 
+Die Version ist die gleich, wie bei der vorigen Installation. Bei der Auflistung der DNS-Module sollte nun aber euer DNS Provider dabei sein. Für mich ist das `dns.providers.inwx`. Du solltest natürlich deinen DNS Provider sehen.
 
-WAS SOLLTE BEIM VERGLEICH AUFFALLEN?
+Damit können wir Caddy nutzen, um Zertifikate per DNS Challenge zu bekommen.
 
-Danach dnsmasq installieren, dann Caddyfile anpassen mit
+## Caddyfile vorbereiten
+
+## dnsmasq einrichten
+
+## DNS für VPN Clients hinterlegen
