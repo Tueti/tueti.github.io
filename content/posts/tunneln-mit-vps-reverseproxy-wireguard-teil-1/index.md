@@ -308,7 +308,7 @@ Nun kannst du den ersten Inhalt einfügen und anpassen:
 ```
 {
   # Used for automatic HTTPS
-  email {DEINE EMAIL-ADRESE}
+  email {DEINE EMAIL-ADRESSE}
 }
 
 deinedomain.de {
