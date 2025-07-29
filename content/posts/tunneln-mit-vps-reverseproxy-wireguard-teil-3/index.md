@@ -18,9 +18,11 @@ sitemap:
   priority: 0.8
 ---
 
-Willkommen zum dritten Teil der Tutorialreihe zur Einrichtung des NAS als Private Cloud. Nachdem in [Teil 1](/nas-als-private-cloud-1-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard/) unser virtueller privater Server vorbereitet und in [Teil 2](/nas-als-private-cloud-2-wireguard-für-synology-nas-und-konfiguration-des-vpn/) das VPN-Netz aufgebaut wurde, geht es jetzt mit diesem Teil an den Abschluss des Setups. Dieser Beitrag widmet sich zwei Themen. Schauen wir und das Ziel einmal an.
+Willkommen zum dritten Teil der Tutorialreihe zur Einrichtung des NAS als Private Cloud. Nachdem in [Teil 1](/nas-als-private-cloud-1-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard/) unser virtueller privater Server vorbereitet und in [Teil 2](/nas-als-private-cloud-2-wireguard-für-synology-nas-und-konfiguration-des-vpn/) das VPN-Netz aufgebaut wurde, möchte ich mich hier der _Usability_ widmen.
 
 ## Das Ziel vor Augen: Was wollen wir erreichen?
+
+Es ist kein Problem,
 
 Genau genommen möchte ich zwei Ziele erreichen. Erstens will ich einen lokalen DNS Server einrichten, der uns ansprechende Domains für lokale Routen zur Verfügung stellt. Diesen DNS Server möchte ich dann in den Client Configs der VPN Clients hinterlegen, sodass diese ansprechenden Routen aufgelöst wird. Genau genommen wird es _eine_ Route, zu unserem Reverse Proxy _Caddy_. In Zusammenarbeit mit Caddy sollen dann Subdomains zu internen Routen aufgelöst werden. Grund ist, dass in meinem Setup die IP von Services gleich sein kann und nur der Port anders ist. Das ist via DNS nicht darstellbar.
 
