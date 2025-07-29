@@ -30,7 +30,7 @@ In diesem Tutorial werde ich die Konfigurationen so erstellen, dass _ausschließ
 
 Schlussendlich wollen wir am Ende des Tutorials ein VPN-Netz haben, in welchem sich unsere Clients (Smartphone, Tablet, Rechner) aus dem Internet heraus über VPN mit unserem heimischen NAS verbinden können. Obwohl wir hinter [CGNat](https://de.wikipedia.org/wiki/Carrier-grade_NAT) sitzen und keine Portfreigaben eingerichtet haben.
 
-Im dritten Teil werden wir unsere Services dann über ansprechende Domains erreichbar machen und selektieren, welche Routen öffentlich und welche nur aus dem VPN-Netz heraus erreichbar sind.
+Es wird dann noch einen weiteren Teil geben, in welchem wir uns der _Usability_ widmen. Ich will die internen Routen sinnvoll ansprechen können (und werde auch der Familie nicht klar machen können, dass sie `10.8.0.2:PORT` statt `photos.vpn.meinedomain.de` nutzen müssen) und ich möchte auch beleuchten, ob es Services gibt, bei denen es sinnvoll ist, diese ohne VPN aus dem Internet heraus erreichbar zu machen. Dann aber mit sicherer(er) Authentifizierung mit Authentik.
 
 Da wir alle wieder auf demselben Stand sind, lasst uns loslegen!
 
@@ -44,6 +44,7 @@ Bei der [Installation von WireGuard-UI im ersten Teil](/nas-als-private-cloud-1-
 4. In _Global Settings_ kannst du allgemeine Einstellungen für die Client Config treffen:
     - **Endpoint Address** ist die URL (oder öffentliche IP deines Servers), über die dein Server erreichbar ist. Also `deinedomain.de`
     - **DNS Server** werden im dritten Teil der Reihe interessant, wenn wir einen eigenen hinzufügen. Wenn deine Clients doch über das VPN ins Internet sollen, sind dies die DNS Server für die Namensauflösung.
+    - Entferne den Wert bei "Persistent Keepalive". Unsere normalen Clients brauchen kein solches Keepalive, da die Verbindung aufgebaut wird, wenn aktiv Kommunikation gestartet wird. Für unser NAS setzen wir den Wert dann selbst, da beim NAS die Verbindung nicht "einschlafen" soll, denn es würde nicht "aufwachen", wenn es von einem Client erreicht werden soll. Hier brauchen wir also ein aktives Halten der Verbindung.
     - Prüfe nochmal, dass in **WireGuard Config File Path** `etc/wireguard/wg0.conf` steht. Dies _muss_ der Pfad sein, den du im `docker-compose.yml` auf dein lokales `/etc/wireguard/` gemappt hast
 
 ### Konfig für das NAS
@@ -148,6 +149,28 @@ Datei verschieben:
 sudo mv ~/wg0.conf /etc/wireguard/
 ```
 
+Jetzt müssen wir uns noch um das `PersistentKeepalive` kümmern, das unser NAS benötigt, um dauerhaft erreicht werden zu können. Öffne deshalb die Config noch einmal und füge diese Info hinzu:
+```
+sudo vi /etc/wireguard/wg0.conf
+```
+
+Der Inhalt sieht in etwa so aus, wobei dein Eintrag die markierte Zeil 12 noch nicht enthält. Füge diesen hinzu, damit dein Config File meinem entspricht:
+```{hl_lines=[12]}
+[Interface]
+Address = {DEIN VPN IPv4}, {DEINE VPN IPv6}
+PrivateKey = {DEIN PRIVATE KEY}
+DNS = 5.9.164.112, 2a01:4f8:251:554::2, 1.1.1.1
+MTU = 1420
+
+[Peer]
+PublicKey = {DEIN PUBLIC KEY}
+PresharedKey = {DEIN PRESHARED KEY}
+AllowedIPs = 10.8.0.0/24
+Endpoint = {DEIN VPN ENDPUNKT}:51820
+PersistentKeepalive = 25
+```
+
+
 Und die Verbindung starten:
 ```
 sudo wg-quick up wg0
@@ -178,8 +201,8 @@ sudo vim /etc/wireguard/wg0.conf
 Der Inhalt sieht in etwa so aus und die Zeile 4 setzt deine DNS Konfiguration:
 ```{hl_lines=[4]}
 [Interface]
-PrivateKey = {DEIN PRIVATE KEY}
 Address = {DEIN VPN IPv4}, {DEINE VPN IPv6}
+PrivateKey = {DEIN PRIVATE KEY}
 DNS = 5.9.164.112, 2a01:4f8:251:554::2, 1.1.1.1
 MTU = 1420
 
@@ -187,8 +210,8 @@ MTU = 1420
 PublicKey = {DEIN PUBLIC KEY}
 PresharedKey = {DEIN PRESHARED KEY}
 AllowedIPs = 10.8.0.0/24
-PersistentKeepalive = 25
 Endpoint = {DEIN VPN ENDPUNKT}:51820
+PersistentKeepalive = 25
 ```
 
 Da wir `vim` nutzen, kannst du nicht direkt editieren. Deshalb erstmal ...
