@@ -100,7 +100,7 @@ caddy list-modules | grep dns
 
 Die Version ist die gleich, wie bei der vorigen Installation. Bei der Auflistung der DNS-Module sollte nun aber euer DNS Provider dabei sein. Für mich ist das `dns.providers.inwx`. Du solltest natürlich deinen DNS Provider sehen.
 
-Damit können wir Caddy nutzen, um Zertifikate per DNS Challenge zu bekommen.
+Damit können wir Caddy nutzen, um Zertifikate per DNS Challenge von unserem Provider zu bekommen.
 
 ## Caddyfile vorbereiten
 
