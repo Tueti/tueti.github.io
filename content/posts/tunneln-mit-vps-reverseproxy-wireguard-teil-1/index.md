@@ -458,6 +458,13 @@ sudo systemctl restart wg-quick@wg0
 
 Nun öffne doch mal die von dir gesetzte URL im Browser und die WireGuard-UI sollte sich öffnen! 🥳
 
+Wenn alles passt, dann wollen wir noch dafür sorgen, dass das WireGuard Interface immer automatisch startet, wenn der Server mal rebooted wird. Dafür müssen wir den Service `enablen`.
+```
+sudo systemctl enable wg-quick@wg0
+``` 
+
+Fertig! Dann kann's weitergehen.
+
 ### Routing für das VPN erlauben
 
 Bisher sieht alles gut aus, aber der Teufel steckt im Detail und aktuell würde beim VPN noch einiges nicht ganz funktionieren und deshalb müssen wir uns nun dem Routing der Interfaces widmen. Ich mache das anhand von `nftables`, werde aber nur grundlegend auf die einzelnen Aspekte eingehen. Der Artikel wird sonst einfach zu lang.
