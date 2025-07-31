@@ -1,14 +1,14 @@
 ---
 author: ["Chrischi"]
-title: "NAS als Private Cloud #3: Private und öffentliche Routen plus Authentication"
-slug: "nas als private cloud 3 private und oeffentliche routen plus authentication"
+title: "NAS als Private Cloud #3: Lokaler DNS Server für schönere Endpunkt-Adressen"
+slug: "nas als private cloud 3 lokaler dns server fuer schoenere endpunkt-adressen"
 date: "2025-08-11"
 draft: false
-description: "Eine Private Cloud geht auch als DIY-Lösung mit eigenem Server. In Teil 3 öffnen wir Routen ins Internet"
-summary: "In Teil 1 haben wir unser Setup vorbereitet und in Teil 2 das VPN-Netz aufgesetzt. Der Zugriff mit verbundenem VPN-Client auf Endpunkte im VPN-Netz steht. Im dritten und letzten Teil öffnen wir einige Services ins Internet, sichern diese ab und erstellen ansprechende interne Routennamen."
+description: "Eine Private Cloud geht auch als DIY-Lösung mit eigenem Server. In Teil 3 geht es um den eigenen DNS für schöne Routen"
+summary: "In Teil 1 haben wir unser Setup vorbereitet und in Teil 2 das VPN-Netz aufgesetzt. Der Zugriff mit verbundenem VPN-Client auf Endpunkte im VPN-Netz steht. Im dritten und letzten Teil erstellen wir ansprechende interne Routennamen."
 ShowToc: true
 TocOpen: false
-tags: ["Synology", "WireGuard", "dnsmasq", "Authentik", "Virtual Private Server"]
+tags: ["Synology", "WireGuard", "dnsmasq", "Virtual Private Server"]
 categories: ["Tutorials", "Synology NAS"]
 series: ["Private Cloud mit einem Synology NAS"]
 cover:
@@ -16,6 +16,10 @@ cover:
   caption: Der Tunnel zur Cloud - Erstellt von ChatGPT
 sitemap:
   priority: 0.8
+---
+
+_Ein Hinweis zur Transparenz vorab: Ich habe dieses Setup einige Zeit als Lösung für mein CGNat-Problem genutzt, bin aber mittlerweile auf [Pangolin](https://github.com/fosrl/pangolin) umgestiegen, da es eine All-In-One-Lösung mit ungefähr demselben Tech Stack ist, wie ich ihn in dieser Tutorialreihe selbst aufbaue. Nichtsdestotrotz kann diese Lösung natürlich verwendet werden. Ein Beitrag zu Pangolin wird folgen._
+
 ---
 
 Willkommen zum dritten Teil der Tutorialreihe zur Einrichtung des NAS als Private Cloud. Nachdem in [Teil 1](/nas-als-private-cloud-1-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard/) unser virtueller privater Server vorbereitet und in [Teil 2](/nas-als-private-cloud-2-wireguard-für-synology-nas-und-konfiguration-des-vpn/) das VPN-Netz aufgebaut wurde, möchte ich mich hier der _Usability_ widmen.
@@ -108,8 +112,6 @@ Bevor wir nun mit Caddy weitermachen (aktuell sollte noch alles so funktionieren
 
 Linux Distributionen nutzen im Standard `systemd-resolve` mit der Konfigurationsdatei `/etc/resolve.conf`, um Namensauflösungen zu vollziehen. Nachdem wir also `dnsmasq` installiert haben, müssen wir einmal dnsmasq konfigurieren (dazu nutzen wir dessen config `/etc/dnsmasq.conf`) und dann in einer eigenen `/etc/resolve.conf` hinterlegen, dass für Namensauflösungen dnsmasq verwendet werden soll.
 
---- 
-
 ### Legen wir los mit der Installation
 
 ```
@@ -137,13 +139,18 @@ Jetzt editieren wir die Konfig-Datei für `dnsmasq`:
 sudo nano /etc/dnsmasq.conf
 ```
 
-Die Datei ist groß, deshalb gebe ich hier nur die Zeilen an, die geändert werden sollen:
+Die Datei ist groß, deshalb gebe ich hier nur die Zeilen an, die geändert werden sollen - dabei muss das Hashsymbol entfernt werden, damit es kein Kommentar mehr ist:
 
-| Alter Wert | Neuer Wert |
-|------------|------------|
-|     -      |       -    |
+| Alter Wert       | Neuer Wert      |
+|------------------|-----------------|
+| `#domain-needed` | `domain-needed` |
+| `#bogus-priv`    | `bogus-priv`    |
+| `#no-resolve`    | `no-resolve`    |
+| Unter `#add other name servers here... #server=/localnet/192...` | `server=1.1.1.1` |
+| Unter `#Add domains which you want to force... #address=/double-click.net...` | `address=/internal.{deinedomain.de}/10.8.0.1` |
+| `#listen-adress=` | `listen-address=127.0.0.1,10.8.0.1` |
 
-Mit dem folgenden Befehl kannst du nun prüfen, welche Zeilen in der Datei aktiviert sind, das Ergebnis siehst du (für dich wohl leicht angepasst) darunter.
+Letztendlich ist es egal, ob du die Zeilen so anpasst oder die neuen Werte einfach ganz ans Ende der Datei schreibst. Ich habe die Werte nur auch dort, wo sie in der Datei beschrieben werden. Mit dem folgenden Befehl kannst du nun prüfen, welche Zeilen in der Datei aktiviert sind, das Ergebnis siehst du (für dich wohl leicht angepasst) darunter.
 ```
 grep -v -e "^#" -e "^$" /etc/dnsmasq.conf
 ```
@@ -265,4 +272,8 @@ Jetzt hast du zwei Optionen, deine bestehenden WireGuard Clients zu aktualisiere
 
 Solltest du in [Teil 2]() dein NAS mit einer WireGuard Konfig versehen haben, müsstest du das NAS eigentlich nicht ändern. Du wirst ja vermutlich nicht vom NAS aus (also per SSH oder aus dem DSM heraus) auf die lokalen Routen zugreifen, die wir eben erstellt haben. Bei denen geht es ja eher darum, dass du diese Domains auf deinem Rechner, Smartphone oder Tablet nutzen kannst.
 
-Ich denke, mit diesen zwei Wegen kannst du die Anpassung der Clients selber durchführen und sobald einer, deiner Clients eine neue Konfig mit dem entsprechenden DNS Server hat, heißt es, deine Route mal zu testen. Öffne mal `https://dns.internal.deinedomain.de` und du solltest mit gültigem Zertifikat auf das DSM deines NAS geleitet werden.
+Ich denke, mit diesen zwei Wegen kannst du die Anpassung der Clients selber durchführen und sobald einer, deiner Clients eine neue Konfig mit dem entsprechenden DNS Server hat, heißt es, deine Route mal zu testen. Öffne mal `https://dns.internal.deinedomain.de` und du solltest mit gültigem Zertifikat auf das DSM deines NAS geleitet werden. Mit solchen Domains lässt sich viel mehr anfangen und sie haben die Sicherheit, nur mit verbundenem VPN Client erreichbar zu sein.
+
+Als optionalen nächsten Schritt könnten nun die Routen, die ins offene Internet gehen, noch mit Diensten, wie Authentik abgesichert werden. Wenn du das nicht tust, stell zumindest sicher, dass alle Dienste mit einem starken Passwort versehen sind, es keine bekannten Sicherheitslücken gibt und am besten auch Multi-Faktor-Authentication unterstützen.
+
+Im nächsten Beitrag widme ich mich [Pangolin](https://github.com/fosrl/pangolin), was eine Art All-In-One-Lösung für unser Setup ist. Oder vielleicht eher eine Selfhosted-Lösung für Cloudflare Tunnels. Bis dahin erstmal viel Spaß mit deinem Setup!
