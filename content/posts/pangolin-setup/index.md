@@ -13,7 +13,7 @@ categories: ["Tutorials"]
 series: ["Private Cloud mit einem Synology NAS"]
 cover:
   image: featured-image.webp
-  caption: Foto von [Aaron Burden](https://unsplash.com/de/@aaronburden?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) auf [Unsplash](https://unsplash.com/de/fotos/strassentunnel-tapete-gmy25xvSkq8?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)
+  caption: Foto von [Studio Crevettes](https://unsplash.com/de/@louismornaud?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) auf [Unsplash](https://unsplash.com/de/fotos/strassentunnel-tapete-gmy25xvSkq8?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)
 sitemap:
   priority: 0.8
 ---
