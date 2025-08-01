@@ -15,7 +15,7 @@ cover:
   image: featured-image.webp
   caption: Der Tunnel zur Cloud - Erstellt von ChatGPT
 sitemap:
-  priority: 0.8
+  priority: 0.5
 ---
 
 _Ein Hinweis zur Transparenz vorab: Ich habe dieses Setup einige Zeit als Lösung für mein CGNat-Problem genutzt, bin aber mittlerweile auf [Pangolin](https://github.com/fosrl/pangolin) umgestiegen, da es eine All-In-One-Lösung mit ungefähr demselben Tech Stack ist, wie ich ihn in dieser Tutorialreihe selbst aufbaue. Nichtsdestotrotz kann diese Lösung natürlich verwendet werden. Ein Beitrag zu Pangolin wird folgen._
