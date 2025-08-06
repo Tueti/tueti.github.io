@@ -18,10 +18,6 @@ sitemap:
   priority: 0.5
 ---
 
-_Ein Hinweis zur Transparenz vorab: Ich habe dieses Setup einige Zeit als Lösung für mein CGNat-Problem genutzt, bin aber mittlerweile auf [Pangolin](https://github.com/fosrl/pangolin) umgestiegen, da es eine All-In-One-Lösung mit ungefähr demselben Tech Stack ist, wie ich ihn in dieser Tutorialreihe selbst aufbaue. Nichtsdestotrotz kann diese Lösung natürlich verwendet werden. Ein Beitrag zu Pangolin wird folgen._
-
----
-
 Willkommen zum dritten Teil der Tutorialreihe zur Einrichtung des NAS als Private Cloud. Nachdem in [Teil 1](/nas-als-private-cloud-1-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard/) unser virtueller privater Server vorbereitet und in [Teil 2](/nas-als-private-cloud-2-wireguard-für-synology-nas-und-konfiguration-des-vpn/) das VPN-Netz aufgebaut wurde, möchte ich mich hier der _Usability_ widmen.
 
 ## Das Ziel vor Augen: Was wollen wir erreichen?

@@ -18,10 +18,6 @@ sitemap:
   priority: 0.8
 ---
 
-_Ein Hinweis zur Transparenz vorab: Ich habe dieses Setup einige Zeit als Lösung für mein CGNat-Problem genutzt, bin aber mittlerweile auf [Pangolin](https://github.com/fosrl/pangolin) umgestiegen, da es eine All-In-One-Lösung mit ungefähr demselben Tech Stack ist, wie ich ihn in dieser Tutorialreihe selbst aufbaue. Nichtsdestotrotz kann diese Lösung natürlich verwendet werden. Ein Beitrag zu Pangolin wird folgen._
-
----
-
 Lasst uns direkt einsteigen, wo wir [letztes Mal](/nas-als-private-cloud-1-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard/) aufgehört haben. Unser VPS steht und WireGuard inklusive aller notwendigen Einstellungen (für Interface und Routing) sind eingerichtet. Außerdem haben wir Caddy und Docker installiert und WireGuard-UI als Container hochgezogen. Caddy läuft auch mit der ersten `reverse_proxy` Regel und wir konnten WireGuard-UI per eigens definierter Subdomain öffnen.
 
 Das klingt alles bekannt? Dann kann es weitergehen.

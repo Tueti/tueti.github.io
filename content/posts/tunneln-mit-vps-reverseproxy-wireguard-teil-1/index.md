@@ -18,10 +18,6 @@ sitemap:
   priority: 0.8
 ---
 
-_Update vom 31.07.2025: Als Hinweis zur Transparenz, ich habe dieses Setup einige Zeit als Lösung für mein CGNat-Problem genutzt, bin aber mittlerweile auf [Pangolin](https://github.com/fosrl/pangolin) umgestiegen, da es eine All-In-One-Lösung mit ungefähr demselben Tech Stack ist, wie ich ihn in dieser Tutorialreihe selbst aufbaue. Nichtsdestotrotz kann diese Lösung natürlich verwendet werden. Ein Beitrag zu Pangolin wird folgen._
-
----
-
 ## Wieso nicht einfach Cloudflare?
 
 In den beiden letzten Artikeln habe ich mich des Problems angenommen, das [heimische NAS via Cloudflare Tunnel aus dem Internet heraus erreichbar zu machen](/synology-nas-als-private-cloud-via-cloudflare-tunnel-ohne-portweiterleitung) und dann auch noch [abzusichern](/cloudflare-tunnel-mit-extra-authentifizierung). Das Setup funktioniert soweit, aber es hat zwei Haken:
