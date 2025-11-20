@@ -61,7 +61,6 @@ params:
   description: "Meine Gedanken zum iPad und dessen Familie."
   author: Chrischi
   dateFormat: "02 Jan 2006"
-  comments: false
   impressum: "[Impressum & Datenschutz](impressum)"
 
   defaultTheme: auto
