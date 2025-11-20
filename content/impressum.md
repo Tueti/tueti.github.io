@@ -7,22 +7,36 @@ disableShare: true
 
 ## Datenschutzerklärung
 
-Diese Webseite wird auf [Uberspace](https://uberspace.de "Uberspace.de") gehostet. Deren Server erstellen Logs über jeden Request, um die Lauffähigkeit der Server sicherzustellen und schadhaftes Verhalten zu erkennen.
+Diese Webseite wird auf [Github Pages](https://docs.github.com/de/pages "Dokumentation zu Github Pages") gehostet. Beim Besuch meiner Webseite übermittelt dein Browser Daten an diesen Hoster:
 
-Die [geloggten Informationen](https://manual.uberspace.de/web-logs/#contents-of-the-access-logs) beinhalten:
-- Anonymisierte IP-Adressen des Besuchers
-- Datum und Uhrzeit des Requests
-- Die Besuchte URL
-- Einen _User Agent_ String, der im Normalfall den Browser oder das Betriebssystem beinhaltet
-- Die _Referring URL_, sofern vorhanden. Also woher der Besucher kam
-- Die Größe der übertragenen Daten
-- Den _HTTP Status Code_ der Server-Antwort
+- IP-Adresse
+- die Adresse der vorher besuchten Website (Referer Anfrage-Header), sofern ein Referer-Link genutzt wurde
+- Datum und Uhrzeit der Anfrage
+- Zeitzonendifferenz zur Greenwich Mean Time
+- Inhalt der Anforderung
+- HTTP-Statuscode
+- übertragene Datenmenge
+- Informationen zu Browser und Betriebssystem.
 
-Uberspace [anonymisiert die geloggten IP-Adressen](https://manual.uberspace.de/web-logs/#privacy), um das Sammeln potentiell persönlicher Daten zu verhinden. Dies tun sie, indem sie die letzten 16 Bit voon IPv4-Adressen und die letzten 32 Bit von IPv6 Adressen maskieren ("wegwerfen"). Außerdem werden geloggte Requests nach 7 Tagen gelöscht.
+Das ist erforderlich, um unsere Website anzuzeigen und die Stabilität und Sicherheit zu gewährleisten. Dies entspricht unserem berechtigten Interesse im Sinne des Art. 6 Abs. 1 S. 1 lit. f DSGVO, selbst keinen Server in unseren Räumlichkeiten vorhalten zu müssen. Serverstandort ist USA.
 
 Und das wars! Keine Cookies, keine Analysetools, keine geladenen Fonts von Google und keine automatischen Requests an Dritte (wie Social Media Betreiber). Blogbeiträge enthalten jedoch eine "Teilen"-Funktion. Hier wird der Service jedoch erst aufgerufen und somit Daten an diesen übermittelt, wenn der Teilen-Button aktiv genutzt wird.
 
 Und einige Posts enthalten Affiliate Links, diese sind immer entsprechend gekennzeichnet. Wenn du über einen solchen Link einen Kauf tätigst, erhalte ich eine Provision, ohne dass für dich zusätzliche Kosten entstehen. Dies steht die aber natürlich frei!
+
+Meiner Hoster hat folgende Anschrift:
+GitHub Inc.
+88 Colin P Kelly Jr St
+San Francisco, CA 94107
+United States
+
+Weitere Informationen zu Widerspruchs- und Beseitigungsmöglichkeiten gegenüber GitHub findest du [hier](https://docs.github.com/en/free-pro-team@latest/github/site-policy/github-privacy-statement#github-pages).
+
+Du hast das Recht der Verarbeitung zu widersprechen. Ob der Widerspruch erfolgreich ist, ist im Rahmen einer Interessenabwägung zu ermitteln. Die Daten werden gelöscht, sobald der Zweck der Verarbeitung entfällt.
+
+Die Verarbeitung der unter diesem Abschnitt angegebenen Daten ist weder gesetzlich noch vertraglich vorgeschrieben. Die Funktionsfähigkeit der Website ist ohne die Verarbeitung nicht gewährleistet.
+
+GitHub hat Compliance-Maßnahmen für internationale Datenübermittlungen umgesetzt. Diese gelten für alle weltweiten Aktivitäten, bei denen GitHub personenbezogene Daten von natürlichen Personen in der EU verarbeitet. Diese Maßnahmen basieren auf den EU-Standardvertragsklauseln (SCCs). Weitere Informationen dazu gibt es [in deren Dokumentation](https://docs.github.com/en/free-pro-team@latest/github/site-policy/github-data-protection-addendum#attachment-1–the-standard-contractual-clauses-processors)
 
 ---
 
