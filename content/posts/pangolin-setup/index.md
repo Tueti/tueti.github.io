@@ -13,10 +13,10 @@ categories: ["Tutorials"]
 series: ["Private Cloud mit einem Synology NAS"]
 cover:
   image: featured-image.webp
-  caption: Foto von [Studio Crevettes](https://unsplash.com/de/@louismornaud?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) auf [Unsplash](https://unsplash.com/de/fotos/strassentunnel-tapete-gmy25xvSkq8?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)
+  caption: Foto von [Studio Crevettes](https://unsplash.com/de/@louismornaud?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) auf [Unsplash](https://unsplash.com/de/fotos/braun-weiss-gefleckter-vogel-mtTpAM2uaRM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 sitemap:
   priority: 0.8
----
+---   
 
 ## Wieso denn noch eine Lösung?
 
