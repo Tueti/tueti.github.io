@@ -50,7 +50,7 @@ Curslacker Deich 177B
 
 #### Kontakt
 
-Email: tueti (Klammeraffe) proton (punkt) me  
+Email: christian (Klammeraffe) tueti (punkt) space  
 Ersetze (Klammeraffe) mit @ und (punkt) mit .
 
 ### Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:
