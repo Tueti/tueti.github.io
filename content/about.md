@@ -16,6 +16,6 @@ Mittlerweile weiß ich, was ich tue, habe meine Ausrüstung ein wenig aktualisie
 
 Wenn dir der Blog gefällt und du über Apple und/oder Fotografie chatten möchtest, melde dich gern.
 
-tueti (at) proton.me
+christian (at) tueti.space
 
 ![Im Urlaub in Thailand, die Kamera dabei](/images/chrischi_about.webp "Ich in Thailand")

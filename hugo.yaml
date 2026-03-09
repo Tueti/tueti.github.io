@@ -14,6 +14,7 @@ buildFuture: false
 buildExpired: false
 enableEmoji: true
 pygmentsUseClasses: true
+canonifyURLs: true
 
 permalinks:
   posts: /:slug/
@@ -87,7 +88,7 @@ params:
       
       Hier geht's um Technik, Fotografie, Nerd-Kram und alles, worüber ich sonst gern schreiben würde.  
 
-      Jeden Montag ein neuer Beitrag - hoffentlich 😎
+      Beiträge kommen immer, wenn ich etwas zu schreiben habe 😎
   
   label:
     text: tueti.space
