@@ -10,6 +10,7 @@ Lies zuerst den vollständigen Post unter dem angegebenen Pfad, bevor du die Rev
 
 ### 1. Lesbarkeit & Stil
 - Gibt es Füllsätze, Drumherumreden oder unnötige Wiederholungen? Wenn ja: konkret benennen (Zitat + Zeilennummer).
+- Gibt es Rechtschreibfehler? Wenn ja: eine Liste aller Rechtschreibfehler als dreispaltige Tabelle übergeben: `| **Zeilennummer** | **Zitat** | **Korrektur** |`
 - Ist der Einstieg direkt oder verliert er sich in Einleitung?
 - Sind Absätze und Sätze angemessen kurz, oder gibt es Textwüsten?
 - Wirkt der Ton konsistent und authentisch?
@@ -45,7 +46,7 @@ Lies zuerst den vollständigen Post unter dem angegebenen Pfad, bevor du die Rev
 Strukturiere die Review exakt so:
 
 **Lesbarkeit & Stil**
-[Konkrete Kritikpunkte mit Zitaten. Wenn nichts zu beanstanden: "Keine Auffälligkeiten."]
+[Konkrete Kritikpunkte mit Zitaten und die Tabelle der Rechtschreibfehler. Wenn nichts zu beanstanden: "Keine Auffälligkeiten."]
 
 **Struktur & Aufbau**
 [Konkrete Kritikpunkte. Wenn nichts zu beanstanden: "Keine Auffälligkeiten."]
