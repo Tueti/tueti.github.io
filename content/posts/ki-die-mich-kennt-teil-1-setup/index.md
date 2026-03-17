@@ -1,55 +1,62 @@
 ---
 author: ["Chrischi"]
 title: "KI, die mich kennt - Teil 1: Claude auf dem NAS einrichten"
-slug: "ki-die-mich-kennt-claud-auf-nas"
-date: "2026-03-16"
-draft: true
-description: ""
-summary: ""
+slug: "ki-die-mich-kennt-claude-auf-nas"
+date: "2026-03-17"
+draft: false
+description: "Wie ich Claude Code per Docker auf meinem NAS installiere und per MCP-Servern mit Unifi, GitHub und Context7 verbinde — für eine KI, die mich wirklich kennt."
+summary: "Eine persönliche KI, die Zugriff auf das Heimnetz, GitHub und aktuelle Entwicklerdokumentation hat — erreichbar von MacBook, iPad und iPhone. Dieser Post zeigt, wie man Claude Code per Docker auf dem NAS einrichtet und mit MCP-Servern ausstattet, die aus einem generischen CLI-Tool einen echten persönlichen Assistenten machen."
 ShowToc: true
 TocOpen: false
 tags: ["Claude Code", "KI", "Docker", "MCP"]
 categories: ["Tech Tipps", "Tutorials"]
 cover:
   image: featured-image.webp
-  caption: ""
+  caption: "Erstellt von Nanobanana/Gemini"
 ---
 
-Wie nutzt du KI? Du ließt einen Tech Blog, von daher nutzt du vielleicht nicht nur das Web-Interface. Aber die große Mehrheit öffnet einfach den Browser und fängt an zu tippen. Aber das ist bei Weitem nicht die produktivste Art, einen KI-Assistenten in die täglichen Aufgaben zu integrieren. In jeder Session musst du erneut definieren, was genau du möchtest, wer du bist und auch andere Datenquellen können nur eingeschränkt genutzt werden. Deshalb wollte ich eine KI, die mich kennt. Immer verfügbar und mit mit spezifischen Wissen für meine Bedürfnisse. Dies ist Teil 1 der _"KI, die mich kennt"_-Reihe. Lasst uns [Claude](https://code.claude.com/docs/de/quickstart) auf dem NAS einrichten. Du kannst auch [Gemini](https://geminicli.com/) nutzen, dann ändern sich für dich am Ende einige Befehle, da ich in diesem Tutorial Claude nutze. Das Prinzip bleibt aber gleich.
+KI ist aktuell das Thema, das mich am meisten fasziniert. Ich habe das Glück, dass ich meinen beruflichen Arbeitsablauf stark durch KI unterstützen lassen kann. Das macht mir zum einen total Spaß, nimmt mir aber auch viele "Zeitfresser" ab. Privat wollte ich mir deshalb auch eine Art "persönlichen, digitalen Assistenten" aufbauen. Eine KI, die mich kennt, am besten lokal auf meinem NAS, damit ich sie von allen Geräten aus nutzen kann: MacBook, iPad, iPhone, egal. Kann ich eine SSH-Session initiieren, kann ich meine KI nutzen.
 
-_Disclaimer:_ Wenn du Claude nutzen möchtest, benötigst du entweder mindestens ein kostenpflichtiges Pro-Abo oder einen abrechnungsfähigen API Key.
+Bevor ich tiefer in den Blog Post einsteige, lass mich kurz schreiben, dass dieser Post meinungsstark ist. Ich werde ein Setup aufbauen, dass zu _mir_ passt. Das ist ganz wichtig. Auch, wenn dieser Post wie ein Tutorial wirkt, so ist ein Eins-zu-Eins-Nachbau vermutlich nur in wenigen Fällen sinnvoll. Eigentlich nur, wenn du exakt dieselben Interessen hast, wie ich. Denn mein Ziel ist eine _persönliche_ KI. Ich will dich aber ermächtigen, dir selbst eine solche KI zu bauen und dir Ideen geben, wie ein solches Setup aussehen kann und welche Möglichkeiten es gibt.
 
 ## Zielarchitektur für die KI, die mich kennt
 
-Mein Ziel ist eine zentrale Claude Anlaufstelle. Ein zentraler Workspace, in welchem ich diverse Themenbereiche (Sport, mein Blog, Home Lab, Recherche, etc...) bearbeiten und mich dabei von einem persönlich eingerichteten KI-Assistenten unterstützen lassen kann.
+Meine zentrale KI wird [Claude Code](https://code.claude.com/docs/de/quickstart), das CLI Tool von [Claude](https://claude.ai/). Um Claude als Konsolentool zu nutzen, brauchst du zwingend mindestens ein _Pro_-Abo oder einen abrechnungsfähigen API Key. Mit dem [Gemini CLI](https://geminicli.com/) gibt es eine sehr gute Alternative, die ein wirklich großzügiges Gratis-Tier besitzt. Mein Tutorial basiert auf "Claude", das Konzept ist aber mit beiden KIs umsetzbar. Die Befehle sind ein wenig angepasst - aber nichts, was eine KI für dich umbiegen könnte 😉.
 
-Was passt da also besser, als mein Ugreen NAS?! Das kann ich via Tailscale von überall erreichen. Meine Vorstellung ist ein dedizierter Ordner in meinem User-Ordner, der als _Workspace_ dient, z.B. "claude-workspace". Darin soll eine KI leben, die alle für mich wichtigen Daten anzapfen kann und jeweils einen dedizierten und vor allem _persistieren_ Kontext zu all meinen Themen hat. Bin ich im Unterordner "HomeLab" soll sie als Experte hierfür agieren, im Unterordner "Blog" als Lektor (keine Angst, ich schreibe alles selbst, lasse aber gegenlesen) und im Unterordner "Sport" als Personal Trainer. Ich will nicht jedes Mal alles wieder neu erklären müssen.
+Aber was macht Claude in meinem Setup _persönlich_, wie mache ich aus Claude eine KI, die mich kennt? Als erstes muss ich Claude bestimmte _Fähigkeiten ermöglichen_. Es wäre wirklich cool, wenn Claude ...
+- ... auf meine lokalen Dateien zugreifen kann (klar, ein No-Brainer).
+- ... Zugriff auf meinen GitHub Account hätte.
+- ... Zugriff auf meinen Unifi Controller (und somit auf die Administration meines Heimnetzwerkes) hätte.
+- ... mein Smart Home einsehen kann.
+- ... meinen Kalender kennt?!
+- ... meine sportliche Leistung einschätzen kann.
 
-Das ist eigentlich nicht schwierig, aber ich habe viele zu komplexe Wege eingeschlagen und bin gescheitert, bis ich am Ende bei meinem jetzigen Setup landete. Aber dazu gleich mehr. Erstmal die Frage, wie muss die KI eingerichtet sein, um _mich_ beraten zu können? Sie soll ...
-- ... einige meiner lokalen Ordner lesen können
-- ... Zugriff auf meinen GitHub Account haben
-- ... immer die neuste Dokumentation in Entwicklerthemen haben
-- ... mein Unifi-Netzwerk administrieren können
-- ... mein Smart Home einsehen
-- ... meine sportlichen Aktivitäten kennen
-- ... vielleicht auch meinen Kalender einsehen?!
+Das wäre doch schon ein starker Anfang, um Claude für persönliche Dinge zu nutzen. Trainingspläne erstellen, Rolling Firmware Updates meiner Unifi-Geräte, GitHub Issues ansehen und den Code dazu prüfen. Das ist schon deutlich mehr, als einfach das generische Web-Interface im Browser zu nutzen und jedes Mal wieder einen mehr oder weniger soliden Kontext einzubringen.
 
-Mit einem solchen Setup hätte ich tatsächlich eine KI, die mich kennt. Klingt gut? Angsteinflößend und gut? Dann lasst uns anfangen.
+All diese Fähigkeiten können wir per _MCP Server_ bereitstellen.
 
-## Disclaimer: KI, die _mich_ kennt!
+## Was ist MCP?
 
-Dieser Blog Post wird sehr meinungsstark. Ich richte die KI so ein, wie es für _mich_ passt. Das muss für dich überhaupt nicht dasselbe Setup sein. Aber ich hoffe, ich kann dir hier auch zeigen, _wie_ diese Einrichtung aussehen kann, sodass du mein Setup für dich justieren kannst.
+Was ist ein _MCP Server_? _MCP_ steht für _Model Context Protocol_ und ist ein mittlerweile standardisierter Weg, einer KI neue Fähigkeiten zu ermöglichen. Oft kommt der Vergleich mit _USB-C_: USB-C ist ein Stecker-Standard über welchen du alles Mögliche an deinen Rechner anschließen und dessen Funktionsumfang erweitern kannst. Drucker über USB-C geben deinem Rechner die Fähigkeit zu drucken. Eine Tastatur ermöglicht das Tippen, eine Kamera die Foto- und Videoaufnahme.
 
-## Es lebe Docker! ... oder: Unsere KI lebt in Docker?!
+Über das _Model Context Protocol_ können wir der KI ebenfalls Tools an die Hand geben, um Dinge zu tun. Über einen _Unifi MCP Server_ könnte eine KI _lernen_ (oder direkt wissen), wie die heimischen Unifi-Geräte auszulesen und zu administrieren sind. So könnte man fragen, _"Hey, wie viele Access Points habe ich?"_ und die KI nutzt den per MCP angebundenen _Unifi MCP Server_, der das richtige Tool beinhaltet, um diese Frage zu beantworten.
 
-Zu allererst einmal müssen wir uns überlegen, was wir _lokal_ brauchen und was wir von extern aus anbinden. Hier bin ich anfangs falsch abgebogen und wollte unbedingt das [_Docker MCP Gateway_](https://github.com/docker/mcp-gateway) nutzen, aber das beruht zu sehr auf dem Secret Store, den Docker Desktop mitbringt und so verwarf ich meine erste Setup-Idee. Im Nachhinein nicht schlecht, da auf dem NAS auch das Starten und Stoppen von Docker Containern aus anderen Containern heraus ein Schmerz ist. Aber ich schweife ab.
+So erhält Claude Zugriff auf das Heimnetz. Ich mag mich als Nerd outen, aber ich finde das ziemlich cool!
 
-Wir brauchen einen Container, in welchem Claude selbst läuft und dann brauchen wir lokal einen Container als Unifi MCP Server. Denn mein Unifi Controller ist lokal im Heimnetz und so muss auch der entsprechende MCP Server lokal sein.
+Über MCP können wir auf sehr vieles zugreifen. So werden auch unsere weiteren Fähigkeiten angebunden.
 
-Glücklicherweise gibt es bereits ein Communityprojekt zu einem [dockerbasierten Unifi MCP Server](https://github.com/sirkirby/unifi-network-mcp) und claude selbst kann in einem [node Container](https://hub.docker.com/_/node) laufen. Beide Container können im selben Netzwerk sein, welches wir ebenfalls einrichten.
+## Es geht los: Lokales Docker-Setup
 
-Hier also das `docker-compose.yaml`:
-```
+Mein Setup umfasst zwei Ebenen: Die lokale Ebene und die Service-Ebene. Die lokale Ebene beinhaltet die Tools, die wir lokal bereitstellen müssen, während die Service-Ebene ebendie Tools umfasst, die wir über das Internet anbinden. Tools, die wir nicht selbst hosten müssen.
+
+Lokal brauchen wir einen Host, auf dem Claude installiert werden kann und einen Host, um den Unifi MCP Server zu betreiben. Da unser Netzwerk typischerweise lokal ist, brauchen wir auch den MCP-Server lokal. Glücklicherweise können wir beides über [_Docker_](https://www.docker.com/) bereitstellen. Es lebe Docker!
+
+Für Claude gibt es kein eigenes Image, aber wir können einen schlanken [Node Container](https://hub.docker.com/_/node) nutzen. Für unsere angebundene Heimnetz-Fähigkeit gibt es glücklicherweise bereits einen [Unifi MCP Server als Communityprojekt](https://github.com/sirkirby/unifi-network-mcp).
+
+Beide Container lasse ich auf meinem NAS im selben Netzwerk laufen, das ich `ai-net` nenne.
+
+Hier mein `docker-compose.yaml`, beachte bitte die Inline-Kommentare. Ein paar Anpassungen müssten vorgenommen werden. Gerade beim Username und Passwort empfehle ich stark, einen zusätzlichen, lokalen Admin im Unifi Controller anzulegen, der ausschließlich hierfür verwendet wird. Denn es darf keine Zweifaktor-Authentifizierung eingeschaltet sein. Den Rest gern mit eigenem Setup anpassen.
+```yaml
 networks:
   ai-net:
     driver: bridge
@@ -71,7 +78,7 @@ services:
       - "3000:3000"       # Dein interner Port 3000 kann geändert werden, wenn bereits belegt
     environment:
       - UNIFI_HOST=192.168.X.XXX                          # IP deines UniFi Controllers
-      - UNIFI_PORT=XXXX                                   # Port meines Controllers
+      - UNIFI_PORT=XXXX                                   # Optional Port meines Controllers, wenn nicht 443
       - UNIFI_USERNAME=${UNIFI_USERNAME}                  # UniFi-Benutzername via .env
       - UNIFI_PASSWORD=${UNIFI_PASSWORD}                  # UniFi-Passwort via .env
       - UNIFI_SITE=default                                # Site-Name (meist "default")
@@ -93,39 +100,146 @@ services:
     restart: unless-stopped
     stdin_open: true
     tty: true
-    working_dir: /claude-workspace  # So heißt mein Arbeitsverzeichnis bei den Volumes
+    working_dir: /claude-workspace  # In diesem Verzeichnis startet meine Session, wenn ich mich einlogge
     command: sleep infinity
     volumes:
       - ./claude-code-home:/root                                  # Persistente Claude-Konfiguration
-      - /volume1/@home/{USER}/claude-workspace:/claude-workspace  # Arbeitsverzeichnis für claude. Hier liegen alle Projekte
+      - /volume1/@home/{USER}/claude-workspace:/claude-workspace  # Arbeitsverzeichnis für claude. Hier liegen alle Projekte. Ist auch das "working_dir" in Zeile 44
     depends_on:
       - unifi-mcp
     networks:
       - ai-net
 ```
 
-Wir nutzen ein eigenes Bridge-Netzwerk und setzen die beiden Container auf. Beim Unifi MCP müsstest du deine Daten in den `environment` Variablen anpassen. Username und Passwort kannst du entweder direkt eintragen oder in eine .env auslagern.
+Mit diesem Setup ziehst du zwei Container hoch. Der `claude-code` Container enthält aber noch keine Claude CLI, die müssen wir gleich nachziehen.
 
-Wichtig ist, es wird kein Account mit einer Zweifaktor-Authentifizierung unterstützt. Lege am besten einen weiteren lokalen Admin in deinem Unifi Controller an und dessen Credentials nutzt du hier. Dein persönlicher Account ist vermutlich synchronisiert mit deinem Unifi-Account. Deshalb deaktiviere nicht 2FA!
+Du kannst natürlich außerdem im `claude-code` Container weitere Ordner in deinen `volumes` angeben, auf die Claude Zugriff haben soll. Hänge für den Anfang gern `:ro` an das Mapping, um diese Zugriffe erstmal auf `read-only` zu beschränken. So kann claude nichts löschen.
 
-Im `claude-code` Container kannst du natürlich weitere Ordner in deinen `volumes` angeben, auf die Claude Zugriff haben soll. Hänge für den Anfang gern `:ro` an das Mapping, um diese Zugriffe erstmal auf `read-only` zu beschränken. So kann claude nichts löschen.
+## Das NAS vorbereiten
 
-## Was ist MCP?
+Ich ziehe mein Setup auf meinem Ugreen NAS hoch und werde es dort als _Projekt_ in der hauseigenen Docker App starten. Einfach, damit ich es in der Docker UI sehe. Damit Docker die Container starten kann, brauche ich also im Vorfeld alle referenzierten Ordner.
 
-Nun haben wir bereits das `docker-compose.yaml` und darin ein MCP Server Image hinterlegt. Doch was ist ein MCP Server? _MCP_ steht für _Model Context Protocol_ und ist ein mittlerweile standardisierter Weg, einer KI neue Fähigkeiten bereitzustellen. Oft kommt der Vergleich mit _USB-C_: USB-C ist ein Stecker-Standard über welchen du alles mögliche an deinen Rechner anschließen und dessen Funktionsumfang erweitern kannst. Drucker über USB-C geben deinem Rechner die Fähigkeit zu drucken. Eine Tastatur ermöglicht das Tippen, eine Kamera die Foto- und Videoaufnahme.
+Ich lege meine Dockerprojekte alle unter `/volume1/docker` ab, dieses also unter `/volume1/docker/ai-net` und hier brauche ich folgende Struktur:
+```bash
+/volume1/docker/ai-net/
+  |-- claude-code-home/
+  |-- docker-compose.yaml # Meine oben gezeigte Datei
+  |-- .env                # Hier speichere ich meine Unifi Zugangsdaten
+```
+Nun kann in der Docker App auf dem NAS unter _Projekte_ ein neues Projekt angelegt werden. Als Name wähle ich `ai-net` und als Speicherort den gleichnamigen Ordner. Ich importiere die `docker-compose.yaml` (das sollte schon vorgeschlagen werden) und schon werden die beiden Container und das Netzwerk erstellt.
 
-Über das _Model Context Protocol_ können wir der KI also Tools an die Hand geben, um beispielweise ein Unifi-Netzwerk zu lesen und zu administrieren. Genau dies macht der Unifi MCP Server. Der Server abstrahiert ganz viele Fähigkeiten und stellt diese per MCP für unsere KI bereit. So können wir die KI fragen _"Hey, wie viele Access Points habe ich?"_ und die KI nutzt MCP, um das richtige Tool im Unifi MCP Server zu finden, welches diese Frage beantwortet.
+## Claude zum Leben erwecken
 
-Claude kennt von Haus aus weder mein noch dein Heimnetzwerk. Mit MCP Server können wir unsere KI aber ermächtigen, Infos aus unserem Unifi Controller zu bekommen - und auch Dinge dort zu tun. Die KI kann auch die Firmware rollierend aktualisieren, wenn gewünscht. Das ist ebenfalls ein verfügbares Tool.
+In den Einstellungen wirst du vermutlich noch SSH aktivieren müssen, damit du dich per SSH auf deinem NAS einloggen kannst. Ob du SSH dauerhaft aktiviert haben möchtest, bleibt dir überlassen.
 
-Cool, oder? Über MCP können wir auf sehr vieles zugreifen. So werden auch unsere weitern Fähigkeiten angebunden.
+```bash
+ssh <USERNAME>@<NAS-IP>           # Per SSH auf dem NAS einloggen
+docker exec -it claude-code bash  # Eine Shell-Sitzung im Container starten
+```
 
-## Docker Projekt bauen
+Nun solltest du nicht nur auf dem NAS sein, sondern eine Shell-Session im Container haben! Der Container ist wirklich schlank, weshalb wir anfangs eine erste Konfiguration durchführen müssen:
 
-Ich nutze ein Ugreen NAS als zentralen Server. Du kannst das compose file aber überall starten, wo du es möchtest. Ich zeige hier weiterhin _meinen_ Weg. Also, logge dich im Web-Interface deines NAS ein. Du musst natürlich Docker installiert haben, das überspringe ich hier kurz. Du findest es im App Center.
+```bash
+apt-get update && apt-get install -y curl bash git nano  # Installiert curl, bash, git und nano - die letzten beiden sind optional für dieses Setup
+curl -fsSL https://claude.ai/install.sh | bash           # Laut Claude Doku der empfohlene Weg, die CLI zu installieren
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc # So können wir den Befehl "claude" im Terminal nutzen
+source ~/.bashrc                                         # Alle Änderungen aktivieren, sodass "claude" verfügbar ist
+```
 
-Erst einmal lege ich `/volume1/docker/ai-net` an, denn darin will ich mein Projekt legen. Darin brauchen wir einen Unterordner `/volume1/docker/ai-net/claude-code-home`. Hier werden die Konfigurationsdateien des Containers liegen, sodass diese persistiert werden. Unter anderem werden so auch die hinzugefügten MCP Server gespeichert.
+Teste das Setup gern mit `claude --version`, was dir einen sinnvollen Output geben sollte! Wenn das so ist, meinen Glückwunsch, du hast Claude auf deinem NAS! 🎉
 
-Außerdem muss im _Persönlichen Ordner_ ein Unterordner `claude-workspace` (`/volume1/@home/{USER}/claude-workspace`) angelegt werden. Dies wird der Arbeitsbereich. Bei Ugreen müssen die referenzierten Ordner existieren, wenn Container starten.
+## Claude wird zur KI, die mich kennt
 
-Nun kannst du die Docker App starten.
+Okay, Claude existiert, nun ermächtigen wir es, für uns wichtige Daten einzusehen und ggf. zu manipulieren. Man kann Claude (oder auch Gemini und anderen KIs) diese Fähigkeiten entweder _projektbasiert_ oder als _user scope_ geben. Projektbasiert existieren die Fähigkeiten nur in dem Ordner, in dem sie hinzugefügt werden. Im _user scope_ kann die KI überall darauf zugreifen, egal, in welchem Ordner ich mich aktuell befinde. Das ist, was ich für meinen Container möchte.
+
+### Unifi MCP Server
+
+Unser Unifi MCP Server existiert, also fügen wir diesen als erstes hinzu:
+```bash
+claude mcp add --scope user --transport sse unifi http://unifi-mcp:3000/sse
+```
+
+Es sollte eine kurze Info erscheinen, dass der Server hinzugefügt wurde und per `claude mcp list` kannst du erfragen, welche MCP Server konfiguriert sind. Es sollte etwas, wie:
+```bash
+Checking MCP Server health ...
+
+unifi: http://unifi-mcp:3000/sse (SSE) - ✓ Connected
+```
+Dann hast du es geschafft, Claude hat Zugriff auf deinen Unifi Controller - sofern du die richtigen Credentials im `docker-compose.yaml` angegeben hast und der Zugriff tatsächlich funktioniert. Nur als Hinweis, falls Fragen später doch kein Ergebnis liefern sollten.
+
+### Sequential Thinking MCP Server
+
+Als zweites möchte ich den MCP Server für _Sequential Thinking_ hinzufügen, ein MCP Server, der bei komplexen Themen dafür sorgt, dass die KI sich erstmal eine Art "Gesamtbild" der Aufgabe verschafft, bevor eine Lösung präsentiert wird. Es verbraucht in diesen Fällen extra Tokens, aber hilft der KI, komplexe Probleme in kleine Schritte zu zerlegen und Revisionen durchzuführen, wenn diese Schritte abgearbeitet werden. Die Installation ist denkbar einfach:
+
+```bash
+claude mcp add --scope user sequential-thinking -- npx -y @modelcontextprotocol/server-sequential-thinking
+```
+
+### Context7 MCP Server
+
+Als nächstes möchte ich den [_Context7_](https://context7.com/) MCP Server. Context7 bietet aktuelle Entwicklerdokumentation für LLMs. Da ich programmiere, ist es super, immer eine aktuelle Doku für die LLMs griffbereit zu haben und nicht hoffen zu müssen, dass veraltete Lösungen online gefunden werden oder in den Trainingsdaten vorhanden sind. Für Context7 benötigst du einen Account und einen API Key. Allerdings gibt es hier einen gratis Tier, der für Privatpersonen gut ausreicht, da man 1000 Calls pro Monat bekommt und selbst, wenn man dies erreicht, werden bis Ende des Monats 20 Calls pro Tag erlaubt, um weitere Arbeit zu gewährleisten. Ziemlich cooles Free Tier! Sobald du einen Account auf deren Webseite erstellt hast, kannst du im [Dashboard](https://context7.com/dashboard) einen API Key erstellen. Danach geht hier weiter mit:
+
+```bash
+claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp --api-key DEIN_KEY
+```
+
+### GitHub MCP Server
+
+Nun zu GitHub - auch dort brauchst du einen Access Token, den du in `Settings -> Developer Settings -> Personal Access Token -> Fine-grained tokens` (oder [hier](https://github.com/settings/personal-access-tokens) erstellen kannst). Gib dem Token die Berechtigung, die du claude ermöglichen willst. Ein sinnvoller Startpunkt könnte dies sein:
+
+| Permission | Level |
+|---|---|
+| Metadata | Read (Pflicht) |
+| Contents | Read & Write |
+| Pull Requests | Read & Write |
+| Issues | Read & Write |
+| Discussions | Read |
+| Commit statuses | Read & Write |
+| Actions | Read & Write |
+| Workflows | Read & Write |
+| Pages | Read & Write |
+| Environments | Read & Write |
+| Deployments | Read & Write |
+| Dependabot alerts | Read |
+| Variables | Read & Write |
+| Wikis | Read & Write |
+
+Wenn der Access Token erstellt ist, geht's im Terminal weiter:
+
+```bash
+claude mcp add-json --scope user github '{"type":"http","url":"https://api.githubcopilot.com/mcp","headers":{"Authorization":"Bearer github_pat_DEIN_KEY"}}'
+```
+
+## Hallo Claude
+
+Ein letzter Check mit `claude mcp list`, das hoffentlich einen solchen Output bringt:
+```bash
+Checking MCP server health...
+
+context7: npx -y @upstash/context7-mcp --api-key dein_api_key - ✓ Connected
+unifi: http://unifi-mcp:3000/sse (SSE) - ✓ Connected
+github: https://api.githubcopilot.com/mcp (HTTP) - ✓ Connected
+sequential-thinking: npx -y @modelcontextprotocol/server-sequential-thinking - ✓ Connected
+```
+
+Wenn du es bis hier geschafft hast, kommt nun der Moment, auf den wir gewartet haben:
+```bash
+claude
+```
+
+Damit startest du die CLI. Logge dich ein (unser NAS hat keinen Browser, aber die Claude CLI ist clever genug, uns einen kopierbaren Link zu geben, mit dem wir das OAuth mit unserem normalen Browser durchführen können) oder verbinde deinen API Key und fang an zu testen! Lass Claude deine GitHub Repos auflisten oder prüfen, wie viele Unifi Access Points du hast. Lass es prüfen, ob es "Expo v55" (die neuste API für React-Native Mobilentwicklung) kennt. Claude ist da und hat die Fähigkeiten, dich persönlich zu unterstützen!
+
+Und du kannst die SSH Session vom Tablet oder Smartphone aus starten, wenn dein NAS remote verfügbar ist (vielleicht via VPN, Tailscale, oder Twingate), kannst du das von überall machen.
+
+## Eine letzte Quality-of-Life Konfig und weiterer Ausblick
+
+Wenn du per `exit` die Session beendest und dich erneut einloggen willst, musst du auf dem NAS immer `docker exec -it claude-code bash` eingeben. Ich kann mir das nicht merken. Leg dir doch auch hier einen `claude` Alias an:
+```bash
+echo "alias claude='docker exec -it claude-code bash'" >> ~/.bashrc
+```
+
+Und schon kannst du per `claude` die Session in deinem Container starten. Also vom Endgerät erst per `ssh <Username>@<NAS-IP>` aufs NAS und dann per `claude` in den Container - und dort lebt deine immer persönlich werdendere KI 😎.
+
+Bis hierher erstmal viel Spaß damit! Im nächsten Teil verbinde ich Strava mit der KI, sodass diese auch als mein Personal Trainer agieren kann. Da hierzu jedoch eine Strava App angelegt werden muss, wollte ich diesen Post nicht noch länger machen. Ich werde auch noch zeigen, wie du deine SSH Session per Key-Authentifizierung starten kannst, um nicht immer das Passwort anzugeben und [_n8n_](https://n8n.io/) steht auch auf der Liste.
+
+Coole Zeiten! Bis dahin, viel Spaß!
