@@ -240,6 +240,6 @@ echo "alias claude='docker exec -it claude-code bash'" >> ~/.bashrc
 
 Und schon kannst du per `claude` die Session in deinem Container starten. Also vom Endgerät erst per `ssh <Username>@<NAS-IP>` aufs NAS und dann per `claude` in den Container - und dort lebt deine immer persönlich werdendere KI 😎.
 
-Bis hierher erstmal viel Spaß damit! Im nächsten Teil verbinde ich Strava mit der KI, sodass diese auch als mein Personal Trainer agieren kann. Da hierzu jedoch eine Strava App angelegt werden muss, wollte ich diesen Post nicht noch länger machen. Ich werde auch noch zeigen, wie du deine SSH Session per Key-Authentifizierung starten kannst, um nicht immer das Passwort anzugeben und [_n8n_](https://n8n.io/) steht auch auf der Liste.
+Bis hierher erstmal viel Spaß damit! Im nächsten Teil verbinde ich Strava mit der KI, sodass diese auch als mein Personal Trainer agieren kann. Da hierzu jedoch eine Strava App angelegt werden muss, wollte ich diesen Post nicht noch länger machen. Ich werde auch noch zeigen, wie du deine SSH Session per Key-Authentifizierung starten kannst, um nicht immer das Passwort anzugeben und [_n8n_](https://n8n.io/) steht auch auf der Liste. Und natürlich widmen wir uns auch den _Skills_, _Agents_ und _Commands_, damit die KI nicht nur Fähigkeiten besitzt, sondern auch weiß, was sie wie in welcher Situation tun soll.
 
 Coole Zeiten! Bis dahin, viel Spaß!
