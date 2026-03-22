@@ -55,7 +55,53 @@ Für Claude gibt es kein eigenes Image, aber wir können einen schlanken [Node C
 
 Beide Container lasse ich auf meinem NAS im selben Netzwerk laufen, das ich `ai-net` nenne.
 
-Hier mein `docker-compose.yaml`, beachte bitte die Inline-Kommentare. Ein paar Anpassungen müssten vorgenommen werden. Gerade beim Username und Passwort empfehle ich stark, einen zusätzlichen, lokalen Admin im Unifi Controller anzulegen, der ausschließlich hierfür verwendet wird. Denn es darf keine Zweifaktor-Authentifizierung eingeschaltet sein. Den Rest gern mit eigenem Setup anpassen.
+Allerdings möchte ich meinen Claude Container so vorbereiten, dass ich gewisse Pakete (`git`, `vim`, `nano`) und Claude nicht immer manuell nach jedem Neustart installieren muss. Deshalb will ich ein eigenes `Dockerfile` nutzen. Lege eine Datei namens `Dockerfile` (ohne Dateiendung) an. Teste per `id <USERNAME>` einmal, was deine UserID (UID) und deine GruppenID (GID) sind und dann befülle dein Dockerfile folgendermaßen:
+```bash
+FROM node:24-slim
+
+USER root
+
+ARG UID=<DEINE UID>
+ARG GID=<DEINE GID>
+
+# System-Pakete installieren
+RUN apt-get update && apt-get install -y \
+    curl bash git nano vim-nox \
+    && rm -rf /var/lib/apt/lists/*
+
+# Falls eine Gruppe mit id der GID bereits existiert, wird diese zu 9999 geändert (im Container okay)
+RUN if getent group ${GID} > /dev/null 2>&1; then \
+        groupmod -g 9999 $(getent group ${GID} | cut -d: -f1); \
+    fi && \
+    usermod -u ${UID} node && groupmod -g ${GID} node
+
+# User `node` auf eigene UID und GID ändern
+RUN usermod -u ${UID} node && groupmod -g ${GID} node
+
+# Claude als root installieren → landet in /root/.local/bin/claude
+RUN curl -fsSL https://claude.ai/install.sh | bash
+
+# Global verfügbar machen für alle User
+#RUN ln -s /root/.local/bin/claude /usr/local/bin/claude
+RUN cp /root/.local/bin/claude /usr/local/bin/claude && \
+    chmod 755 /usr/local/bin/claude
+
+# Ab hier als node-User
+USER node
+
+# PATH für node-User setzen (für interaktive Shells)
+RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/node/.bashrc
+```
+
+Wir installieren hier als `root` unsere Pakete und auch Claude. Claude wollen wir dann aber unter dem User `nano` ausführen, da dieser in meinem Fall direkt dieselbe UID besitzt, wie mein lokaler Nutzer auf meinem NAS. Wenn also Claude unter diesem Nutzer Dateien anlegt, hat mein NAS-User volle Rechte auf die Dateien auf dem NAS.
+
+Über dem `curl` Befehl in Zeile 11 (also Zeile 9) biegen wir dann die ID und die Gruppen-ID des node-Nutzers um:
+```
+# node-User auf deine NAS-UID anpassen
+RUN usermod -u ${UID} node && groupmod -g ${GID} node
+```
+
+Danach mein `docker-compose.yaml`, beachte bitte die Inline-Kommentare. Ein paar Anpassungen müssten vorgenommen werden. Gerade beim Username und Passwort empfehle ich stark, einen zusätzlichen, lokalen Admin im Unifi Controller anzulegen, der ausschließlich hierfür verwendet wird. Denn es darf keine Zweifaktor-Authentifizierung eingeschaltet sein. Den Rest gern mit eigenem Setup anpassen.
 ```yaml
 networks:
   ai-net:
@@ -95,8 +141,12 @@ services:
   # MCP-Verbindungen werden einmalig nach Installation konfiguriert (siehe README).
   # ---------------------------------------------------------------------------
   claude-code:
-    image: node:24-slim    # Node 24 ist LTS
-    user: "1000:10"        # UID:GID deines NAS-Users. So bekommen von Claude angelegte Dateien die korrekten Rechte
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UID: <DEINE UID>
+        GID: <DEINE GID>
     container_name: claude-code
     restart: unless-stopped
     stdin_open: true
@@ -104,7 +154,7 @@ services:
     working_dir: /claude-workspace  # In diesem Verzeichnis startet meine Session, wenn ich mich einlogge
     command: sleep infinity
     volumes:
-      - ./claude-code-home:/root                                  # Persistente Claude-Konfiguration
+      - ./claude-code-home:/home/node                             # Persistente Claude-Konfiguration
       - /volume1/@home/{USER}/claude-workspace:/claude-workspace  # Arbeitsverzeichnis für claude. Hier liegen alle Projekte. Ist auch das "working_dir" in Zeile 44
     depends_on:
       - unifi-mcp
@@ -125,6 +175,7 @@ Ich lege meine Dockerprojekte alle unter `/volume1/docker` ab, dieses also unter
 /volume1/docker/ai-net/
   |-- claude-code-home/
   |-- docker-compose.yaml # Meine oben gezeigte Datei
+  |-- Dockerfile          # Das Setup unserer node-Images
   |-- .env                # Hier speichere ich meine Unifi Zugangsdaten
 ```
 Nun kann in der Docker App auf dem NAS unter _Projekte_ ein neues Projekt angelegt werden. Als Name wähle ich `ai-net` und als Speicherort den gleichnamigen Ordner. Ich importiere die `docker-compose.yaml` (das sollte schon vorgeschlagen werden) und schon werden die beiden Container und das Netzwerk erstellt.
@@ -138,16 +189,7 @@ ssh <USERNAME>@<NAS-IP>           # Per SSH auf dem NAS einloggen
 docker exec -it claude-code bash  # Eine Shell-Sitzung im Container starten
 ```
 
-Nun solltest du nicht nur auf dem NAS sein, sondern eine Shell-Session im Container haben! Der Container ist wirklich schlank, weshalb wir anfangs eine erste Konfiguration durchführen müssen:
-
-```bash
-apt-get update && apt-get install -y curl bash git nano  # Installiert curl, bash, git und nano - die letzten beiden sind optional für dieses Setup
-curl -fsSL https://claude.ai/install.sh | bash           # Laut Claude Doku der empfohlene Weg, die CLI zu installieren
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc # So können wir den Befehl "claude" im Terminal nutzen
-source ~/.bashrc                                         # Alle Änderungen aktivieren, sodass "claude" verfügbar ist
-```
-
-Teste das Setup gern mit `claude --version`, was dir einen sinnvollen Output geben sollte! Wenn das so ist, meinen Glückwunsch, du hast Claude auf deinem NAS! 🎉
+Da wir im Vorfeld per Dockerfile bereits claude installiert haben, teste das Setup gern mit `claude --version`, was dir einen sinnvollen Output geben sollte! Wenn das so ist, meinen Glückwunsch, du hast Claude auf deinem NAS! 🎉
 
 ## Claude wird zur KI, die mich kennt
 
