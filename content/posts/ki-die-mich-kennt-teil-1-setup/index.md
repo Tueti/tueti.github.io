@@ -96,6 +96,7 @@ services:
   # ---------------------------------------------------------------------------
   claude-code:
     image: node:24-slim    # Node 24 ist LTS
+    user: "1000:10"        # UID:GID deines NAS-Users. So bekommen von Claude angelegte Dateien die korrekten Rechte
     container_name: claude-code
     restart: unless-stopped
     stdin_open: true
