@@ -93,13 +93,7 @@ USER node
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/node/.bashrc
 ```
 
-Wir installieren hier als `root` unsere Pakete und auch Claude. Claude wollen wir dann aber unter dem User `nano` ausführen, da dieser in meinem Fall direkt dieselbe UID besitzt, wie mein lokaler Nutzer auf meinem NAS. Wenn also Claude unter diesem Nutzer Dateien anlegt, hat mein NAS-User volle Rechte auf die Dateien auf dem NAS.
-
-Über dem `curl` Befehl in Zeile 11 (also Zeile 9) biegen wir dann die ID und die Gruppen-ID des node-Nutzers um:
-```
-# node-User auf deine NAS-UID anpassen
-RUN usermod -u ${UID} node && groupmod -g ${GID} node
-```
+Wir installieren hier als `root` unsere Pakete und auch Claude. Claude wollen wir dann aber unter dem User `nano` ausführen und da Claude später auch Dateien anlegen können soll, die wir auf dem NAS lesen wollen, braucht der lokale User `node` dieselbe UID und GID, wie unser Nutzer auf dem NAS. Denn dann werden die Dateien im Container auf diese IDs berechtigt und wir haben später keine Leseschwierigkeiten.
 
 Danach mein `docker-compose.yaml`, beachte bitte die Inline-Kommentare. Ein paar Anpassungen müssten vorgenommen werden. Gerade beim Username und Passwort empfehle ich stark, einen zusätzlichen, lokalen Admin im Unifi Controller anzulegen, der ausschließlich hierfür verwendet wird. Denn es darf keine Zweifaktor-Authentifizierung eingeschaltet sein. Den Rest gern mit eigenem Setup anpassen.
 ```yaml
