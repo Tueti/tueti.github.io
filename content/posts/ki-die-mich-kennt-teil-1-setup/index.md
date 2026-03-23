@@ -55,7 +55,15 @@ Für Claude gibt es kein eigenes Image, aber wir können einen schlanken [Node C
 
 Beide Container lasse ich auf meinem NAS im selben Netzwerk laufen, das ich `ai-net` nenne.
 
-Allerdings möchte ich meinen Claude Container so vorbereiten, dass ich gewisse Pakete (`git`, `vim`, `nano`) und Claude nicht immer manuell nach jedem Neustart installieren muss. Deshalb will ich ein eigenes `Dockerfile` nutzen. Lege eine Datei namens `Dockerfile` (ohne Dateiendung) an. Teste per `id <USERNAME>` einmal, was deine UserID (UID) und deine GruppenID (GID) sind und dann befülle dein Dockerfile folgendermaßen:
+Allerdings möchte ich unseren Claude Container so vorbereiten, dass wir gewisse Pakete (`git`, `vim`, `nano`) und Claude nicht immer manuell nach jedem Neustart installieren müssen. Deshalb will ich ein eigenes `Dockerfile` nutzen. Hierfür legen wir eine Datei namens `Dockerfile` (ohne Dateiendung) an und prüfen per SSH auf dem NAS mit `id <USERNAME>` einmal, was unsere UserID (UID) und GruppenID (GID) sind. Diese sind notwendig, da Claude später Dateien anlegen soll. Damit auch unser lokaler Nutzer auf dem NAS Zugriff auf diese Dateien bekommt, möchte ich, dass der Nutzer `node` (unter diesem wird Claude später laufen) im Container dieselbe UID und GID besitzt, wie ebendieser NAS-Nutzer auf dem NAS. Dann sind die Berechtigen der Datei direkt auf die richtige ID geschlüsselt und funktionieren.
+
+Also erstmal:
+```bash
+ssh <USERNAME>@<NAS-IP>
+ip <USERNAME>
+```
+
+Sobald wir die IDs haben, können wir das Dockerfile anlegen:
 ```bash
 FROM node:24-slim
 
@@ -93,9 +101,9 @@ USER node
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/node/.bashrc
 ```
 
-Wir installieren hier als `root` unsere Pakete und auch Claude. Claude wollen wir dann aber unter dem User `nano` ausführen und da Claude später auch Dateien anlegen können soll, die wir auf dem NAS lesen wollen, braucht der lokale User `node` dieselbe UID und GID, wie unser Nutzer auf dem NAS. Denn dann werden die Dateien im Container auf diese IDs berechtigt und wir haben später keine Leseschwierigkeiten.
+Das Dockerfile nutzt das Node-Image als Basis und installiert dann die von mir gewünschten Pakete direkt mit. Danach werden UID und GID des Nutzers `node` auf unsere UID und GID gebogen - sollte die GID bereits vergeben sein, wird diese im Container auf 9999 gebogen. Das ist für unseren Anwendungsfall in Ordnung. Danach wird Claude installiert und zum User `node` gewechselt, um die PATH-Variable anzupassen und `claude` als Befehl in der Kommandozeile verfügbar zu machen.
 
-Danach mein `docker-compose.yaml`, beachte bitte die Inline-Kommentare. Ein paar Anpassungen müssten vorgenommen werden. Gerade beim Username und Passwort empfehle ich stark, einen zusätzlichen, lokalen Admin im Unifi Controller anzulegen, der ausschließlich hierfür verwendet wird. Denn es darf keine Zweifaktor-Authentifizierung eingeschaltet sein. Den Rest gern mit eigenem Setup anpassen.
+Sobald wir unser angepasstes Image-Setup haben, kann das `docker-compose.yaml` angelegt werden. Beachte hierbei bitte die Inline-Kommentare. Ein paar Anpassungen müssten vorgenommen werden. Gerade beim Username und Passwort empfehle ich stark, einen zusätzlichen, lokalen Admin im Unifi Controller anzulegen, der ausschließlich hierfür verwendet wird. Denn es darf keine Zweifaktor-Authentifizierung eingeschaltet sein. Den Rest gern mit eigenem Setup anpassen.
 ```yaml
 networks:
   ai-net:
@@ -156,8 +164,6 @@ services:
       - ai-net
 ```
 
-Mit diesem Setup ziehst du zwei Container hoch. Der `claude-code` Container enthält aber noch keine Claude CLI, die müssen wir gleich nachziehen.
-
 Du kannst natürlich außerdem im `claude-code` Container weitere Ordner in deinen `volumes` angeben, auf die Claude Zugriff haben soll. Hänge für den Anfang gern `:ro` an das Mapping, um diese Zugriffe erstmal auf `read-only` zu beschränken. So kann claude nichts löschen.
 
 ## Das NAS vorbereiten
@@ -176,7 +182,7 @@ Nun kann in der Docker App auf dem NAS unter _Projekte_ ein neues Projekt angele
 
 ## Claude zum Leben erwecken
 
-In den Einstellungen wirst du vermutlich noch SSH aktivieren müssen, damit du dich per SSH auf deinem NAS einloggen kannst. Ob du SSH dauerhaft aktiviert haben möchtest, bleibt dir überlassen.
+Es geht wieder per SSH aufs NAS und dann in die Shell des Containers.
 
 ```bash
 ssh <USERNAME>@<NAS-IP>           # Per SSH auf dem NAS einloggen
