@@ -2,8 +2,8 @@
 author: ["Chrischi"]
 title: "KI, die mich kennt - Teil 1: Claude auf dem NAS einrichten"
 slug: "ki-die-mich-kennt-claude-auf-nas"
-date: "2026-03-17"
-draft: false
+date: "2026-03-29"
+draft: true
 description: "Wie ich Claude Code per Docker auf meinem NAS installiere und per MCP-Servern mit Unifi, GitHub und Context7 verbinde — für eine KI, die mich wirklich kennt."
 summary: "Eine persönliche KI, die Zugriff auf das Heimnetz, GitHub und aktuelle Entwicklerdokumentation hat — erreichbar von MacBook, iPad und iPhone. Dieser Post zeigt, wie man Claude Code per Docker auf dem NAS einrichtet und mit MCP-Servern ausstattet, die aus einem generischen CLI-Tool einen echten persönlichen Assistenten machen."
 ShowToc: true
