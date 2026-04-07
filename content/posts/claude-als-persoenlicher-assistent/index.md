@@ -34,7 +34,7 @@ Das NAS kann bei dir auch etwas anderes sein, ein VPS, Raspberry Pi, dein Laptop
 
 ## Zielarchitektur für die KI, die mich kennt
 
-Meine zentrale KI wird [Claude Code](https://code.claude.com/docs/de/quickstart), das CLI Tool von [Claude](https://claude.ai/). Um Claude als Konsolentool zu nutzen, brauchst du zwingend mindestens ein _Pro_-Abo oder einen abrechnungsfähigen API Key. Mit dem [Gemini CLI](https://geminicli.com/), dem [Mistral CLI](https://mistral.ai/pricing) oder der [Ollama Cloud](https://ollama.com/) gibt es sehr gute Alternativen, die wirklich großzügige Gratis-Tiers oder erschwingliche Monatspreise besitzt. Mein Tutorial basiert auf "Claude", das Konzept ist aber mit beiden KIs umsetzbar. Die Befehle wären ein wenig angepasst - aber nichts, was eine KI für dich umbiegen könnte 😉.
+Meine zentrale KI wird [Claude Code](https://code.claude.com/docs/de/quickstart), das CLI Tool von [Claude](https://claude.ai/). Um Claude als Konsolentool zu nutzen, brauchst du zwingend mindestens ein _Pro_-Abo oder einen abrechnungsfähigen API Key. Mit dem [Gemini CLI](https://geminicli.com/), dem [Mistral CLI](https://mistral.ai/pricing) oder der [Ollama Cloud](https://ollama.com/) gibt es sehr gute Alternativen, die wirklich großzügige Gratis-Tiers oder erschwingliche Monatspreise besitzen. Mein Tutorial basiert auf "Claude", das Konzept ist aber mit beiden KIs umsetzbar. Die Befehle wären ein wenig angepasst - aber nichts, was eine KI für dich nicht umbiegen könnte 😉.
 
 Wie kann ich Claude _personalisieren_? Wie mache ich aus Claude eine KI, die mich kennt? Als erstes muss ich Claude bestimmte _Fähigkeiten ermöglichen_. Es wäre wirklich cool, wenn Claude ...
 - ... auf meine lokalen Dateien zugreifen kann (klar, ein No-Brainer).
