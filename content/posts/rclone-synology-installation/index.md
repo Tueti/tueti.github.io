@@ -15,7 +15,7 @@ cover:
   image: featured-image.webp
   caption: "Erstellt von ChatGPT"
 sitemap:
-  priority: 0.8
+  priority: 0.6
 ---
 
 **Update 02.07.2025:** Dieser Beitrag ist dauerhaft von meiner alten Domain "chrischisblog.de" umgezogen. Den Grund für den Umzug habe ich in [diesem Post](/ipad-blog-workflow-vom-schreiben-bis-zur-veroeffentlichung) erklärt.

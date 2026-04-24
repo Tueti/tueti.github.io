@@ -13,6 +13,8 @@ categories: ["Tech Tipps", "Tutorials", "Ugreen NAS"]
 cover:
   image: featured-image.webp
   caption: "Erstellt von Nanobanana/Gemini"
+sitemap:
+  priority: 0.7
 ---
 
 KI ist aktuell das Thema, das mich am meisten fasziniert. Ich verfolge die Entwicklungen ganz aktiv, die neusten Features von Anthropic, Google und OpenAI. Tools, wie [OpenClaw](https://openclaw.ai/), die den Markt erschüttern und eine noch nie zuvor gesehene Popularität erlangen (wenn man [GitHub Stars](https://github.com/openclaw/openclaw) als Maßstab nimmt). Alle sagen, es würde unser Leben verändern, aber ich _sehe_, wie dies bereits geschieht. Wie KI im Beruf integriert wird und Berufsfelder sich gerade neu justieren müssen. Nicht jeder kann oder will mitgehen. Super spannende Zeit.

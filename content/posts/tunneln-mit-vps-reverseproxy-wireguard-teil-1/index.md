@@ -15,7 +15,7 @@ cover:
   image: featured-image.webp
   caption: Der Tunnel zur Cloud - Erstellt von ChatGPT
 sitemap:
-  priority: 0.8
+  priority: 0.6
 ---
 
 ## Wieso nicht einfach Cloudflare?

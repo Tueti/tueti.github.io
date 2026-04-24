@@ -15,7 +15,7 @@ cover:
   image: featured-image.webp
   caption: Der Tunnel zur Cloud - Erstellt von ChatGPT
 sitemap:
-  priority: 0.8
+  priority: 0.6
 ---
 
 Lasst uns direkt einsteigen, wo wir [letztes Mal](/nas-als-private-cloud-1-eigener-tunnel-mit-virtuellem-privaten-server-reverse-proxy-und-wireguard/) aufgehört haben. Unser VPS steht und WireGuard inklusive aller notwendigen Einstellungen (für Interface und Routing) sind eingerichtet. Außerdem haben wir Caddy und Docker installiert und WireGuard-UI als Container hochgezogen. Caddy läuft auch mit der ersten `reverse_proxy` Regel und wir konnten WireGuard-UI per eigens definierter Subdomain öffnen.
