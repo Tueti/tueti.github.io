@@ -1,82 +1,44 @@
-# CLAUDE.md
+# Repository Guidelines
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Project Structure & Module Organization
 
-## Project Overview
+This repository contains the German-language Hugo site for `tueti.space`. Site configuration lives in `hugo.yaml`. Articles are leaf bundles under `content/posts/<slug>/`; keep each post's `index.md`, `featured-image.webp`, and other local images together. Standalone pages and taxonomy definitions also live in `content/`. Site-specific templates belong in `layouts/`, custom styling in `assets/css/extended/custom.css`, and files copied unchanged to the published site in `static/`.
 
-This is a Hugo static site blog at [tueti.space](https://tueti.space) — a German-language personal blog about tech, photography, and other topics. The PaperMod theme is included as a git submodule.
+`themes/PaperMod/` is a Git submodule. Do not edit it directly; override templates in the root `layouts/` tree or extend styles under `assets/`. Generated output in `public/` is not source and should not be committed.
 
-## Common Commands
+## Build, Test, and Development Commands
 
-> ⚠️ Hugo muss lokal installiert sein — auf manchen Systemen (z.B. NAS) ggf. nicht verfügbar. Build läuft via CI/CD (`pages.yml`).
+- `git submodule update --init --recursive` installs the PaperMod theme after cloning.
+- `hugo server -D` starts a live-reloading local server and includes draft posts.
+- `hugo --gc --minify` performs the production build used for validation.
+- `hugo new content posts/<slug>/index.md` creates a draft from `archetypes/default.md`.
+- `/review-post` runs the repository's structured editorial and SEO review defined in `.claude/commands/review-post.md`.
 
-```bash
-# Start local development server with live reload
-hugo server
+Use Hugo Extended; CI currently builds with version `0.164.0`. A push to `main` triggers `.github/workflows/pages.yml` and deploys to GitHub Pages.
 
-# Build for production (minified)
-hugo --minify
+## Content, Style & Naming Conventions
 
-# Create a new post
-hugo new content posts/<slug>/index.md
-```
+Use lowercase, hyphen-separated directory names and URL slugs, for example `content/posts/mein-neuer-beitrag/`. Write posts in German and follow neighboring YAML front matter. Include `author`, `title`, `slug`, `date`, `draft`, `description`, `summary`, `tags`, `categories`, `series`, and a `cover` block when applicable. New articles remain drafts until explicitly ready. Prefer WebP images, descriptive lowercase filenames, meaningful alt text, and relative paths within the page bundle.
 
-## Deployment
+Match existing formatting in YAML, HTML, CSS, and Markdown: two-space YAML indentation, readable template blocks, and focused overrides. Avoid reformatting unrelated files.
 
-Deployment is handled automatically on push to `main` via **`pages.yml`** — builds and deploys to GitHub Pages.
+## Theme Overrides & Extensions
 
-## Content Structure
+Keep customizations outside the PaperMod submodule. Important overrides are:
 
-Posts live in `content/posts/<slug>/` as page bundles — each post is a directory containing `index.md` and any associated images (`.webp` preferred):
+- `layouts/baseof.html` for the shared page shell and theme initialization.
+- `layouts/custom_page.html` for Impressum and Über mich.
+- `layouts/indexed_archive.html` for the category, tag, and series index.
+- `layouts/rss.xml` for the customized feed.
+- `layouts/_partials/footer.html` and `layouts/_partials/templates/opengraph.html` for footer and metadata behavior.
+- `layouts/_shortcodes/image_with_caption_and_link.html` for linked, captioned images.
 
-```
-content/posts/my-post-slug/
-  index.md
-  featured-image.webp
-  other-image.webp
-```
+Use the shortcode as `{{< image_with_caption_and_link src="image.webp" alt="Alt text" caption="Caption" link="https://example.com" >}}`. When PaperMod changes, rebase complete template copies against upstream and retain only documented project-specific differences.
 
-Post front matter example:
-```yaml
----
-author: ["Chrischi"]
-title: "Post Title"
-slug: "url-slug"
-date: "2025-01-01"
-draft: false
-description: "Short description for meta tags"
-summary: "Longer summary shown in post lists"
-tags: ["Tag1", "Tag2"]
-categories: ["Category"]
-series: ["Series Name"]
-cover:
-  image: featured-image.webp
-  caption: "Caption text"
----
-```
+## Testing Guidelines
 
-## Custom Layouts & Extensions
+There is no dedicated automated test suite or coverage target. Before submitting, run `hugo --gc --minify`; warnings, broken shortcodes, or build failures must be resolved. Also preview changed pages with `hugo server -D` and check navigation, responsive layout, images, links, code blocks, and both light and dark themes when styling changes.
 
-The site overrides/extends PaperMod with:
+## Commit & Pull Request Guidelines
 
-- **`layouts/custom_page.html`** — Custom page type for static pages (Impressum, Über mich)
-- **`layouts/indexed_archive.html`** — Custom indexed archive page
-- **`layouts/rss.xml`** — Customized RSS feed template
-- **`layouts/_partials/footer.html`** — Custom footer
-- **`layouts/_partials/templates/opengraph.html`** — Hugo-compatible OpenGraph override
-- **`layouts/_shortcodes/image_with_caption_and_link.html`** — Custom shortcode for images with optional link and caption
-
-To use the image shortcode in posts:
-```
-{{< image_with_caption_and_link src="image.webp" alt="Alt text" caption="Caption" link="https://example.com" >}}
-```
-
-- **`assets/css/extended/custom.css`** — Custom CSS extending PaperMod styles
-
-## Custom Commands
-
-- **`/review-post`** — Führt ein strukturiertes Lektorat & SEO-Review eines Posts durch (`.claude/commands/review-post.md`)
-
-## Theme
-
-PaperMod is installed as a git submodule in `themes/PaperMod/`. Do not edit theme files directly — use the override/extension mechanisms above instead. When cloning, initialize submodules with `git clone --recurse-submodules` or run `git submodule update --init` afterwards.
+History uses short, imperative, change-focused subjects, often in German (for example, `typos fix` or `Neuer Beitrag`). Keep each commit scoped to one content or site change. Pull requests should explain what changed, identify affected pages, confirm a successful Hugo build, and include before/after screenshots for visual changes. Link an issue when one exists and call out draft-state, permalink, configuration, or submodule changes explicitly.
