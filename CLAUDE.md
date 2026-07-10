@@ -60,11 +60,11 @@ cover:
 The site overrides/extends PaperMod with:
 
 - **`layouts/custom_page.html`** — Custom page type for static pages (Impressum, Über mich)
-- **`layouts/_default/indexed_archive.html`** — Custom indexed archive page
-- **`layouts/_default/rss.xml`** — Customized RSS feed template
-- **`layouts/partials/footer.html`** — Custom footer
-- **`layouts/partials/extend_head.html`** — Head tag extensions
-- **`layouts/shortcodes/image_with_caption_and_link.html`** — Custom shortcode for images with optional link and caption
+- **`layouts/indexed_archive.html`** — Custom indexed archive page
+- **`layouts/rss.xml`** — Customized RSS feed template
+- **`layouts/_partials/footer.html`** — Custom footer
+- **`layouts/_partials/templates/opengraph.html`** — Hugo-compatible OpenGraph override
+- **`layouts/_shortcodes/image_with_caption_and_link.html`** — Custom shortcode for images with optional link and caption
 
 To use the image shortcode in posts:
 ```
