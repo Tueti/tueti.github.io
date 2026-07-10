@@ -77,7 +77,7 @@ Die Umstellung erfolgt in zwei Schritten:
 
 2. Fahre die VM vollständig herunter. Öffne anschließend im VM Manager ihre Netzwerkeinstellungen und ändere den Modus von **Bridged Mode – macvtap** auf **Bridged Mode – Linux Bridge**. Danach kannst du die VM wieder starten.
 
-Die Bezeichnungen können sich mit späteren UGOS-Versionen ändern. In meinem Fall lief das NAS mit 1.17.00095.
+Die Bezeichnungen können sich mit späteren UGOS-Versionen ändern. In meinem Fall lief das NAS mit 1.17.0.0095.
 
 ## Prüfen, ob die Umstellung funktioniert hat
 
