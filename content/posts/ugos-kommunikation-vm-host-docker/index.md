@@ -1,18 +1,18 @@
 ---
 author: ["Chrischi"]
-title: "Hallo Host: Wie man Virtuelle Maschinen auf dem Ugreen NAS mit dem Host sprechen lässt"
-slug: ""
+title: "UGOS: Wenn macvtap Host und VM voneinander trennt"
+slug: "ugos-macvtap-host-vm-linux-bridge"
 date: "2026-07-10"
-draft: true
-description: ""
-summary: ""
+draft: false
+description: "Eine UGOS-VM ist im LAN erreichbar, aber nicht vom NAS oder von Docker-Diensten. Ursache ist macvtap – eine Linux Bridge löst das Problem."
+summary: "Meine Home-Assistant-VM war im Netzwerk erreichbar – nur das Ugreen NAS selbst und seine Docker-Dienste konnten nicht mit ihr kommunizieren. Beinahe hätte mich die Fehlersuche zu Proxmox getrieben. Dabei steckte hinter dem Problem lediglich der standardmäßig verwendete macvtap-Netzwerkmodus."
 ShowToc: true
 TocOpen: false
 tags: ["VM", "Docker", "Ugreen", "UGOS"]
 categories: ["Ugreen NAS", "Tutorials"]
 cover:
-  image: 
-  caption: ""
+  image: featured-image.webp
+  caption: "Image by Codex"
 sitemap:
   priority: 0.5
 ---
@@ -27,7 +27,7 @@ Also begann das Debugging.
 
 ## Die Symptome
 
-Zuerst dachte ich an ein internes Routing-Problem zwischen Docker und der VM auf dem NAS. Docker-Bridge- & Host-Netzwerke, die Netzwerkkonfiguration einer VM, irgendwo hier vermutete ich die Ursache. Aber jedes gute Debugging beginnt mit einer sauberen Analyse. Was ist der Ausgangszustand?
+Zuerst dachte ich an ein internes Routing-Problem zwischen Docker und der VM auf dem NAS. Docker-Bridge- und Host-Netzwerke, die Netzwerkkonfiguration einer VM, irgendwo hier vermutete ich die Ursache. Aber jedes gute Debugging beginnt mit einer sauberen Analyse. Was ist der Ausgangszustand?
 
 - VM erreichbar von jedem anderen Gerät im LAN
 - Host-NAS erreicht VM _nicht_
@@ -35,71 +35,60 @@ Zuerst dachte ich an ein internes Routing-Problem zwischen Docker und der VM auf
 - VM erreicht die Docker-Container auf dem Host _nicht_
 - mDNS-Auflösung von `homeassistant.local` funktioniert nicht
 
-Aha! Das NAS selbst findet die Route nicht, das Problem liegt _vor_ den Docker Containern. Was mich anfangs nur stutzig machte, ist Teil des größeren Problems: `homeassistant.local` wird nicht aufgelöst, weil das NAS die Route zur VM nicht auflösen kann.
+Aha! Bereits das NAS selbst konnte die VM nicht erreichen. Das Problem lag also nicht zuerst bei Docker, sondern bei der Netzwerkanbindung zwischen Host und VM.
 
-## Die Ursache
+## Warum der UGOS-Host die VM nicht erreicht
 
-Das Problem scheint also zu sein, dass sowohl das NAS als auch die virtuelle Maschine am selben physischen Netzwerk-Interface hängen und sich somit nicht gegenseitig sehen können. Geräte, die im über andere Anschlüsse im selben LAN sind, können beide Geräte sehen, aber die VM und das NAS (der Host) können einander über diese Schnittstelle nicht erreichen.
+Die Liste machte ziemlich schnell deutlich: Das Problem lag nicht zuerst bei Docker. Bereits das NAS selbst konnte die VM nicht erreichen, obwohl sie für andere Geräte im LAN ganz normal erreichbar war.
+
+Der Grund dafür war der Netzwerkmodus der VM. UGOS hatte sie über **macvtap** mit dem physischen Netzwerkanschluss des NAS verbunden. Dabei erhält die VM eine eigene virtuelle Netzwerkkarte samt eigener MAC-Adresse. Für meinen Mac, mein Smartphone und andere Geräte im LAN sieht sie deshalb wie ein eigenständiges Gerät aus.
 
 ![Blinder Fleck für Geräte am selben NIC](./macvtap_ohne_bridge_host_isolation.svg)
 
-## Was macvtap damit zu tun hat
+Der Haken: Der Host kann eine über macvtap angebundene VM standardmäßig nicht über dasselbe physische Interface erreichen. Der Netzwerkverkehr des Hosts wird nicht zurück in das macvtap-Interface der VM geleitet.
 
-UGOS verbindet virtuelle Maschinen standardmäßig über **macvtap** mit dem Netzwerk. Dabei erhält die VM eine eigene virtuelle Netzwerkkarte samt eigener MAC-Adresse, die direkt an die physische Netzwerkkarte des NAS gekoppelt ist. Für andere Geräte im LAN wirkt die VM dadurch wie ein ganz normales, eigenständiges Gerät.
+Genau deshalb war Home Assistant aus dem restlichen LAN erreichbar, vom NAS selbst aber nicht. In meinem Setup betraf das auch die Docker-Container, deren Dienste über das Netzwerk des NAS angebunden waren.
 
-Der Aufbau ist vergleichsweise schlank: Statt ein virtuelles TAP-Interface mit einer Linux Bridge zu verbinden, hängt macvtap die VM direkt an das physische Interface. Der Traffic läuft weiterhin durch den Linux-Kernel – es handelt sich also nicht um echtes Hardware-Passthrough –, aber eine zusätzliche virtuelle Switch-Schicht entfällt.
+Macvtap war also nicht kaputt oder falsch konfiguriert. Der Netzwerkmodus passte nur nicht zu meinem Anwendungsfall: Home Assistant sollte schließlich auch mit Diensten kommunizieren, die auf demselben NAS liefen.
 
-Genau hier liegt allerdings auch der Haken: **Der Host kann eine macvtap-VM standardmäßig nicht über dasselbe physische Interface erreichen.**
+## Was eine Linux Bridge anders macht
 
-Das NAS und die VM teilen sich zwar dieselbe Netzwerkkarte, hängen intern aber nicht an einem gemeinsamen virtuellen Switch. Pakete vom Host zur VM werden deshalb nicht einfach innerhalb des Systems zurückgeleitet. Sie müssten erst über das physische Netzwerk laufen – und selbst wenn der externe Switch sie zurücksendet, werden sie auf diesem Weg nicht wieder zur macvtap-VM zugestellt.
+Eine Linux Bridge funktioniert vereinfacht wie ein virtueller Switch im NAS. Die physische Netzwerkkarte, der Host und die virtuellen Maschinen hängen dabei an derselben Bridge.
 
-Andere Geräte im LAN sind davon nicht betroffen. Sie senden ihre Pakete über einen anderen Switch-Port an die Netzwerkkarte des NAS, wo macvtap sie der VM zuordnen kann. Deshalb war Home Assistant von meinem Mac oder Smartphone erreichbar, vom NAS selbst aber nicht.
-
-Da Docker-Container ihre Verbindung ebenfalls über den Host beziehen, betrifft die Einschränkung auch sie. Aus Sicht meines UniFi-Containers war die Home-Assistant-VM damit genauso unerreichbar wie aus Sicht von UGOS selbst. Auch das Problem mit `homeassistant.local` passte in dieses Bild: Die für mDNS benötigte Kommunikation zwischen Host und VM wurde durch dieselbe Trennung verhindert.
-
-macvtap war also nicht falsch konfiguriert. Es tat exakt das, wofür es gebaut wurde – nur passte dieses Verhalten überhaupt nicht zu meinem Anwendungsfall. Home Assistant sollte schließlich mit Diensten kommunizieren, die direkt auf demselben NAS liefen.
-
-## Was eine echte Linux Bridge anders macht
-
-Eine Linux Bridge arbeitet vereinfacht wie ein virtueller Switch innerhalb des NAS. Die physische Netzwerkkarte, der Host und die virtuellen Maschinen hängen dabei jeweils an einem eigenen Port dieser Bridge.
-
-Die VM wird nicht mehr direkt über macvtap an die physische NIC gekoppelt. Stattdessen erhält sie ein virtuelles TAP-Interface, das als eigener Port an der Bridge hängt. Auch die physische Netzwerkkarte wird Teil dieser Bridge. Die IP-Adresse des NAS liegt anschließend üblicherweise nicht mehr direkt auf der physischen NIC, sondern auf dem Bridge-Interface.
-
-Vereinfacht sieht der Aufbau dann so aus:
+Die VM wird nicht mehr direkt per macvtap an die physische Netzwerkkarte gekoppelt. Stattdessen verbindet ein virtuelles TAP-Interface die VM mit der Bridge. Auch die IP-Adresse des NAS liegt anschließend üblicherweise auf diesem Bridge-Interface.
 
 ![Kommunikation mit virtuellem Switch](./vbr_lan1_linux_bridge_topologie.svg)
 
-Damit befinden sich Host und VM tatsächlich im selben virtuellen Layer-2-Netzwerk. Die Bridge lernt, hinter welchem Port welche MAC-Adresse erreichbar ist, und leitet die Ethernet-Frames entsprechend weiter. Pakete zwischen NAS und VM müssen das Gerät dabei gar nicht erst verlassen. Sie werden direkt innerhalb des Linux-Kernels von einem Bridge-Port zum anderen transportiert.
+Damit können Pakete zwischen NAS und VM direkt innerhalb des Linux-Kernels weitergeleitet werden. Sie müssen das NAS nicht erst über die physische Netzwerkkarte verlassen.
 
-Genau das fehlte bei macvtap.
+Für mein Setup war das der entscheidende Unterschied: Das NAS konnte anschließend die Home-Assistant-VM erreichen und umgekehrt. Auch meine Docker-Dienste waren über die NAS-IP wieder erreichbar, sofern ihre Netzwerk- und Firewallregeln den Zugriff erlaubten.
 
-Das NAS kann die Home-Assistant-VM nun direkt erreichen – und umgekehrt. Da die Docker-Container über den Netzwerk-Stack des Hosts beziehungsweise dessen Docker-Netzwerke angebunden sind, können auch sie mit der VM kommunizieren, sofern keine Firewall- oder Docker-Regel den Zugriff blockiert.
+Es geht also nicht darum, dass macvtap grundsätzlich schlecht und eine Linux Bridge grundsätzlich besser ist. Macvtap reicht aus, wenn eine VM hauptsächlich mit anderen Geräten im LAN kommunizieren soll. Sobald Host, VM und lokale Dienste miteinander sprechen müssen, ist eine Linux Bridge meist die passendere Wahl.
 
-Auch Broadcasts und Multicasts können innerhalb der gemeinsamen Bridge weitergeleitet werden. Das ist unter anderem für Protokolle wie mDNS relevant, über die Namen wie `homeassistant.local` gefunden werden. Ob die Namensauflösung tatsächlich bis in einen bestimmten Docker-Container funktioniert, hängt zusätzlich von dessen Netzwerkmodus ab. Das grundlegende Hindernis zwischen Host und VM ist mit der Bridge aber beseitigt.
+## Die passenden Einstellungen in UGOS
 
-Der Unterschied ist damit weniger „macvtap schlecht, Linux Bridge gut“, sondern eine Frage des Einsatzzwecks: macvtap ist schlank und ausreichend, wenn eine VM nur mit dem externen Netzwerk kommunizieren muss. Eine Linux Bridge ist die passendere Wahl, sobald Host, VMs und lokale Dienste miteinander sprechen sollen.
+In meiner UGOS-Pro-Version taucht der Begriff „Brücke“ an zwei verschiedenen Stellen auf. Das ist etwas verwirrend, weil nur eine der Einstellungen für virtuelle Maschinen relevant ist.
 
-## Die UGOS-Falle
+Im Control Panel unter **Netzwerk** gibt es eine "Normale Netzwerkbrücke" und eine "Virtuelle Netzwerkbrücke". Für dieses Problem wird die **Virtuelle Netzwerkbrücke** benötigt. Sie stellt auf dem NAS die Linux Bridge bereit, mit der anschließend auch die VM verbunden werden kann.
 
-UGOS bietet beide Konzepte an, aber versteckt sie hinter zwei verschiedenen Einstellungen, die auf den ersten Blick ähnlich klingen.
+Die Umstellung erfolgt in zwei Schritten:
 
-Im Control Panel unter Netzwerk gibt es zwei "Brücken"-Konzepte: "Normale Netzwerkbrücke" und "Virtuelle Netzwerkbrücke". Die "Normale Netzwerkbrücke" ist NIC-Sharing für am NAS-Port direkt angeschlossene Endgeräte – ein Mini-Switch-Modus, hat mit VMs nichts zu tun und ist beim VM-Problem irrelevant. Die "Virtuelle Netzwerkbrücke" ist das, was du brauchst: sie aktiviert die Linux-Bridge-Funktionalität auf NAS-Ebene und ermöglicht erst, dass VMs in einer echten Bridge laufen können.
+1. Öffne im Control Panel den Bereich **Netzwerk** und aktiviere die **Virtuelle Netzwerkbrücke**. Dabei wird die Netzwerkanbindung des NAS kurz unterbrochen. Ich würde die Änderung deshalb nicht gerade während eines Streams oder einer größeren Datenübertragung durchführen.
 
-Im VM Manager wählst du dann pro VM-Subnetz zwischen "Bridged Mode – macvtap" und "Bridged Mode – LinuxBridge". Der Default beim Anlegen einer VM: macvtap.
+2. Fahre die VM vollständig herunter. Öffne anschließend im VM Manager ihre Netzwerkeinstellungen und ändere den Modus von **Bridged Mode – macvtap** auf **Bridged Mode – Linux Bridge**. Danach kannst du die VM wieder starten.
 
-Warum der Default macvtap ist, kann ich nur vermuten. Vermutlich Performance-Optimierung für den typischen NAS-Use-Case: "Diese VM ist eine Box im LAN, niemand auf dem NAS muss mit ihr reden, also nehmen wir den effizienteren Pfad." Für die meisten NAS-Nutzer, die eine Windows-VM oder einen einzelnen Linux-Server als isolierte LAN-Maschine betreiben, ist das auch völlig ausreichend.
+Die Bezeichnungen können sich mit späteren UGOS-Versionen ändern. In meinem Fall lief das NAS mit 1.17.00095.
 
-Für Homelab-Setups mit Docker-Containern auf dem NAS, die mit der VM kommunizieren sollen, oder mit Tools wie einem Twingate-Connector, der vom Host aus VM-Services erreichbar machen soll, oder mit Service-Discovery via mDNS – genau falsch.
+## Prüfen, ob die Umstellung funktioniert hat
 
-## Die Lösung
+Nach dem Start der VM habe ich die vier Verbindungen erneut getestet:
 
-Zwei Schritte, in dieser Reihenfolge:
+- Das NAS konnte die IP-Adresse der Home-Assistant-VM erreichen.
+- Home Assistant konnte die über die NAS-IP veröffentlichten Dienste meiner Docker-Container erreichen.
+- Der UniFi-Controller wurde in Home Assistant gefunden und ließ sich einrichten.
+- Home Assistant konnte über `homeassistant.local` sauber erreicht werden.
 
-1. NAS-Control Panel → Netzwerk → "Virtuelle Netzwerkbrücke" aktivieren. Das ändert das System-Networking: die physische NIC wandert in eine Linux Bridge, der Host bekommt seine IP auf der Bridge statt direkt auf der NIC. Kurzer Netzwerkaussetzer von wenigen Sekunden während der Umstellung. Mach das nicht, während jemand vom NAS streamt.
-
-2. VM Manager → Netzwerk → VM-Subnetz auf "Bridged Mode – LinuxBridge" stellen. Die VM komplett herunterfahren und neu starten – Reboot reicht hier explizit nicht, weil der Network-Detach-Attach beim Mode-Wechsel sonst nicht greift.
-
-Danach: Host erreicht VM. Container erreichen VM. mDNS funktioniert. Saga zu Ende.
+Die Linux Bridge beseitigt zunächst die entscheidende Trennung zwischen NAS und VM.
 
 ## Lesson Learned
 
@@ -107,12 +96,8 @@ Die eigentliche Lektion ist nicht "macvtap ist böse" – es ist ein legitimes K
 
 **Bevor du strukturelle Änderungen anstößt – Hypervisor wechseln, Architektur umbauen, Migration planen – prüf die Default-Konfig deines aktuellen Stacks.**
 
-Ich war ernsthaft dabei, Proxmox zu installieren, weil ich UGOS-Networking für strukturell kaputt hielt. Die Häufung von Symptomen – Host erreicht VM nicht, Container erreichen VM nicht, mDNS funktioniert nicht, jeder neue Service braucht einen Workaround – sah aus wie ein Muster, das den Wechsel rechtfertigt. Tatsächlich war es genau ein Dropdown im Control Panel, kombiniert mit einem Verhalten des Kernels, das in der UGOS-Doku nicht explizit gemacht wird.
+Ich war ernsthaft dabei, Proxmox zu installieren, weil ich UGOS-Networking für strukturell kaputt hielt. Die Häufung der Symptome – der Host erreichte die VM nicht, lokale Container-Dienste waren aus der VM nicht erreichbar und die automatische Erkennung funktionierte nicht zuverlässig – sah nach einem grundsätzlichen Problem aus. Tatsächlich waren es zwei Netzwerkeinstellungen, kombiniert mit einem Verhalten des Kernels, das in der UGOS-Dokumentation nicht deutlich erklärt wird.
 
 Die Frage, die ich mir früher hätte stellen sollen: Welcher Bridge-Mode ist eigentlich aktiv? Statt direkt nach Workarounds und Migration zu denken.
 
-Beim nächsten "Host erreicht VM nicht"-Symptom auf einer NAS-Plattform ist die erste Frage: macvtap oder LinuxBridge? Spart vermutlich ein paar Wochenenden Hypervisor-Migration.
-
----
-
-*Setup: UGREEN DXP4800 Plus, UGOS Pro, HAOS in VM, Docker-Stacks via Container Manager. Der gleiche Mechanismus existiert auf anderen NAS-Plattformen (Synology, QNAP, Asustor) mit teils anderen Default-Modi – Diagnose-Frage bleibt aber identisch.*
+Beim nächsten "Host erreicht VM nicht"-Symptom auf einer NAS-Plattform ist die erste Frage: macvtap oder Linux Bridge? Spart vermutlich ein paar Wochenenden Hypervisor-Migration.
