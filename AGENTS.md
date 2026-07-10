@@ -13,7 +13,7 @@ This repository contains the German-language Hugo site for `tueti.space`. Site c
 - `hugo --gc --minify` performs the production build used for validation.
 - `hugo new content posts/<slug>/index.md` creates a draft from `archetypes/default.md`.
 
-Use Hugo Extended; CI currently builds with version `0.162.1`. A push to `main` triggers `.github/workflows/pages.yml` and deploys to GitHub Pages.
+Use Hugo Extended; CI currently builds with version `0.164.0`. A push to `main` triggers `.github/workflows/pages.yml` and deploys to GitHub Pages.
 
 ## Content, Style & Naming Conventions
 
