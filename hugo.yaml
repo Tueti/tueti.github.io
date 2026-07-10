@@ -1,5 +1,4 @@
 baseURL: https://tueti.space/
-languageCode: de-de
 title: tueti.space
 copyright: Written with ❤️ in Hamburg • Chrischi 2025 - 2026
 
@@ -21,7 +20,9 @@ permalinks:
 
 languages:
   de:
-    languageName: "Deutsch"
+    locale: de-DE
+    label: "Deutsch"
+    direction: ltr
     weight: 1
     taxonomies:
       category: categories
