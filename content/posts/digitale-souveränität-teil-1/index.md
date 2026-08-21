@@ -18,7 +18,7 @@ cover:
   caption: Foto von [Ales Nesetril](https://unsplash.com/de/@alesnesetril?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) auf [Unsplash](https://unsplash.com/de/fotos/grauer-und-schwarzer-laptop-computer-auf-der-oberflache-Im7lZjxeLhg?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
 ---
 
-*Digitale Souveränität* und *Big Tech* - das mag erstmal nach "Nerd" klingen, aber das Thema geht uns wirklich alle etwas an. Ja, ich bin ein Nerd, das ist sicher keine Überraschung, aber was in welchem Ausmaß mit unseren Daten passiert, ist wirklich kein reines IT-Thema. Also schließe bitte den Tab nicht direkt, ich komme gleich zum Punkt.
+*Digitale Souveränität* und *Big Tech* - das mag erstmal nach "Nerd" klingen, aber das Thema geht uns wirklich alle etwas an. Ja, ich bin ein Nerd, das ist sicher keine Überraschung, aber was in welchem Ausmaß mit unseren Daten passiert, ist kein reines IT-Thema. Also schließe bitte den Tab nicht direkt, ich komme gleich zum Punkt.
 
 Wer meinen Blog verfolgt, weiß, dass ich viel Zeit investiere, um meine private Cloud aufzubauen (erst mit [Synology](/series/private-cloud-mit-einem-synology-nas/), mittlerweile mit meinem [Ugreen NAS](/series/private-cloud-mit-einem-ugreen-nas/)). In dieser Serie möchte ich einen Schritt zurückgehen und einmal beleuchten, wieso ich das eigentlich mache. Denn ich bin fest davon überzeugt, dass Digitale Souveränität immer wichtiger wird, da Big Tech es zu weit treibt. Also wird die Serie meine Art *Essay* zu diesem Thema. Hol dir am besten ein Heißgetränk deiner Wahl (☕️) und viel Spaß beim Lesen.
 
