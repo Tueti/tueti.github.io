@@ -108,10 +108,10 @@ Mit dieser Serie zum Thema "Digitale Souveränität" möchte ich in den kommende
 
 Niemand soll oder muss direkt alles löschen und nicht mehr am (digitalen) Leben teilnehmen. Aber jeder kann kleine Schritte machen. Wer mit der Einstellung *"die wissen doch eh schon alles"* resigniert, unterstützt diese großen Unternehmen. Die Services zu nutzen, ist bequem. Wir haben diese Accounts und wir nutzen all die Gratisdienste, aber es ist deshalb nicht zu spät, jetzt ein wenig zu justieren. Jeder nur so viel, wie er oder sie mag. Jeder Schritt ist ein guter Schritt und es muss keine "Alles-oder-Nichts"-Lösung sein.
 
-In den folgenden Teilen der Serie werde ich mir ansehen:
-- Die Browserwahl und AdBlock für privatere Internetnutzung
-- Deine digitale Identität: E-Mail ohne Tracking
+Hier findest du die Liste der zugehörigen Artikel (erschienene verlinkt und Ideen):
+- [Teil 2: Die Browserwahl: Weg von Chrome](/digitale-souveraenitaet-teil-2-weg-von-chrome/)
 - Durch Werbung getrieben: Was bringt ein VPN?
+- Deine digitale Identität: E-Mail ohne Tracking
 - Sichere Service-Alternativen: Fotos, Online-Speicher, Office-Suite, usw.
 - Self-Hosting: Daten im eigenen Zuhause
 - ...und was mir noch einfällt
