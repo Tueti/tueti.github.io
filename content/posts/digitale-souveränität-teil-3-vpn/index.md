@@ -2,7 +2,7 @@
 author: ["Chrischi"]
 title: "Digitale Souveränität - Teil 3: Was bringt ein VPN?"
 slug: "digitale-souveraenitaet-teil-3-was-bringt-ein-vpn"
-date: "2026-09-01"
+date: "2026-09-04"
 draft: false
 description: "Was ein VPN wirklich leistet - und woran du erkennst, welchem Anbieter du trauen kannst. Fünf prüfbare Kriterien statt Werbeversprechen."
 summary: "VPN-Anbieter versprechen Anonymität und eine No-Log-Policy. Nur: Versprechen kann man nicht überprüfen. Statt zu fragen, wem man vertrauen sollte, schaue ich mir an, welche Anbieter so gebaut sind, dass man ihnen gar nicht vertrauen muss - und leite daraus fünf Kriterien ab, die du selbst nachprüfen kannst. Mullvad, Windscribe, Proton VPN und NordVPN im Vergleich."
