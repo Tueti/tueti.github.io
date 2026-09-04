@@ -1,7 +1,7 @@
 ---
 author: ["Chrischi"]
-title: "Digitale Souveränität - Teil 3: Private Suchmaschinen"
-slug: "digitale-souveraenitaet-teil-3-private-suchmaschinen"
+title: "Digitale Souveränität - Teil 4: Private Suchmaschinen"
+slug: "digitale-souveraenitaet-teil-4-private-suchmaschinen"
 date: "2026-08-27"
 draft: true
 description: ""
